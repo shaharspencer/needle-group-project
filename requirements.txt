@@ -1,0 +1,7 @@
+requests
+pandas
+kaggle
+textblob
+mwparserfromhell
+beautifulsoup4
+tqdm
