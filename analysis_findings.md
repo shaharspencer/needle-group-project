@@ -127,6 +127,12 @@ Not worth building the model around.
 
 ## 5. Social factors
 
+**How gender is assigned.** Where the infobox lists a gender we use it
+directly. For the ~13% of characters missing it, we infer from pronoun counts
+in the first 500 words of the page — at least two "he/him/his" and a clear
+majority gives Male, the same for "she/her" gives Female, otherwise it stays
+Other/Unknown.
+
 ### Men die more — everywhere
 Raw: men 30.0% vs women 21.6%. More importantly it holds *within* franchises:
 men die more in 26 of 27 franchises (only Twilight reverses, by 0.3pp), with a
@@ -134,6 +140,14 @@ mean within-franchise gap of +12.3 points. So it's a real pattern, not just
 "action franchises happen to be male."
 
 ![Male vs female mortality within franchise](data/clean/gender_gap_by_franchise.png)
+
+**How archetype is assigned.** There's no clean occupation column, so we build
+one with a keyword rule. First we match the character's infobox title/
+occupation against word lists per role (Military = soldier, sergeant, captain,
+admiral…; Royalty = king, queen, prince…; Criminal = thief, gangster…). If the
+title gives nothing, we fall back to scanning the first ~2000 characters of the
+page with the same patterns and take the role with the most hits. It's rough —
+about 28% of characters land in "Unknown" — but good enough to compare roles.
 
 ### Role matters too, and the gender gap holds inside every role
 Archetypes order by deadliness — Military/Royalty/Criminal ~33% at the top,
