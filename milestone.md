@@ -56,6 +56,8 @@ We expected that franchises known for killing characters — The Walking Dead, S
 
 ### Check 3: More prominent characters should die more — not less
 
+An infobox is the summary box on the side of a wiki page that lists a character's basic facts — name, gender, species, affiliation, family, and so on. Each of those is one field, so a well-known character usually has more filled-in fields than a background one.
+
 We thought minor characters (short pages, few infobox fields) would die more often. It turned out the other way: dead characters have a median of 11 infobox fields versus 10 for living ones. We used `infobox_field_count` as a rough measure of how detailed a character's wiki page is.
 
 **Visualization: Box plot of infobox field count, split by alive vs dead**
