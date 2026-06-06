@@ -58,10 +58,10 @@ We expected that franchises known for killing characters — The Walking Dead, S
 
 An infobox is the summary box on the side of a wiki page that lists a character's basic facts — name, gender, species, affiliation, family, and so on. Each of those is one field, so a well-known character usually has more filled-in fields than a background one.
 
-We thought minor characters (short pages, few infobox fields) would die more often. It turned out the other way: dead characters have a median of 11 infobox fields versus 10 for living ones. We used `infobox_field_count` as a rough measure of how detailed a character's wiki page is.
+We thought minor characters (short pages, few infobox fields) would die more often. It turned out the other way. We used `infobox_field_count` as a rough measure of how detailed a character's wiki page is, but raw counts are misleading because some wikis just write longer pages than others. To get around that we ranked each character against the others *in their own franchise*, then split everyone into ten equal prominence groups and looked at the death rate in each.
 
-**Visualization: Box plot of infobox field count, split by alive vs dead**
+**Visualization: Mortality rate by within-franchise prominence (deciles)**
 
-![Infobox field count by mortality](data/clean/infobox_prominence_vs_death.png)
+![Mortality by prominence](data/clean/prominence_decile_mortality.png)
 
-**Interpretation**: The median is slightly higher for dead characters, which is the opposite of what we guessed. The two distributions overlap a lot, so the gap is small, but it's consistent. So death isn't really a minor-character thing here — better-documented characters die too. `infobox_field_count` might still be a useful feature, but we shouldn't expect much from it on its own.
+**Interpretation**: Mortality climbs from about 12% in the least-documented tenth of characters to roughly 49% in the most-documented tenth — the most prominent group dies at nearly four times the rate of the least prominent. The bottom few groups are a bit noisy (a one- or two-field difference doesn't mean much there), but from the middle up the trend is clear. So death isn't a minor-character thing at all: the better-documented a character is within their franchise, the more likely they are to die. Ranking within franchise matters — the same count is "major" in a sparse wiki and "average" in a detailed one, and normalizing this way makes the signal much stronger than the raw field count.
