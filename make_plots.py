@@ -7,7 +7,7 @@ from pathlib import Path
 DATA = Path(__file__).parent / "data" / "clean"
 OUT = DATA
 
-df = pd.read_csv(DATA / "characters_cleaned.csv", low_memory=False)
+df = pd.read_csv(DATA / "characters_raw.csv", low_memory=False)
 
 # ── Plot 1: mortality rate by franchise (bar chart) ──────────────────────────
 mort = (
@@ -46,23 +46,17 @@ dead  = df.loc[df["is_dead"] == 1, "infobox_field_count"].clip(upper=40)
 fig, ax = plt.subplots(figsize=(6, 5))
 bp = ax.boxplot(
     [alive, dead],
-    labels=["Alive", "Dead"],
+    tick_labels=["Alive", "Dead"],
     patch_artist=True,
     widths=0.5,
     medianprops=dict(color="black", linewidth=2),
     flierprops=dict(marker="o", markersize=2, alpha=0.3, linestyle="none"),
 )
-bp["boxes"][0].set_facecolor("#2980b9")
-bp["boxes"][1].set_facecolor("#c0392b")
 for patch in bp["boxes"]:
-    patch.set_alpha(0.7)
-
-medians = [alive.median(), dead.median()]
-for i, med in enumerate(medians, start=1):
-    ax.text(i, med + 0.4, f"median = {med:.0f}", ha="center", fontsize=9, color="black")
+    patch.set_facecolor("#4878a8")
 
 ax.set_ylabel("Infobox field count (capped at 40)")
-ax.set_title("Wiki Documentation Depth\nfor Alive vs Dead Characters", fontsize=13, pad=10)
+ax.set_title("Infobox Field Count: Alive vs Dead")
 ax.spines[["top", "right"]].set_visible(False)
 
 plt.tight_layout()

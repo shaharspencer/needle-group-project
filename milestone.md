@@ -56,10 +56,10 @@ We expected that franchises known for killing characters — The Walking Dead, S
 
 ### Check 3: More prominent characters should die more — not less
 
-Our initial instinct was that minor characters (short wiki pages, few infobox fields) die more often. In practice the opposite held: dead characters have a median of 11 infobox fields compared to 10 for living ones. This makes sense once you think about it — major characters are the ones whose deaths are dramatically meaningful, so they accumulate detailed wiki documentation precisely because their deaths were important enough to be fully recorded. We used `infobox_field_count` as a proxy for how thoroughly a character is documented on their Fandom wiki page.
+We thought minor characters (short pages, few infobox fields) would die more often. It turned out the other way: dead characters have a median of 11 infobox fields versus 10 for living ones. We used `infobox_field_count` as a rough measure of how detailed a character's wiki page is.
 
 **Visualization: Box plot of infobox field count, split by alive vs dead**
 
 ![Infobox field count by mortality](data/clean/infobox_prominence_vs_death.png)
 
-**Interpretation**: Dead characters have a slightly higher median infobox field count than living ones, which is the reverse of what we expected. The distributions overlap heavily, but the shift is consistent. It suggests that in our dataset, death is not a minor-character phenomenon — prominent, well-documented characters die too, arguably more so. This makes `infobox_field_count` a potentially useful feature for prediction, though the effect size is small.
+**Interpretation**: The median is slightly higher for dead characters, which is the opposite of what we guessed. The two distributions overlap a lot, so the gap is small, but it's consistent. So death isn't really a minor-character thing here — better-documented characters die too. `infobox_field_count` might still be a useful feature, but we shouldn't expect much from it on its own.
