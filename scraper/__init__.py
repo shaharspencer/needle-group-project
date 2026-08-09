@@ -1,1 +1,0 @@
-# Fandom Character Death Scraper
