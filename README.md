@@ -130,17 +130,24 @@ Two conventions worth keeping to:
 
 ## Demo
 
+**Live: https://shaharspencer.github.io/needle-group-project/**
+
 `docs/` is a self-contained page. Look up any of ~2,000 characters to see their
 predicted risk, which attributes drove it, whether they actually died, and
 comparable characters — or build a character from scratch and watch the estimate
 move.
 
+To run it locally instead:
+
 ```bash
 cd docs && python -m http.server 8765     # http://localhost:8765
 ```
 
-On GitHub Pages: **Settings → Pages → Source: Deploy from a branch**, branch
-`main`, folder `/docs`.
+The live link is served by GitHub Pages from this repository. If it 404s, the
+setting is **Settings → Pages → Source: Deploy from a branch**, branch `final`,
+folder `/docs` — `final` rather than `main`, since that is the branch this work
+is on. `docs/.nojekyll` is required and already committed; without it Pages
+runs the page through Jekyll and drops files it does not recognise.
 
 The model runs in the browser from exported logistic-regression coefficients.
 `src/app/export_demo.py` writes `demo_data.json` to both `data/clean/` and
