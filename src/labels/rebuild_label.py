@@ -17,7 +17,7 @@ import json
 import pandas as pd
 
 from src.constants import ACTOR_INFOBOX_KEYS
-from src.labels.onscreen import OnscreenFeatures
+from src.enrich.name_match import NameMatcher
 from src.paths import CLEAN_DIR, RAW_DIR
 
 
@@ -25,7 +25,9 @@ class LabelRebuilder:
 
     @staticmethod
     def scan_flags() -> pd.DataFrame:
-        """One pass over the raw scrape for the two on-screen signals."""
+        """One pass over the raw scrape for on-screen signals and prominence."""
+        matcher = NameMatcher.from_disk()
+
         rows = []
         for path in sorted(RAW_DIR.glob("*.jsonl")):
             with path.open(encoding="utf-8") as handle:
@@ -38,46 +40,22 @@ class LabelRebuilder:
                         continue
 
                     infobox = record.get("infobox") or {}
-                    name = record.get("name", "")
-                    franchise = record.get("franchise", "")
+                    credit = matcher.lookup(
+                        record.get("name", ""), record.get("franchise", ""), infobox
+                    )
                     rows.append({
                         "page_url": record.get("page_url", ""),
                         "has_actor": int(
                             any(k.lower() in ACTOR_INFOBOX_KEYS for k in infobox)
                         ),
-                        "tmdb_match": OnscreenFeatures.tmdb_match(name, franchise),
+                        **credit,
                     })
+
         flags = pd.DataFrame(rows).drop_duplicates(subset="page_url")
         flags["is_onscreen"] = (
             (flags["has_actor"] == 1) | (flags["tmdb_match"] == 1)
         ).astype(int)
         return flags
-
-    @staticmethod
-    def attach_prominence(df: pd.DataFrame) -> pd.DataFrame:
-        """Best (lowest) TMDB billing order and max episode count per character."""
-        cast_path = CLEAN_DIR / "tmdb_cast.csv"
-        if not cast_path.exists():
-            df["billing_order"] = pd.NA
-            df["episode_count"] = pd.NA
-            return df
-
-        cast = pd.read_csv(cast_path)
-        cast["key"] = [
-            " ".join(sorted(OnscreenFeatures.name_tokens(c)))
-            for c in cast["character"]
-        ]
-        agg = (
-            cast[cast["key"] != ""]
-            .groupby(["franchise", "key"])
-            .agg(billing_order=("billing_order", "min"),
-                 episode_count=("episode_count", "max"))
-            .reset_index()
-        )
-
-        df["key"] = [" ".join(sorted(OnscreenFeatures.name_tokens(n))) for n in df["name"]]
-        merged = df.merge(agg, on=["franchise", "key"], how="left")
-        return merged.drop(columns="key")
 
 
 def main() -> None:
@@ -92,8 +70,6 @@ def main() -> None:
     df = raw.merge(flags, on="page_url", how="left")
     for col in ("has_actor", "tmdb_match", "is_onscreen"):
         df[col] = df[col].fillna(0).astype(int)
-
-    df = LabelRebuilder.attach_prominence(df)
 
     # is_dead is already 0/1 here; characters_raw dropped the unparsed rows
     # upstream, so counting them as alive happens in the audit rather than now.

@@ -52,9 +52,19 @@ LEAKY = {
     "franchise_female_ratio", "hg_winner",
 }
 
+# How much fans wrote about a character, rather than anything about the
+# character. Dead characters attract death sections and cause-of-death fields,
+# so these plausibly encode the outcome instead of predicting it. Scored as a
+# separate feature set to see how much of the result rests on them.
+WIKI_METADATA = ["page_text_length", "infobox_field_count", "appearance_count"]
+
 FEATURE_SETS = {
     "franchise": (FRANCHISE_CATEGORICAL, FRANCHISE_NUMERIC),
     "character": (CHARACTER_CATEGORICAL, CHARACTER_NUMERIC),
+    "character_no_wiki_meta": (
+        CHARACTER_CATEGORICAL,
+        [c for c in CHARACTER_NUMERIC if c not in WIKI_METADATA],
+    ),
     "both": (
         CHARACTER_CATEGORICAL + FRANCHISE_CATEGORICAL,
         CHARACTER_NUMERIC + FRANCHISE_NUMERIC,
