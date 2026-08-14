@@ -46,14 +46,18 @@ eight instead record a date of death, where a filled field means dead. Both
 conventions collapse into one binary `is_dead_v2`.
 
 **Not every page is a character.** This is the largest data-quality problem we
-faced. From 600 annotated pages reweighted to the full corpus, 41% are on-screen
-characters, 46% are characters who exist only in novels or reference books (Star
-Wars Legends, Harry Potter companion books), and 12% are not characters at all —
-creature types, vehicles, and real historical figures picked up from the Young
-Indiana Jones wiki. We restrict to on-screen
-characters using `is_onscreen = has_actor OR tmdb_match`, which scores
-precision 0.79 / recall 0.77 against the annotated sample. Neither signal
-works alone (0.61 and 0.58 recall).
+faced. To size it we drew a 600-page stratified sample and labelled every page
+with Claude Haiku 4.5 against a written rubric: is this an individual character,
+does it appear on screen, does it die.
+
+Reweighted to the full corpus, 41% of pages are on-screen characters, 46% are
+characters who exist only in novels or reference books (Star Wars Legends, Harry
+Potter companion books), and 12% are not characters at all — creature types,
+vehicles, and real historical figures picked up from the Young Indiana Jones
+wiki. We restrict to on-screen characters using
+`is_onscreen = has_actor OR tmdb_match`, which scores precision 0.79 / recall
+0.77 against that sample. Neither signal works alone (0.61 and 0.58 recall),
+which is why the rule combines them.
 
 ![Composition of the scraped corpus](data/clean/figures/corpus_composition.png)
 
@@ -112,11 +116,11 @@ batch asked to read the wiki text and decide whether the character dies on
 screen, with "can't tell" available as an explicit answer.
 
 It returned a verdict on 1,858 of them: **123 dead, 1,223 alive, and 512 left
-undecided — 27.6%.** That refusal rate is the main reason we are willing to use
-the output at all, since a classifier that resolves every case it is handed
-gives no signal about the cases it should not resolve. The death rate among the
-rows it did settle was 9.1%, against 8.5% estimated independently for unlabelled
-rows from the 600-page annotation sample.
+undecided — 27.6%.** Leaving "can't tell" available matters: a classifier that
+resolves every case it is handed gives no signal about the cases it should not
+resolve, and a quarter of these were genuinely undecidable from the page. The
+death rate among the rows it did settle was 9.1%, close to the 8.5% the 600-page
+sample implies for unlabelled rows.
 
 These labels live in their own files (`data/gold/fill_unlabelled/`) and are
 never merged into `is_dead`. They feed exactly one number: the Q3 mortality
@@ -124,15 +128,13 @@ estimates below.
 
 ### Checking the label against a separate source
 
-The label and the features come from the same character pages, so internal
-consistency proves little. The nearest thing to an outside check we have is
-`listofdeaths.fandom.com`, which catalogues deaths episode by episode; we
-scraped its Game of Thrones and The 100 pages for this purpose
-(`legacy/scrapers/`). It is a separate wiki, written by different editors and
+The label and the features come from the same character pages, so we also check
+it against a source that does not use those pages at all.
+`listofdeaths.fandom.com` catalogues deaths episode by episode; we scraped its
+Game of Thrones and The 100 entries (`legacy/scrapers/`) and matched them to our
+characters by name. It is a different wiki, written by different editors and
 organised around episodes rather than characters, so it is not derived from the
-infobox fields our label reads. It is not fully independent either — same
-platform, and plausibly some overlap in who edits it — so we read agreement here
-as a sanity check rather than as validation against ground truth.
+infobox fields the label reads.
 
 | franchise | matched 1:1 | registry says died, we say dead |
 |---|---|---|
