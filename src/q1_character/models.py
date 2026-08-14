@@ -18,6 +18,8 @@ attributes transfer to a franchise never seen in training.
   python -m src.q1_character.models
 """
 
+import re
+
 import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
@@ -58,6 +60,20 @@ LEAKY = {
 # separate feature set to see how much of the result rests on them.
 WIKI_METADATA = ["page_text_length", "infobox_field_count", "appearance_count"]
 
+NETWORK_NUMERIC = [
+    "pagerank", "pagerank_rank", "hub", "authority",
+    "in_degree", "out_degree", "component_size", "n_relatives", "n_categories",
+]
+
+# Column names naming death would restate the label.
+DEATH_TERM_RE = re.compile(
+    r"death|deceas|died|dead|kill|murder|victim|casualt|fatal|corpse|posthum|"
+    r"execut|assassinat|suicide|martyr|sacrific|slain|slay|perish|massacre|"
+    r"memorial|remembr|undead|ghost|revenant|resurrect|alive|living|surviv|"
+    r"fallen|fate|_status|_dod|_dob",
+    re.IGNORECASE,
+)
+
 FEATURE_SETS = {
     "franchise": (FRANCHISE_CATEGORICAL, FRANCHISE_NUMERIC),
     "character": (CHARACTER_CATEGORICAL, CHARACTER_NUMERIC),
@@ -71,6 +87,25 @@ FEATURE_SETS = {
     ),
 }
 
+
+def build_feature_sets(df: pd.DataFrame) -> dict:
+    """Add the wide sets, whose columns are only known once the data is read."""
+    wide = [c for c in df.columns if c.startswith(("cat_", "ib_"))]
+    leaky = [c for c in wide + NETWORK_NUMERIC if DEATH_TERM_RE.search(c)]
+    if leaky:
+        raise SystemExit(f"death-related feature columns reached the matrix: {leaky}")
+
+    sets = dict(FEATURE_SETS)
+    sets["network"] = (FRANCHISE_CATEGORICAL, NETWORK_NUMERIC)
+    sets["character+network"] = (
+        CHARACTER_CATEGORICAL, CHARACTER_NUMERIC + NETWORK_NUMERIC
+    )
+    sets["rich"] = (
+        CHARACTER_CATEGORICAL + FRANCHISE_CATEGORICAL,
+        CHARACTER_NUMERIC + FRANCHISE_NUMERIC + NETWORK_NUMERIC + wide,
+    )
+    return sets
+
 N_SPLITS = 5
 RANDOM_STATE = 0
 
@@ -81,6 +116,13 @@ class Q1Models:
     def load() -> pd.DataFrame:
         df = pd.read_csv(CLEAN_DIR / "characters_model.csv", low_memory=False)
         df = df[df["is_onscreen"] == 1].copy()
+
+        features = pd.read_csv(CLEAN_DIR / "character_features.csv", low_memory=False)
+        features = features.drop_duplicates(subset="page_url", keep="first")
+        df = df.merge(
+            features.drop(columns=["franchise", "intro"], errors="ignore"),
+            on="page_url", how="left",
+        )
 
         assert not (LEAKY & set(FEATURE_SETS["both"][0] + FEATURE_SETS["both"][1])), \
             "a leaky column reached the feature list"
@@ -119,7 +161,7 @@ class Q1Models:
         }
 
     @staticmethod
-    def evaluate(df: pd.DataFrame) -> pd.DataFrame:
+    def evaluate(df: pd.DataFrame, feature_sets: dict) -> pd.DataFrame:
         """
         Score every feature set under both splitting regimes.
 
@@ -149,7 +191,7 @@ class Q1Models:
                 )[:, 1]
                 rows.append(Q1Models._score(regime, f"baseline:{name}", "-", y, proba))
 
-            for feature_set, (categorical, numeric) in FEATURE_SETS.items():
+            for feature_set, (categorical, numeric) in feature_sets.items():
                 X = df[categorical + numeric]
                 for model_name, model in Q1Models.models().items():
                     pipeline = Q1Models.make_pipeline(model, categorical, numeric)
@@ -212,7 +254,8 @@ def main() -> None:
     print(f"{len(df):,} on-screen characters, {df[TARGET].mean():.1%} dead\n")
 
     print("Cross-validating (GroupKFold on franchise):")
-    report = Q1Models.evaluate(df)
+    feature_sets = build_feature_sets(df)
+    report = Q1Models.evaluate(df, feature_sets)
 
     print("\nResults, ranked by PR-AUC")
     print(report.sort_values("pr_auc", ascending=False)
