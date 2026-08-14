@@ -27,7 +27,16 @@ Python 3.12. From the repository root:
 pip install pandas numpy scikit-learn statsmodels matplotlib networkx requests
 ```
 
-Two things are needed before a full run and neither is in the repository:
+**Install `git-lfs` before cloning.** `data/clean/character_features.csv` is
+about 140 MB and is stored in Git LFS. Without git-lfs you get a 134-byte pointer
+in its place and every stage that reads it fails with a parse error rather than
+a missing-file error, which is a confusing way to find out.
+
+```bash
+git lfs install && git lfs pull      # if you already cloned without it
+```
+
+Two more things are needed before a full run and neither is in the repository:
 
 - **`.env`** with `TMDB_API_KEY=<key>`. Gitignored. Only the enrichment stage
   reads it, and TMDB responses cache to `data/external/tmdb/`, so a second run
@@ -37,9 +46,10 @@ Two things are needed before a full run and neither is in the repository:
   which takes hours. Everything downstream of it is tracked, so you only need
   this if you are changing the scrape or rebuilding the feature table.
 
-Everything under `data/clean/` and `data/gold/` **is** tracked. You can
-reproduce every number in the writeup from a fresh clone without re-scraping,
-starting at Stage 3.
+Everything under `data/clean/` and `data/gold/` **is** tracked, including the
+built feature matrix. From a fresh clone you can therefore reproduce every number
+in the writeup without re-scraping, starting at Stage 4 — Stages 0 and 3 are the
+only ones that need `data/raw/`.
 
 On Windows, prefix `build_pipeline.py` with `PYTHONUTF8=1`. It prints non-ASCII
 and the console defaults to cp1252, which otherwise kills the run.
@@ -57,6 +67,7 @@ PYTHONUTF8=1 python build_pipeline.py     # -> characters_raw.csv
 # Stage 1 — labels
 python -m src.labels.audit_labels
 python -m src.labels.rebuild_label        # -> characters_model.csv
+python -m src.labels.eval_labels          # -> label_eval.csv, corpus_composition.csv
 python -m src.labels.validate_registry    # check the label against outside sources
 python -m src.labels.fill_unlabelled --collect   # then Haiku, then --merge
 
@@ -71,6 +82,7 @@ python -m src.q1_character.splits         # train/test assignment; run before mo
 python -m src.q1_character.models         # 9 feature sets x 3 models x 2 CV regimes
 python -m src.q1_character.evaluate       # the held-out test score
 python -m src.q1_character.effects        # gender effect sizes
+python -m src.q2_text.coefficients        # -> q2_text_coefficients.csv
 python -m src.q3_franchise.mortality      # franchise mortality, WLS, k-means
 
 # Stage 5 — outputs
@@ -79,6 +91,15 @@ python -m src.app.export_demo             # -> data/clean/ and docs/demo_data.js
 
 python -m pytest tests -q
 ```
+
+Stage order matters in three places, and nowhere else:
+
+- `splits` before `models`, `evaluate` and `export_demo`, which all read
+  `split_assignment.csv`.
+- `eval_labels`, `q2_text.coefficients` and `q3_franchise.mortality` before
+  `figures`. Figures read their numbers from those CSVs rather than restating
+  them, so a missing one is a crash rather than a stale caption.
+- `features` before anything in Stage 4.
 
 Every stage is idempotent: re-running overwrites its own outputs and nothing
 else. `build_pipeline.py` checkpoints to `data/clean/.ckpt/` and resumes from
@@ -103,7 +124,7 @@ src/
   enrich/          TMDB titles, cast, name matching
   q1_character/    features, model comparison, splits, held-out evaluation,
                     gender effect sizes
-  q2_text/         empty — see Status below
+  q2_text/         coefficients.py — the fitted TF-IDF weights behind Q2
   q3_franchise/    franchise mortality, WLS regression, k-means
   viz/             figures.py renders every writeup figure, style.py is shared
   app/             demo model export
@@ -111,7 +132,8 @@ data/
   raw/             scraped JSONL (gitignored, 268 MB)
   external/        third-party dumps and the TMDB cache (gitignored)
   clean/           built tables, figures/ (tracked — these are our outputs)
-  gold/            annotation sample, labels, Haiku fill (tracked)
+  gold/            600-page annotation sample and its labels, plus the Haiku
+                    fill for unlabelled rows (tracked)
 datasets/          transcripts, death registries, per-show character features
 docs/              the demo, served by GitHub Pages
 legacy/            pre-restructure scripts, kept for the record, never run
@@ -119,10 +141,15 @@ logs/              per-run console output (gitignored)
 tests/             pytest
 ```
 
-Two conventions worth keeping to:
+Three conventions worth keeping to:
 
 - **Import paths from `src/paths.py`.** No stage should hardcode a data
   location.
+- **Labels produced by a model stay in their own files.** The 600-page
+  annotation sample and the fill for unlabelled rows were both labelled by
+  Claude Haiku 4.5, and neither is merged into `is_dead`. The fill feeds exactly
+  one number, the Q3 mortality point estimates. Keep that separation if you add
+  to it.
 - **Constants go in `src/constants.py`.** `analysis_population()` lives there
   and is how every question restricts rows to the same population — on screen,
   and named. If you filter rows yourself somewhere else, the tables stop
@@ -171,18 +198,22 @@ Two constraints on it, both deliberate and both documented at the top of
 |---|---|
 | Q1 — character vs franchise | done: 9 feature sets × 3 models × 2 CV regimes, plus a held-out test score |
 | Q1 — gender effect sizes | done: pooled and per-franchise |
-| Q2 — does text predict death? | **partly**: TF-IDF over per-character wiki text is built and is the best-transferring feature family. The dialogue half is not done |
+| Q2 — does text predict death? | done for descriptive text: TF-IDF over each character's wiki description, the best-transferring feature family we have. Dialogue is out of scope — see below |
 | Q3 — franchise properties | done: WLS regression, k-means, Haiku-filled mortality for the four worst franchises |
 | demo | done, deployed from `docs/` |
 | tests | 17 passing, all on `src/labels/` |
 
-Q2's dialogue half is blocked on death registries, not on transcripts. There are
-transcripts for 11 shows but a usable per-episode death list for only two, so
-the largest transcript set (464 Grey's Anatomy episodes) has nothing to align
-against. Most transcripts also lack speaker labels, which makes attributing a
-line to a character its own unsolved problem. `src/q2_text/` is an empty stub;
-the text features that do exist live in the Q1 pipeline, where they are
-evaluated.
+Q2 is answered for text *about* a character. Dialogue is a different question and
+is blocked on death registries rather than on transcripts: there are transcripts
+for 11 shows but a usable per-episode death list for only two, so the largest
+transcript set (464 Grey's Anatomy episodes) has nothing to align against, and
+most transcripts carry no speaker labels, which makes attributing a line to a
+character a prerequisite problem in its own right.
+
+The text features themselves are built in `src/q1_character/features.py`
+(`intro_clean`) and scored in `models.py`, since that is where the comparison
+lives. `src/q2_text/coefficients.py` refits the text-only model on trainval and
+writes the fitted weights, which is what Figure 5 in the writeup is drawn from.
 
 ## Known issues
 
@@ -223,6 +254,11 @@ Open, roughly in the order they would bite someone picking this up:
   Walking Dead and 811 Prison Break rows from an earlier per-show scrape. Not
   merged because those files have no page text or categories, so their rows
   could not get the network and category features every other row has.
+- **There is only one annotation pass.** `src/labels/eval_labels.py` computes
+  inter-pass agreement and Cohen's kappa if a second pass exists, and
+  `data/gold/annotations/pass2/` is an empty directory, so it prints "Only one
+  annotation pass present" and no reliability figure is produced. Re-running
+  `src.labels.annotate` into `pass2` would fill it.
 - **Test coverage is narrow.** 17 tests, all on `src/labels/`. Nothing tests
   feature building, the models, the Q3 regression, the figures or the demo
   export — which is where a silent bug does the most damage to the writeup.
@@ -260,3 +296,9 @@ Fixed, recorded because the numbers moved:
   and it turned out to be the best-transferring family we have.
 - The demo was fitting on every character and then scoring those same
   characters. It now fits on `trainval` and shows only `test` rows.
+- Figure captions restated numbers by hand and two had gone stale against the
+  data: the gender forest claimed nine of nineteen franchises significant
+  against an actual 11 of 22, and the run-span caption cited the pre-fix
+  p-value. Captions now read from `q3_glm_summary.csv`,
+  `corpus_composition.csv` and the tables themselves, so they cannot drift
+  again.
