@@ -45,6 +45,10 @@ class LabelRebuilder:
                     )
                     rows.append({
                         "page_url": record.get("page_url", ""),
+                        "franchise": record.get("franchise", ""),
+                        # Kept nullable: rows the pipeline could not label are
+                        # exactly what the corrected denominator needs.
+                        "raw_is_dead": record.get("is_dead"),
                         "has_actor": int(
                             any(k.lower() in ACTOR_INFOBOX_KEYS for k in infobox)
                         ),
@@ -67,7 +71,10 @@ def main() -> None:
 
     print("Scanning raw scrape for on-screen signals ...")
     flags = LabelRebuilder.scan_flags()
-    df = raw.merge(flags, on="page_url", how="left")
+    flags.to_csv(CLEAN_DIR / "onscreen_flags.csv", index=False, encoding="utf-8")
+
+    df = raw.merge(flags.drop(columns=["franchise", "raw_is_dead"]),
+                   on="page_url", how="left")
     for col in ("has_actor", "tmdb_match", "is_onscreen"):
         df[col] = df[col].fillna(0).astype(int)
 
