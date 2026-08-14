@@ -19,6 +19,52 @@ read [PIPELINE.md](PIPELINE.md).
 | [PIPELINE.md](PIPELINE.md) | what does each stage read and write |
 | [FEATURES.md](FEATURES.md) | how is each feature computed |
 
+## Where the project stands
+
+Everything is built, run and committed. All three questions are answered, the
+demo is live, and every figure in the writeup is generated from the tables in
+`data/clean/` rather than drawn by hand.
+
+**The results, in one place.** Population is 15,686 on-screen, named characters
+across 38 franchises, 35.6% of whom die.
+
+| question | answer |
+|---|---|
+| Q1 — character or franchise? | Both, mostly the character. Character attributes reach 0.633 PR-AUC against 0.556 for franchise identity and 0.743 for everything combined, on a 0.356 base rate. On the held-out test set the full model gets **0.752 PR-AUC / 0.850 ROC-AUC**, dropping to **0.664 / 0.776** when whole franchises are held out. |
+| Q1 — gender | Women are about half as likely to die: **adjusted OR 0.564** (95% CI 0.516–0.616), roughly 11 percentage points. 11 of 22 franchises reach p<0.05 and none point the other way. |
+| Q2 — does text predict death? | Yes, for descriptive text. TF-IDF over each character's wiki description is our best-transferring feature family: +0.066 PR-AUC on a random split, +0.058 held-out. Dialogue is a separate question we did not answer. |
+| Q3 — are some franchises deadlier? | They differ enormously (Grey's Anatomy 9.3%, The 100 72.7%) but **no franchise property predicts which**. Nothing reaches significance and adjusted R² is negative. A clean null. |
+
+**If you worked on this before, two things changed the numbers.** Both were
+fields that were computed correctly for one kind of row and silently wrong for
+another, so neither showed up as missing data:
+
+- `run_span` measured the spread of TMDB *release* years. A TV series is one
+  title, so 15 shows were recorded as running for zero years — Grey's Anatomy
+  aired 2005–2026 and scored 0, as did Lost and The Wire. Fixed by reading
+  `last_air_date`. **This removed the only significant result Q3 had**: run span
+  went from p=0.022 to p=0.185.
+- Gender was inferred from pronouns only when the infobox field was *missing*,
+  never when it was present but unparseable. The Dexter wiki writes an
+  unparseable value on 1,058 of its 1,077 pages, so an entire franchise had no
+  usable gender. Fixed; recovered 1,024 characters, 826 of them Dexter, and
+  Dexter now appears in the per-franchise gender estimates for the first time.
+
+Every table, figure and demo file was regenerated after those fixes. **Old
+figures and numbers from before this are stale — take them from `data/clean/`,
+not from an earlier copy.**
+
+**What else was added:** `src/q2_text/coefficients.py` (Q2's package was empty,
+and the coefficients the writeup quoted weren't saved anywhere), a seventh figure
+for Q2, `in_degree` in the demo, and figure captions that read from the CSVs
+instead of restating numbers by hand — two of them had gone stale against the
+data.
+
+**What is left**, if you want something to pick up: a Future Work section for the
+writeup, and the open items under [Known issues](#known-issues) below. The
+biggest of those is that some features are missing for entire franchises rather
+than at random.
+
 ## Setup
 
 Python 3.12. From the repository root:
