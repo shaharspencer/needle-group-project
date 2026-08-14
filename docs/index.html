@@ -51,6 +51,10 @@
     padding: 7px 14px; font: inherit; font-size: 14px; color: var(--ink-2); cursor: pointer;
   }
   .tab[aria-selected="true"] { background: var(--surface); border-color: var(--rule); color: var(--ink); font-weight: 600; }
+  /* This group sits inside a .card, whose background is already --surface, so
+     the selected state needs the other neutral to read as selected at all. */
+  #verdict-filter .tab { font-size: 13px; padding: 5px 11px; }
+  #verdict-filter .tab[aria-selected="true"] { background: var(--plane); }
 
   .panel { display: none; }
   .panel.on { display: block; }
@@ -112,6 +116,8 @@
   .note { font-size: 12.5px; color: var(--ink-2); margin-top: 22px; padding-top: 16px;
           border-top: 1px solid var(--grid); }
   .note code { font-family: var(--mono); font-size: 12px; }
+  .def { display: block; font-size: 11.5px; line-height: 1.45; color: var(--muted);
+         margin: 5px 0 2px; }
   footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--rule);
            font-size: 12.5px; color: var(--muted); }
   a { color: var(--blue); }
@@ -122,11 +128,22 @@
 
 <header>
   <h1>Plot Armor Index</h1>
-  <p class="sub">How likely is a fictional character to die? This scores 15,633 on-screen
+  <p class="sub">How likely is a fictional character to die? This scores on-screen
   characters from 38 franchises on the attributes a writer actually controls — who they are,
   how prominent they are, and how central they are to the story.</p>
   <div class="stats" id="stats"></div>
+  <p class="sub" id="accuracy-plain" style="margin-top:10px"></p>
 </header>
+
+<div class="card" id="importance-card" style="margin-bottom:20px">
+  <h2>What drives this model</h2>
+  <div id="importance"></div>
+  <p class="note" style="margin-top:10px">How much each attribute actually
+  varies the prediction across the characters below — not how much it matters
+  for any one of them. Measured as the spread of each attribute's contribution
+  to the log-odds, so a feature with many rare categories doesn't outrank a
+  common one just for having more of them.</p>
+</div>
 
 <div class="tabs" role="tablist">
   <button class="tab" role="tab" aria-selected="true" data-panel="lookup">Look up a character</button>
@@ -138,6 +155,12 @@
     <div class="card">
       <h2>Characters</h2>
       <input type="search" id="q" placeholder="Search name or franchise…" autocomplete="off">
+      <div class="tabs" id="verdict-filter" style="margin:12px 0 0">
+        <button class="tab" data-verdict="all" aria-selected="true">All</button>
+        <button class="tab" data-verdict="right" aria-selected="false">Got it right</button>
+        <button class="tab" data-verdict="wrong" aria-selected="false">Got it wrong</button>
+      </div>
+      <p class="note" id="filter-count" style="margin:8px 0 0"></p>
       <div id="list"></div>
     </div>
     <div class="card" id="detail"></div>
@@ -166,10 +189,31 @@
 <script>
 const F = {
   gender: "Gender", archetype: "Role", affiliation_alignment: "Alignment",
-  franchise: "Franchise", billing_order: "Billing order", pagerank_rank: "Story centrality",
+  franchise: "Franchise", billing_order: "Billing order",
+  pagerank_rank: "Story centrality", in_degree: "Times mentioned",
   is_human: "Human", n_relatives: "Named relatives",
 };
-let D, M, chosen = null, current = null;
+
+// What each attribute actually is, in the reader's terms. Shown on hover and
+// under the build-a-character controls, because "story centrality" and
+// "billing order" mean nothing without them. Full definitions: FEATURES.md.
+const DEFS = {
+  gender: "From the wiki infobox. Where it's missing, inferred from he/she pronoun counts in the first 500 words of the page.",
+  archetype: "Occupation bucket from a keyword rule over the infobox title, falling back to a scan of the page text. No wiki has a clean occupation field, so this is approximate — about 28% end up Unknown.",
+  affiliation_alignment: "Good, Evil, Neutral or Ambiguous, matched from the infobox affiliation against two word lists (Jedi and the Order of the Phoenix vs the Empire and the Death Eaters). Ambiguous means it matched both.",
+  franchise: "Which of the 38 wikis the character came from.",
+  billing_order: "Cast position in the TMDB credits — 0 is top billing. 40 means no credit was matched, which usually means uncredited or background.",
+  pagerank_rank: "PageRank over a per-franchise graph where an edge means one character's page talks about another, then ranked within the franchise: 0 is the most central character, 1 the least.",
+  in_degree: "How many other characters in the franchise are described as having something to do with this one. PageRank weights those mentions by who is doing the mentioning; this is the raw count, capped at 60. Together with story centrality it is what this model knows about the story rather than about the wiki.",
+  is_human: "From the infobox species field.",
+  n_relatives: "How many family members the infobox lists.",
+};
+let D, M, chosen = null, current = null, verdictFilter = "all";
+
+// Whether the model's call matched what actually happened. Every character on
+// this page is a held-out one, so this is a real hit or miss, not the model
+// being asked about a row it trained on.
+const correct = c => (c.risk >= 0.5) === (c.d === 1);
 
 const pct = v => (100 * v).toFixed(0) + "%";
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -182,12 +226,12 @@ function logit(c) {
   for (const col of Object.keys(M.levels)) {
     const key = col + "=" + c[col];
     const w = M.coefficients[key];
-    if (w !== undefined) { z += w; parts.push([F[col] + ": " + c[col], w]); }
+    if (w !== undefined) { z += w; parts.push([F[col] + ": " + c[col], w, col]); }
   }
   M.numeric.forEach((col, i) => {
     const x = (Number(c[col]) - M.means[i]) / M.scales[i];
     const w = (M.coefficients[col] || 0) * x;
-    z += w; parts.push([F[col], w]);
+    z += w; parts.push([F[col], w, col]);
   });
   parts.sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]));
   return { p: 1 / (1 + Math.exp(-z)), parts };
@@ -196,17 +240,20 @@ function logit(c) {
 function contributions(parts) {
   const max = Math.max(...parts.map(p => Math.abs(p[1])), 0.35);
   return `<table><thead><tr><th>Attribute</th><th>Effect on risk</th><th class="num">log-odds</th></tr></thead><tbody>` +
-    parts.slice(0, 8).map(([name, w]) => {
+    parts.slice(0, 8).map(([name, w, col]) => {
       const half = 50 * Math.abs(w) / max;
       const style = w >= 0
         ? `left:50%;width:${half}%;background:var(--red)`
         : `left:${50 - half}%;width:${half}%;background:var(--blue)`;
-      return `<tr><td>${esc(name)}</td>
+      const def = DEFS[col] ? ` title="${esc(DEFS[col])}"` : "";
+      const mark = DEFS[col] ? ` <abbr${def} style="cursor:help;color:var(--muted);text-decoration:none">?</abbr>` : "";
+      return `<tr><td>${esc(name)}${mark}</td>
         <td class="bar"><span class="mid"></span><u style="${style}"></u></td>
         <td class="num">${w >= 0 ? "+" : ""}${w.toFixed(2)}</td></tr>`;
     }).join("") + `</tbody></table>
     <p class="note">Red pushes toward dying, blue toward surviving. Bars are the model's
-    log-odds contributions; the eight largest are shown.</p>`;
+    log-odds contributions; the eight largest are shown. Hover a <b>?</b> for how
+    that attribute is defined.</p>`;
 }
 
 function similar(c) {
@@ -220,13 +267,19 @@ function similar(c) {
       return [d, o];
     })
     .sort((a, b) => a[0] - b[0]).slice(0, 5).map(x => x[1]);
-  return `<h2 style="margin-top:26px">Comparable characters</h2>
+  const outcomes = new Set(scored.map(o => o.d));
+  return `<h2 style="margin-top:26px">Others the model scored the same</h2>
     <table><thead><tr><th>Character</th><th>Franchise</th>
-    <th class="num">Risk</th><th class="num">Outcome</th></tr></thead><tbody>` +
+    <th class="num">Risk</th><th class="num">Actually</th></tr></thead><tbody>` +
     scored.map(o => `<tr><td>${esc(o.n)}</td><td style="color:var(--muted)">${esc(o.f)}</td>
       <td class="num">${pct(o.risk)}</td>
       <td class="num" style="color:${o.d ? "var(--red)" : "var(--green)"}">${o.d ? "died" : "survived"}</td></tr>`).join("") +
-    `</tbody></table>`;
+    `</tbody></table>
+    <p class="note">Ranked by how close the model's score is, not by how alike
+    the characters are — so this is the group the model can't tell apart.
+    ${outcomes.size > 1
+      ? "Note the outcomes differ: same score, different fate, which is the model's limit showing."
+      : "They all ended up the same way here, which is the model's score looking justified."}</p>`;
 }
 
 function showCharacter(c) {
@@ -234,7 +287,7 @@ function showCharacter(c) {
   const r = logit({
     gender: c.g, archetype: c.a, affiliation_alignment: c.al, franchise: c.f,
     billing_order: c.b === null ? 40 : c.b, pagerank_rank: c.p,
-    is_human: c.h, n_relatives: c.r,
+    in_degree: c.i, is_human: c.h, n_relatives: c.r,
   });
   const band = r.p >= 0.6 ? "high" : r.p >= 0.35 ? "moderate" : "low";
   const right = (r.p >= 0.5) === (c.d === 1);
@@ -261,32 +314,50 @@ function showCharacter(c) {
 
 function renderList() {
   const q = document.getElementById("q").value.trim().toLowerCase();
-  const hits = D.characters
-    .filter(c => !q || c.n.toLowerCase().includes(q) || c.f.toLowerCase().includes(q))
-    .slice(0, 300);
+  const matching = D.characters.filter(c =>
+    (!q || c.n.toLowerCase().includes(q) || c.f.toLowerCase().includes(q)) &&
+    (verdictFilter === "all" || (correct(c) ? "right" : "wrong") === verdictFilter));
+
+  const nRight = D.characters.filter(correct).length;
+  document.getElementById("filter-count").textContent =
+    `${nRight} of ${D.characters.length} called correctly ` +
+    `(${pct(nRight / D.characters.length)}), at a 50% threshold. ` +
+    `Showing ${matching.length}.`;
+
+  const hits = matching.slice(0, 300);
   document.getElementById("list").innerHTML = hits.length
     ? hits.map(c => `<div class="row" data-n="${esc(c.n)}" data-f="${esc(c.f)}">
         <span><span class="nm">${esc(c.n)}</span><br><span class="fr">${esc(c.f)}</span></span>
-        <span class="pc">${pct(c.risk)}</span></div>`).join("")
-    : `<p class="note">No characters match “${esc(q)}”.</p>`;
+        <span class="pc" style="color:${correct(c) ? "var(--muted)" : "var(--orange)"}">${pct(c.risk)}</span></div>`).join("")
+    : `<p class="note">Nothing matches that.</p>`;
 
   document.querySelectorAll("#list .row").forEach(el => el.onclick = () =>
     showCharacter(D.characters.find(c => c.n === el.dataset.n && c.f === el.dataset.f)));
 }
 
 function renderControls() {
+  const hint = (col) => DEFS[col]
+    ? `<span class="def">${esc(DEFS[col])}</span>` : "";
   const sel = (col) => `<label for="c_${col}">${F[col]}</label>
-    <select id="c_${col}">${M.levels[col].map(v => `<option>${esc(v)}</option>`).join("")}</select>`;
+    <select id="c_${col}">${M.levels[col].map(v => `<option>${esc(v)}</option>`).join("")}</select>
+    ${hint(col)}`;
   document.getElementById("controls").innerHTML =
     Object.keys(M.levels).map(sel).join("") + `
     <label for="c_billing_order">Billing order — <span id="v_b">10</span></label>
     <input type="range" id="c_billing_order" min="0" max="40" value="10">
+    ${hint("billing_order")}
     <label for="c_pagerank_rank">Story centrality — <span id="v_p">most central</span></label>
     <input type="range" id="c_pagerank_rank" min="0" max="100" value="10">
+    ${hint("pagerank_rank")}
+    <label for="c_in_degree">Times mentioned — <span id="v_i">4</span></label>
+    <input type="range" id="c_in_degree" min="0" max="60" value="4">
+    ${hint("in_degree")}
     <label for="c_n_relatives">Named relatives — <span id="v_r">2</span></label>
     <input type="range" id="c_n_relatives" min="0" max="20" value="2">
+    ${hint("n_relatives")}
     <label for="c_is_human">Species</label>
-    <select id="c_is_human"><option value="1">Human</option><option value="0">Non-human</option></select>`;
+    <select id="c_is_human"><option value="1">Human</option><option value="0">Non-human</option></select>
+    ${hint("is_human")}`;
 
   document.querySelectorAll("#controls select, #controls input").forEach(el =>
     el.addEventListener("input", renderBuilt));
@@ -297,6 +368,7 @@ function renderBuilt() {
   const v = id => document.getElementById("c_" + id).value;
   const centrality = Number(v("pagerank_rank")) / 100;
   document.getElementById("v_b").textContent = v("billing_order");
+  document.getElementById("v_i").textContent = v("in_degree");
   document.getElementById("v_r").textContent = v("n_relatives");
   document.getElementById("v_p").textContent =
     centrality < .2 ? "most central" : centrality < .6 ? "mid-tier" : "peripheral";
@@ -305,6 +377,7 @@ function renderBuilt() {
     gender: v("gender"), archetype: v("archetype"),
     affiliation_alignment: v("affiliation_alignment"), franchise: v("franchise"),
     billing_order: Number(v("billing_order")), pagerank_rank: centrality,
+    in_degree: Number(v("in_degree")),
     is_human: Number(v("is_human")), n_relatives: Number(v("n_relatives")),
   };
   const r = logit(c);
@@ -318,21 +391,85 @@ function renderBuilt() {
     <h2 style="margin-top:26px">Why</h2>${contributions(r.parts)}`;
 }
 
+function renderImportance() {
+  // How much each attribute actually moves the prediction, measured as the
+  // standard deviation of its contribution to the log-odds across the real
+  // characters on this page.
+  //
+  // The tempting shortcut -- max coefficient minus min coefficient per
+  // feature -- is unfair across cardinalities: franchise has 38 levels, so
+  // its spread is mechanically wider than a 4-level feature's whatever the
+  // data says. Weighting by how often each level actually occurs fixes that,
+  // and it's still computed from M plus the character list, so it can't drift
+  // out of sync with the model the rest of the page evaluates.
+  const KEYS = {gender: "g", archetype: "a", affiliation_alignment: "al",
+                franchise: "f", billing_order: "b", pagerank_rank: "p",
+                in_degree: "i", is_human: "h", n_relatives: "r"};
+
+  const spread = (values) => {
+    if (!values.length) return 0;
+    const mean = values.reduce((a, b) => a + b, 0) / values.length;
+    return Math.sqrt(values.reduce((s, v) => s + (v - mean) ** 2, 0) / values.length);
+  };
+
+  const scored = [];
+  for (const col of Object.keys(M.levels)) {
+    const contributions = D.characters.map(c => {
+      const w = M.coefficients[col + "=" + c[KEYS[col]]];
+      return w === undefined ? 0 : w;
+    });
+    scored.push([F[col] || col, spread(contributions)]);
+  }
+  M.numeric.forEach((col, i) => {
+    const w = M.coefficients[col] || 0;
+    const contributions = D.characters.map(c => {
+      const raw = c[KEYS[col]];
+      const x = (Number(raw === null ? 40 : raw) - M.means[i]) / M.scales[i];
+      return w * x;
+    });
+    scored.push([F[col] || col, spread(contributions)]);
+  });
+  scored.sort((a, b) => b[1] - a[1]);
+
+  const max = Math.max(...scored.map(s => s[1]));
+  document.getElementById("importance").innerHTML = scored.map(([name, v]) => `
+    <div style="display:flex;align-items:center;gap:10px;margin:6px 0">
+      <span style="width:150px;font-size:13px;color:var(--ink-2)">${esc(name)}</span>
+      <div style="flex:1;height:10px;background:var(--grid);border-radius:5px;overflow:hidden">
+        <div style="width:${(100 * v / max).toFixed(1)}%;height:100%;background:var(--blue);border-radius:5px"></div>
+      </div>
+    </div>`).join("");
+}
+
 fetch("demo_data.json").then(r => r.json()).then(data => {
   D = data; M = data.model;
   document.getElementById("stats").innerHTML = `
-    <div class="stat"><b>${D.performance.n_train.toLocaleString()}</b><span>characters scored</span></div>
+    <div class="stat"><b>${D.performance.n_test.toLocaleString()}</b><span>held-out characters scored</span></div>
     <div class="stat"><b>${M.levels.franchise.length}</b><span>franchises</span></div>
     <div class="stat"><b>${pct(D.performance.base_rate)}</b><span>actually die</span></div>
     <div class="stat"><b>${D.performance.roc_auc}</b><span>ROC-AUC (5-fold)</span></div>`;
+  document.getElementById("accuracy-plain").textContent =
+    `In plain terms: given one character who died and one who didn't, this model ranks ` +
+    `the one who died as riskier about ${pct(D.performance.roc_auc)} of the time.`;
+  renderImportance();
   renderList();
   renderControls();
   showCharacter(D.characters.find(c => c.n === "Eddard Stark") || D.characters[0]);
 });
 
 document.getElementById("q").addEventListener("input", renderList);
-document.querySelectorAll(".tab").forEach(tab => tab.onclick = () => {
-  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", String(t === tab)));
+document.querySelectorAll("#verdict-filter .tab").forEach(tab => tab.onclick = () => {
+  verdictFilter = tab.dataset.verdict;
+  document.querySelectorAll("#verdict-filter .tab").forEach(t =>
+    t.setAttribute("aria-selected", String(t === tab)));
+  renderList();
+});
+// Scoped to [data-panel]: there are two independent groups of .tab buttons on
+// the page now, and an unscoped ".tab" selector here would overwrite the
+// verdict filter's own handler and then hide every panel.
+document.querySelectorAll(".tab[data-panel]").forEach(tab => tab.onclick = () => {
+  document.querySelectorAll(".tab[data-panel]").forEach(t =>
+    t.setAttribute("aria-selected", String(t === tab)));
   document.querySelectorAll(".panel").forEach(p =>
     p.classList.toggle("on", p.id === tab.dataset.panel));
 });

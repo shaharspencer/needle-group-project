@@ -126,10 +126,17 @@ class TmdbEnricher:
             credits = TmdbEnricher.get(f"tv/{tmdb_id}/aggregate_credits", key)
             name = detail.get("name", "")
             release = detail.get("first_air_date", "")
+            # A series is one title, so a franchise like Grey's Anatomy would
+            # otherwise have first_year == last_year and a run span of zero
+            # despite running since 2005. Q3 regresses mortality on run span,
+            # so without this every single-series franchise looked instantaneous.
+            end = detail.get("last_air_date", "") or ""
         else:
             credits = TmdbEnricher.get(f"movie/{tmdb_id}/credits", key)
             name = detail.get("title", "")
             release = detail.get("release_date", "")
+            # A film ends when it is released.
+            end = release
 
         title_row = {
             "franchise": franchise,
@@ -138,6 +145,8 @@ class TmdbEnricher:
             "title": name,
             "release_date": release,
             "release_year": int(release[:4]) if release[:4].isdigit() else None,
+            "end_date": end,
+            "end_year": int(end[:4]) if end[:4].isdigit() else None,
             "genres": "|".join(g["name"] for g in detail.get("genres", [])),
             "vote_average": detail.get("vote_average"),
             "vote_count": detail.get("vote_count"),
@@ -212,4 +221,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    from src import setup_run_log
+    setup_run_log(__spec__)
     main()

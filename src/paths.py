@@ -10,4 +10,5 @@ CLEAN_DIR = DATA_DIR / "clean"       # our built tables and figures (tracked)
 GOLD_DIR = DATA_DIR / "gold"         # annotated ground-truth labels (tracked)
 EXTERNAL_DIR = DATA_DIR / "external" # third-party Kaggle/CMU dumps (gitignored)
 DATASETS_DIR = REPO_ROOT / "datasets"  # per-show transcripts, death lists, features
-FIG_DIR = CLEAN_DIR                  # figures currently live alongside the tables
+FIG_DIR = CLEAN_DIR / "figures"      # writeup figures (tracked)
+DOCS_DIR = REPO_ROOT / "docs"        # what GitHub Pages serves

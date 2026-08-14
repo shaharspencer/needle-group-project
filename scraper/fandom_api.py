@@ -194,6 +194,50 @@ class FandomAPIClient:
             else:
                 break
 
+    def template_redirects(self, template: str, batch_size: int = 500) -> list[str]:
+        """Names that redirect to *template*, without the "Template:" prefix.
+
+        Page discovery uses `embeddedin`, which counts a transclusion through a
+        redirect, but the parser matches the template name as literally written
+        in the wikitext. On wikis where the canonical template has redirects --
+        the Matrix wiki writes {{Resistance character infobox}} and
+        {{Exile character infobox}} for what is really Infobox character --
+        discovery finds those pages and parsing then throws them away. Feeding
+        the redirect names back to the parser keeps them.
+        """
+        params = {
+            "action": "query",
+            "list": "backlinks",
+            "bltitle": f"Template:{template}",
+            "blfilterredir": "redirects",
+            "blnamespace": 10,
+            "bllimit": batch_size,
+        }
+        names: list[str] = []
+        continue_token: Optional[str] = None
+
+        while True:
+            if continue_token:
+                params["blcontinue"] = continue_token
+            try:
+                data = self._get(params)
+            except Exception as exc:
+                logger.warning("Could not list redirects for '%s': %s", template, exc)
+                break
+
+            for link in data.get("query", {}).get("backlinks", []):
+                title = link.get("title", "")
+                if title.startswith("Template:"):
+                    names.append(title[len("Template:"):])
+
+            cont = data.get("continue", {})
+            if "blcontinue" in cont:
+                continue_token = cont["blcontinue"]
+            else:
+                break
+
+        return names
+
     def fetch_pages_wikitext(
         self,
         titles: list[str],

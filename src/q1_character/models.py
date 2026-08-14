@@ -19,6 +19,7 @@ attributes transfer to a franchise never seen in training.
 """
 
 import re
+from typing import NamedTuple
 
 import numpy as np
 import pandas as pd
@@ -31,9 +32,11 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import average_precision_score, confusion_matrix, roc_auc_score
 from sklearn.model_selection import GroupKFold, StratifiedKFold, cross_val_predict
 from sklearn.pipeline import Pipeline
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.tree import DecisionTreeClassifier
 
+from src.constants import analysis_population
 from src.paths import CLEAN_DIR
 
 TARGET = "is_dead_v2"
@@ -41,7 +44,10 @@ TARGET = "is_dead_v2"
 CHARACTER_CATEGORICAL = ["gender", "archetype", "affiliation_alignment", "prominence_tier"]
 CHARACTER_NUMERIC = [
     "is_human", "billing_order", "episode_count", "page_text_length",
-    "infobox_field_count", "appearance_count", "has_dob", "has_family",
+    # Deliberately the cleaned count, not infobox_field_count: a dead character
+    # acquires "Cause of death" and "Date of death" fields, so the raw count
+    # partly counts the label. See clean_infobox_field_count in src/constants.py.
+    "infobox_field_count_clean", "appearance_count", "has_dob", "has_family",
     "has_image", "has_alias",
 ]
 FRANCHISE_CATEGORICAL = ["franchise", "genre", "medium", "content_rating"]
@@ -58,7 +64,7 @@ LEAKY = {
 # character. Dead characters attract death sections and cause-of-death fields,
 # so these plausibly encode the outcome instead of predicting it. Scored as a
 # separate feature set to see how much of the result rests on them.
-WIKI_METADATA = ["page_text_length", "infobox_field_count", "appearance_count"]
+WIKI_METADATA = ["page_text_length", "infobox_field_count_clean", "appearance_count"]
 
 NETWORK_NUMERIC = [
     "pagerank", "pagerank_rank", "hub", "authority",
@@ -74,14 +80,31 @@ DEATH_TERM_RE = re.compile(
     re.IGNORECASE,
 )
 
+class FeatureSet(NamedTuple):
+    categorical: list[str]
+    numeric: list[str]
+    text: str | None = None      # one column name, TF-IDF'd inside the pipeline
+
+    @property
+    def columns(self) -> list[str]:
+        return self.categorical + self.numeric + ([self.text] if self.text else [])
+
+
+# TF-IDF over the death-stripped opening paragraph. Capped because the models
+# are compared against sets of ~15 numeric features; an uncapped vocabulary
+# would swamp them and make the comparison about dimensionality.
+TEXT_COLUMN = "intro_clean"
+TEXT_MAX_FEATURES = 300
+TEXT_MIN_DF = 20
+
 FEATURE_SETS = {
-    "franchise": (FRANCHISE_CATEGORICAL, FRANCHISE_NUMERIC),
-    "character": (CHARACTER_CATEGORICAL, CHARACTER_NUMERIC),
-    "character_no_wiki_meta": (
+    "franchise": FeatureSet(FRANCHISE_CATEGORICAL, FRANCHISE_NUMERIC),
+    "character": FeatureSet(CHARACTER_CATEGORICAL, CHARACTER_NUMERIC),
+    "character_no_wiki_meta": FeatureSet(
         CHARACTER_CATEGORICAL,
         [c for c in CHARACTER_NUMERIC if c not in WIKI_METADATA],
     ),
-    "both": (
+    "both": FeatureSet(
         CHARACTER_CATEGORICAL + FRANCHISE_CATEGORICAL,
         CHARACTER_NUMERIC + FRANCHISE_NUMERIC,
     ),
@@ -96,13 +119,19 @@ def build_feature_sets(df: pd.DataFrame) -> dict:
         raise SystemExit(f"death-related feature columns reached the matrix: {leaky}")
 
     sets = dict(FEATURE_SETS)
-    sets["network"] = (FRANCHISE_CATEGORICAL, NETWORK_NUMERIC)
-    sets["character+network"] = (
+    sets["network"] = FeatureSet(FRANCHISE_CATEGORICAL, NETWORK_NUMERIC)
+    sets["character+network"] = FeatureSet(
         CHARACTER_CATEGORICAL, CHARACTER_NUMERIC + NETWORK_NUMERIC
     )
-    sets["rich"] = (
+    if TEXT_COLUMN in df.columns:
+        sets["text"] = FeatureSet([], [], TEXT_COLUMN)
+        sets["character+text"] = FeatureSet(
+            CHARACTER_CATEGORICAL, CHARACTER_NUMERIC, TEXT_COLUMN
+        )
+    sets["rich"] = FeatureSet(
         CHARACTER_CATEGORICAL + FRANCHISE_CATEGORICAL,
         CHARACTER_NUMERIC + FRANCHISE_NUMERIC + NETWORK_NUMERIC + wide,
+        TEXT_COLUMN if TEXT_COLUMN in df.columns else None,
     )
     return sets
 
@@ -115,7 +144,7 @@ class Q1Models:
     @staticmethod
     def load() -> pd.DataFrame:
         df = pd.read_csv(CLEAN_DIR / "characters_model.csv", low_memory=False)
-        df = df[df["is_onscreen"] == 1].copy()
+        df = analysis_population(df)
 
         features = pd.read_csv(CLEAN_DIR / "character_features.csv", low_memory=False)
         features = features.drop_duplicates(subset="page_url", keep="first")
@@ -129,10 +158,15 @@ class Q1Models:
 
         for col in CHARACTER_CATEGORICAL + FRANCHISE_CATEGORICAL:
             df[col] = df[col].fillna("Unknown").astype(str)
+        # TfidfVectorizer raises on NaN, and a page whose whole opening
+        # paragraph was death-stripped away legitimately has no text left.
+        if TEXT_COLUMN in df.columns:
+            df[TEXT_COLUMN] = df[TEXT_COLUMN].fillna("").astype(str)
         return df
 
     @staticmethod
-    def make_pipeline(model, categorical: list[str], numeric: list[str]) -> Pipeline:
+    def make_pipeline(model, categorical: list[str], numeric: list[str],
+                      text: str | None = None) -> Pipeline:
         encoder = OneHotEncoder(handle_unknown="ignore", min_frequency=10)
         # add_indicator: billing_order is missing for two thirds of characters,
         # and "not in the TMDB cast" is itself a prominence signal.
@@ -140,10 +174,27 @@ class Q1Models:
             ("impute", SimpleImputer(strategy="median", add_indicator=True)),
             ("scale", StandardScaler()),
         ])
-        pre = ColumnTransformer([
+        branches = [
             ("cat", encoder, categorical),
             ("num", numeric_steps, numeric),
-        ])
+        ]
+        if text is not None:
+            # Inside the ColumnTransformer on purpose. Vectorising the corpus
+            # once up front would fit the vocabulary and the IDF weights on
+            # test documents as well as training ones, which is preprocessing
+            # across the split -- the thing every other step here avoids.
+            branches.append((
+                "text",
+                TfidfVectorizer(
+                    max_features=TEXT_MAX_FEATURES,
+                    min_df=TEXT_MIN_DF,
+                    stop_words="english",
+                    strip_accents="unicode",
+                    sublinear_tf=True,
+                ),
+                text,
+            ))
+        pre = ColumnTransformer(branches)
         return Pipeline([("pre", pre), ("model", model)])
 
     @staticmethod
@@ -191,10 +242,12 @@ class Q1Models:
                 )[:, 1]
                 rows.append(Q1Models._score(regime, f"baseline:{name}", "-", y, proba))
 
-            for feature_set, (categorical, numeric) in feature_sets.items():
-                X = df[categorical + numeric]
+            for feature_set, spec in feature_sets.items():
+                X = df[spec.columns]
                 for model_name, model in Q1Models.models().items():
-                    pipeline = Q1Models.make_pipeline(model, categorical, numeric)
+                    pipeline = Q1Models.make_pipeline(
+                        model, spec.categorical, spec.numeric, spec.text
+                    )
                     proba = cross_val_predict(
                         pipeline, X, y, cv=splitter, groups=split_groups,
                         method="predict_proba", n_jobs=1,
@@ -225,12 +278,11 @@ class Q1Models:
     @staticmethod
     def importances(df: pd.DataFrame) -> pd.DataFrame:
         """Permutation importance on the character-only forest."""
-        categorical, numeric = FEATURE_SETS["character"]
-        columns = categorical + numeric
-        X, y = df[columns], df[TARGET].astype(int)
+        spec = FEATURE_SETS["character"]
+        X, y = df[spec.columns], df[TARGET].astype(int)
 
         pipeline = Q1Models.make_pipeline(
-            Q1Models.models()["forest"], categorical, numeric
+            Q1Models.models()["forest"], spec.categorical, spec.numeric, spec.text
         )
         pipeline.fit(X, y)
 
@@ -240,7 +292,7 @@ class Q1Models:
         )
         return (
             pd.DataFrame({
-                "feature": columns,
+                "feature": spec.columns,
                 "importance": result.importances_mean,
                 "std": result.importances_std,
             })
@@ -270,4 +322,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    from src import setup_run_log
+    setup_run_log(__spec__)
     main()

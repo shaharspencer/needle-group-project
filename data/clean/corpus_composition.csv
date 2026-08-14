@@ -1,0 +1,4 @@
+category,share_weighted,share_unweighted,n_annotated,n_corpus_represented
+not an individual character,12.0,12.5,600,75521
+"character, never on screen",46.1,35.0,600,75521
+on-screen character,40.2,52.0,600,75521

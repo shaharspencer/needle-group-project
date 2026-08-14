@@ -23,6 +23,7 @@ import pandas as pd
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
 
+from src.constants import analysis_population
 from src.paths import CLEAN_DIR
 
 TARGET = "is_dead_v2"
@@ -51,7 +52,8 @@ class GenderEffect:
     @staticmethod
     def load() -> pd.DataFrame:
         df = pd.read_csv(CLEAN_DIR / "characters_model.csv", low_memory=False)
-        df = df[(df["is_onscreen"] == 1) & df["gender"].isin(["Male", "Female"])].copy()
+        df = analysis_population(df)
+        df = df[df["gender"].isin(["Male", "Female"])].copy()
 
         df["female"] = (df["gender"] == "Female").astype(int)
         df["billing_missing"] = df["billing_order"].isna().astype(int)
@@ -200,4 +202,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    from src import setup_run_log
+    setup_run_log(__spec__)
     main()

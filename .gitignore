@@ -4,9 +4,18 @@ __pycache__/
 .venv/
 venv/
 .ipynb_checkpoints/
+.pytest_cache/
+
+# build_pipeline.py stage checkpoints — resume state, regenerated on every run
+# and deleted automatically once a build finishes.
+data/clean/.ckpt/
+data/checkpoints/
 
 # Secrets — TMDB key etc. Never commit.
 .env
+
+# Per-run console logs from src.__init__.setup_run_log — regenerated on every run.
+logs/
 
 # Large / regenerable data.
 # data/raw is 262MB of scraped Fandom JSONL (page_text is most of it) and is

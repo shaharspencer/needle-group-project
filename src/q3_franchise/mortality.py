@@ -24,7 +24,8 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import StandardScaler
 
-from src.paths import CLEAN_DIR
+from src.constants import analysis_population
+from src.paths import CLEAN_DIR, GOLD_DIR
 
 TARGET_COUNT = "n_dead"
 K_RANGE = range(2, 9)
@@ -37,6 +38,42 @@ UNLABELLED_DEATH_RATE = 0.085
 
 
 class FranchiseMortality:
+
+    @staticmethod
+    def registry_resolved() -> set:
+        """page_urls a death registry already resolves to dead.
+
+        Takes priority over Haiku by construction: fill_unlabelled.py excludes
+        these from the rows it ever sends to Haiku. Checked again here so the
+        priority holds even if haiku_fill.csv is ever regenerated separately
+        from registry_filled.csv.
+        """
+        path = GOLD_DIR / "fill_unlabelled" / "registry_filled.csv"
+        if not path.exists() or path.stat().st_size == 0:
+            return set()
+        try:
+            return set(pd.read_csv(path)["page_url"])
+        except pd.errors.EmptyDataError:
+            return set()
+
+    @staticmethod
+    def haiku_resolved() -> pd.Series:
+        """page_url -> dies_in_narrative, Haiku labels for rows no other
+        source could settle (see src/labels/fill_unlabelled.py). -1
+        (genuinely couldn't tell) is dropped rather than guessed at; those
+        rows fall back to the flat UNLABELLED_DEATH_RATE assumption, same as
+        every franchise this wasn't run for.
+        """
+        fill_path = GOLD_DIR / "fill_unlabelled" / "haiku_fill.csv"
+        bridge_path = GOLD_DIR / "fill_unlabelled" / "to_annotate.csv"
+        if not fill_path.exists() or not bridge_path.exists():
+            return pd.Series(dtype="float64")
+
+        fill = pd.read_csv(fill_path)
+        bridge = pd.read_csv(bridge_path)[["char_id", "page_url"]]
+        merged = fill.merge(bridge, on="char_id", how="inner")
+        merged = merged[merged["dies_in_narrative"].isin([0, 1])]
+        return merged.set_index("page_url")["dies_in_narrative"]
 
     @staticmethod
     def wilson(successes: int, total: int, z: float = 1.96) -> tuple[float, float]:
@@ -55,33 +92,59 @@ class FranchiseMortality:
         # infobox status could not be parsed. Those are on-screen characters
         # with no recorded death, so they belong in the denominator as alive.
         flags = pd.read_csv(CLEAN_DIR / "onscreen_flags.csv")
-        onscreen = flags[flags["is_onscreen"] == 1]
+        onscreen = analysis_population(flags)
+        registry_dead_urls = FranchiseMortality.registry_resolved()
+        haiku = FranchiseMortality.haiku_resolved()
 
         rows = []
         for franchise, group in onscreen.groupby("franchise"):
             n = len(group)
             dead = int((group["raw_is_dead"] == 1).sum())
+            unlabelled = group[group["raw_is_dead"].isna()]
+            n_unlabelled = len(unlabelled)
+
+            # Priority: a death registry beats Haiku, and Haiku is only ever
+            # consulted for rows a registry didn't already resolve.
+            is_registry_dead = unlabelled["page_url"].isin(registry_dead_urls)
+            n_registry_dead = int(is_registry_dead.sum())
+            still_open = unlabelled.loc[~is_registry_dead, "page_url"]
+
+            resolved = haiku.reindex(still_open)
+            n_haiku_dead = int((resolved == 1).sum())
+            n_haiku_alive = int((resolved == 0).sum())
+            n_still_unknown = len(still_open) - n_haiku_dead - n_haiku_alive
+
             low, high = FranchiseMortality.wilson(dead, n)
             rows.append({
                 "franchise": franchise,
                 "n_characters": n,
                 "n_dead": dead,
-                "n_unlabelled": int(group["raw_is_dead"].isna().sum()),
+                "n_unlabelled": n_unlabelled,
+                "n_resolved_by_registry": n_registry_dead,
+                "n_resolved_by_haiku": n_haiku_dead + n_haiku_alive,
                 "mortality": 100 * dead / n,
                 "ci_low": low,
                 "ci_high": high,
                 # Unlabelled rows counted as alive give a lower bound; counting
                 # them all as dead gives an upper bound. The annotated sample
-                # found 8.5% of them actually die, which sets the point estimate.
-                "mortality_upper": 100 * (dead + group["raw_is_dead"].isna().sum()) / n,
+                # found 8.5% of them actually die, which sets a point estimate
+                # for whatever neither a registry nor Haiku could resolve.
+                "mortality_upper": 100 * (dead + n_unlabelled) / n,
                 "mortality_adjusted": 100 * (
-                    dead + UNLABELLED_DEATH_RATE * group["raw_is_dead"].isna().sum()
+                    dead + UNLABELLED_DEATH_RATE * n_unlabelled
+                ) / n,
+                # Same point estimate, but rows a registry or Haiku actually
+                # resolved use that answer instead of the flat rate. Only
+                # differs from mortality_adjusted where either count is > 0.
+                "mortality_haiku_filled": 100 * (
+                    dead + n_registry_dead + n_haiku_dead
+                    + UNLABELLED_DEATH_RATE * n_still_unknown
                 ) / n,
             })
         df = pd.DataFrame(rows)
 
         characters = pd.read_csv(CLEAN_DIR / "characters_model.csv", low_memory=False)
-        labelled = characters[characters["is_onscreen"] == 1]
+        labelled = analysis_population(characters)
         extra = labelled.groupby("franchise").agg(
             female_ratio=("gender", lambda s: (s == "Female").mean()),
             median_billing=("billing_order", "median"),
@@ -94,12 +157,19 @@ class FranchiseMortality:
             n_titles=("tmdb_id", "nunique"),
             n_tv=("is_tv", "sum"),
             first_year=("release_year", "min"),
-            last_year=("release_year", "max"),
+            last_year=("end_year", "max"),
             mean_rating=("vote_average", "mean"),
             mean_popularity=("popularity", "mean"),
             total_seasons=("n_seasons", "sum"),
             total_episodes=("n_episodes", "sum"),
         ).reset_index()
+        # last_year is the end of the last title, not the start of it. For a
+        # film that is the release date; for a series it is the last air date.
+        # Taking the max over release_year instead made every franchise with a
+        # single long-running series look instantaneous -- Grey's Anatomy ran
+        # 2005-2026 and scored a run span of 0, as did Lost, The Wire and
+        # thirteen others. Run span is the one franchise property that comes
+        # close to significance in the regression below, so this mattered.
         aggregates["run_span"] = aggregates["last_year"] - aggregates["first_year"]
 
         df = df.merge(aggregates, on="franchise", how="left")
@@ -186,6 +256,22 @@ def main() -> None:
              "medium", "genre"]
     print(df[shown].to_string(index=False, float_format=lambda v: f"{v:.1f}"))
 
+    n_registry = int(df["n_resolved_by_registry"].sum())
+    if n_registry:
+        print(f"\n{n_registry} previously-unlabelled rows resolved by a death "
+              f"registry (never sent to Haiku).")
+
+    resolved = df[df["n_resolved_by_haiku"] > 0]
+    if len(resolved):
+        print(f"\n{int(resolved['n_resolved_by_haiku'].sum())} previously-unlabelled "
+              f"rows resolved by Haiku across {len(resolved)} franchises -- only "
+              "rows a death registry and the infobox both had nothing to say "
+              "about (src/labels/fill_unlabelled.py). mortality_haiku_filled uses "
+              "those answers in place of the flat-rate assumption:")
+        print(resolved[["franchise", "n_unlabelled", "n_resolved_by_haiku",
+                        "mortality_adjusted", "mortality_haiku_filled"]]
+              .to_string(index=False, float_format=lambda v: f"{v:.1f}"))
+
     model, usable = FranchiseMortality.regress(df)
     print(f"\nBinomial GLM on {len(usable)} franchises with >= {MIN_FRANCHISE_N} characters")
     summary = pd.DataFrame({
@@ -196,6 +282,15 @@ def main() -> None:
     })
     print(summary.to_string(float_format=lambda v: f"{v:.4f}"))
     print(f"R2 {model.rsquared:.3f}   adjusted R2 {model.rsquared_adj:.3f}")
+
+    # Persisted, not just printed, so the figure captions and the writeup can
+    # read these numbers instead of restating them from memory. Three captions
+    # had gone stale against this model before it was written out.
+    summary = summary.reset_index(names="term")
+    summary["r_squared"] = model.rsquared
+    summary["r_squared_adj"] = model.rsquared_adj
+    summary["n_franchises"] = len(usable)
+    summary.to_csv(CLEAN_DIR / "q3_glm_summary.csv", index=False)
 
     clustered, diag = FranchiseMortality.cluster(df)
     print("\nk-means diagnostics")
@@ -213,9 +308,11 @@ def main() -> None:
     clustered[["franchise", "cluster"]].to_csv(
         CLEAN_DIR / "q3_franchise_clusters.csv", index=False
     )
-    print("\nWrote q3_franchise_mortality.csv, q3_kmeans_diagnostics.csv, "
-          "q3_franchise_clusters.csv")
+    print("\nWrote q3_franchise_mortality.csv, q3_glm_summary.csv, "
+          "q3_kmeans_diagnostics.csv, q3_franchise_clusters.csv")
 
 
 if __name__ == "__main__":
+    from src import setup_run_log
+    setup_run_log(__spec__)
     main()

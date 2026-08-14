@@ -307,7 +307,9 @@ WIKI_CONFIGS = {
         "base_url": "https://the-boys.fandom.com",
         "api_url": "https://the-boys.fandom.com/api.php",
         "content_rating": "TV-MA",
-        "infobox_templates": ["Character", "Infobox character"],
+        # "Character Info" is what character pages use (checked on Homelander).
+        # Not "Cast" -- that one is the real actors.
+        "infobox_templates": ["Character Info", "Character", "Infobox character"],
         "field_map": {"status": "status", "born": "dob", "died": "dod", "death": "dod"},
         "dead_statuses": ["deceased", "dead", "killed", "exploded", "lasered"],
         "alive_statuses": ["alive", "living", "active", "unknown"],
@@ -534,7 +536,10 @@ WIKI_CONFIGS = {
         "base_url": "https://peakyblinders.fandom.com",
         "api_url": "https://peakyblinders.fandom.com/api.php",
         "content_rating": "TV-MA",
-        "infobox_templates": ["Character", "Infobox character", "Infobox Character"],
+        # Character pages use Peaky_Blinders_Characters (checked on Thomas
+        # Shelby). Not "Infobox Cast" -- that one is the real actors.
+        "infobox_templates": ["Peaky_Blinders_Characters", "Character",
+                              "Infobox character", "Infobox Character"],
         "field_map": {
             "status": "status", "born": "dob", "died": "dod", "death": "dod",
             "gender": "gender", "nationality": "nationality",
@@ -552,7 +557,9 @@ WIKI_CONFIGS = {
         "base_url": "https://dexter.fandom.com",
         "api_url": "https://dexter.fandom.com/api.php",
         "content_rating": "TV-MA",
-        "infobox_templates": ["DualProfile"],
+        # CharacterProfile is the main one; verified against real pages
+        # (Rita Morgan, Angel Batista). DualProfile alone found 262 of them.
+        "infobox_templates": ["DualProfile", "CharacterProfile"],
         "field_map": {
             "status": "status", "birth_date": "dob", "born": "dob",
             "gender": "gender", "actor": "actor",

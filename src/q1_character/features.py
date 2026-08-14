@@ -26,6 +26,7 @@ from collections import Counter, defaultdict
 import networkx as nx
 import pandas as pd
 
+from src.constants import is_non_character
 from src.paths import CLEAN_DIR, RAW_DIR
 
 CATEGORY_RE = re.compile(r"Category:([^\n]+)")
@@ -69,6 +70,28 @@ INTRO_CHARS = 700
 class FeatureBuilder:
 
     @staticmethod
+    def strip_death_text(text: str) -> str:
+        """Drop every sentence that mentions death or survival, then any
+        remaining death token.
+
+        Two passes because one is not enough. Dropping whole sentences removes
+        the obvious "He was killed by Darth Vader", but a stray "posthumously"
+        or "the late" in a surviving sentence is still the label leaking in, so
+        the token pass catches the remainder. DEATH_TERMS covers survival words
+        too, for the same reason it does everywhere else in this file: "still
+        alive" is the label with the sign flipped.
+        """
+        kept = [
+            s for s in re.split(r"(?<=[.!?])\s+", text or "")
+            if not DEATH_TERMS.search(s)
+        ]
+        joined = " ".join(kept)
+        cleaned = " ".join(
+            w for w in joined.split() if not DEATH_TERMS.search(w)
+        )
+        return re.sub(r"\s+", " ", cleaned).strip()
+
+    @staticmethod
     def page_tokens(text: str) -> set[str]:
         return {
             t for t in TOKEN_RE.findall(text.lower())
@@ -92,7 +115,7 @@ class FeatureBuilder:
                     record = json.loads(line)
                 except json.JSONDecodeError:
                     continue
-                if record.get("is_redirect"):
+                if record.get("is_redirect") or is_non_character(record):
                     continue
 
                 text = record.get("page_text") or ""
@@ -122,6 +145,13 @@ class FeatureBuilder:
                     "infobox_fields": fields,
                     "n_relatives": relatives,
                     "intro": re.sub(r"\s+", " ", text[:INTRO_CHARS]),
+                    # Same text with every death- or survival-mentioning
+                    # sentence dropped, then any surviving death token
+                    # removed. A dead character's opening paragraph says "was
+                    # killed by", so TF-IDF over the raw intro would mostly
+                    # rediscover the label -- the same trap the violence
+                    # lexicon fell into earlier in this project.
+                    "intro_clean": FeatureBuilder.strip_death_text(text[:INTRO_CHARS]),
                     "tokens": FeatureBuilder.page_tokens(text[:20000]),
                 })
         return pages
@@ -221,6 +251,7 @@ class FeatureBuilder:
                     "n_relatives": page["n_relatives"],
                     "n_categories": len(page["categories"]),
                     "intro": page["intro"],
+                    "intro_clean": page["intro_clean"],
                     "categories": page["categories"],
                     "infobox_fields": page["infobox_fields"],
                     **scores.get(page["page_url"], {}),
@@ -259,4 +290,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    from src import setup_run_log
+    setup_run_log(__spec__)
     main()

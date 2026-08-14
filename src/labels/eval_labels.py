@@ -102,13 +102,25 @@ class LabelEvaluator:
         }
 
         print("Corpus composition, reweighted by stratum size")
+        rows = []
         for name, fn in categories.items():
             weighted = sum(
                 fn(group) * populations.get(stratum, 0)
                 for stratum, group in df.groupby("stratum")
             ) / total
             print(f"  {name:28s} {weighted:5.1%}   (unweighted sample: {fn(df):5.1%})")
+            rows.append({
+                "category": name,
+                "share_weighted": round(100 * weighted, 1),
+                "share_unweighted": round(100 * fn(df), 1),
+                "n_annotated": len(df),
+                "n_corpus_represented": total,
+            })
         print(f"  corpus characters represented: {total:,}\n")
+
+        # Written out so the corpus figure reads these shares rather than
+        # carrying its own hardcoded copy of them.
+        pd.DataFrame(rows).to_csv(CLEAN_DIR / "corpus_composition.csv", index=False)
 
     @staticmethod
     def report_unlabelled(df: pd.DataFrame) -> None:
@@ -203,4 +215,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    from src import setup_run_log
+    setup_run_log(__spec__)
     main()

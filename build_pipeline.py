@@ -33,6 +33,9 @@ import requests
 
 # ── Paths ──────────────────────────────────────────────────────────────────────
 HERE      = Path(__file__).parent
+sys.path.insert(0, str(HERE))
+from src.constants import is_non_character  # noqa: E402  (needs HERE on sys.path)
+
 RAW_DIR   = HERE / "data" / "raw"
 CLEAN_DIR = HERE / "data" / "clean"
 EXT_DIR   = HERE / "data" / "external"
@@ -222,9 +225,13 @@ def parse_jsonl() -> pd.DataFrame:
                         rows.append(json.loads(line))
                     except json.JSONDecodeError:
                         pass
+        n_before = len(rows)
+        rows = [r for r in rows if not is_non_character(r)]
+        n_dropped = n_before - len(rows)
         flat_rows = [extract_flat(r, field_map) for r in rows]
         records.extend(flat_rows)
-        print(f"  [{wiki_key:25s}] {len(flat_rows):6,} rows")
+        note = f"  (-{n_dropped} non-character)" if n_dropped else ""
+        print(f"  [{wiki_key:25s}] {len(flat_rows):6,} rows{note}")
 
     df = pd.DataFrame(records)
     print(f"\nTotal before dedup: {len(df):,}")
@@ -447,10 +454,18 @@ def derive_structural(df: pd.DataFrame, jsonl_texts: dict) -> pd.DataFrame:
         if arch in ("Unknown", "Other"):
             arch = classify_archetype_from_text(text)
         archetypes.append(arch)
-        if pd.isna(row["gender"]) or row["gender"] is None:
-            genders_inferred.append(infer_gender(text))
-        else:
+        # "Other/Unknown" has to fall through to the pronoun inference as well
+        # as a missing value. A wiki that writes something we cannot parse into
+        # the gender field produces the string, not a NaN, and testing only for
+        # NaN meant the fallback never ran there. The Dexter wiki does exactly
+        # this on 1,058 of its 1,063 pages -- three quarters of every
+        # "Other/Unknown" in the corpus -- so gender was effectively unmeasured
+        # for that whole franchise while its pages carry plenty of pronouns.
+        known = row["gender"] in ("Male", "Female")
+        if known:
             genders_inferred.append(row["gender"])
+        else:
+            genders_inferred.append(infer_gender(text) or row["gender"])
     df["archetype"] = archetypes
     df["gender"]    = genders_inferred
 
@@ -1280,10 +1295,25 @@ def main():
         df = merge_franchise_apis(df, keys)
         _ckpt_save("s3_apis", df, keys)
 
-    # Step 4: TVmaze
-    if _should("s4_tvmaze"):
+    # Step 4: TVmaze. Off by default -- it takes about 35 minutes (roughly two
+    # minutes per TV franchise, against the 8 the header used to claim) and the
+    # only columns it produces are tvmaze_episode_count, tvmaze_found,
+    # tvmaze_is_main_cast and actor_age_at_release, none of which is read
+    # anywhere in src/: not in a Q1 feature set, the Q3 regression, the figures
+    # or the demo export. TMDB already supplies episode_count. Set
+    # WITH_TVMAZE=1 to put it back.
+    if os.environ.get("WITH_TVMAZE") == "1" and _should("s4_tvmaze"):
         df = fetch_tvmaze(df, keys)
         _ckpt_save("s4_tvmaze", df, keys)
+    elif "actor_age_at_release" not in df.columns:
+        # Step 5 fills actor_age_at_release from CMU and derives age_group from
+        # it, so the columns have to exist even when the step above is skipped.
+        # Age then comes from CMU alone rather than TVmaze-then-CMU.
+        df["actor_age_at_release"] = pd.NA
+        df["tvmaze_episode_count"] = pd.NA
+        df["tvmaze_found"] = 0
+        df["tvmaze_is_main_cast"] = 0
+        print("STEP 4 — TVmaze skipped (set WITH_TVMAZE=1 to enable)")
 
     # Step 5: CMU
     if _should("s5_cmu"):

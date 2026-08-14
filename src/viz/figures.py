@@ -7,11 +7,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from src.paths import CLEAN_DIR
+from src.paths import CLEAN_DIR, FIG_DIR
 from src.viz import style
 from src.viz.style import BASELINE, INK, INK_SECONDARY, MUTED, SERIES, SURFACE
-
-FIG_DIR = CLEAN_DIR / "figures"
 
 
 def fig_model_comparison() -> None:
@@ -111,12 +109,16 @@ def fig_gender_forest() -> None:
     ax.xaxis.grid(True)
     ax.yaxis.grid(False)
     style.strip_spines(ax, keep=("bottom",))
-    ax.legend(loc="lower left")
+    # Upper left: the franchises are sorted by odds ratio, so the top rows sit
+    # nearest 1.0 and leave the left corner empty. A lower-left legend lands on
+    # top of Ozark and Breaking Bad, which have the widest intervals.
+    ax.legend(loc="upper left")
 
     ax.set_title("Women are less likely to die in every franchise we could measure")
     style.caption(fig,
         "Adjusted for prominence, role, alignment and species. Bars are 95% intervals. "
-        "Nine of nineteen franchises reach p<0.05 and none point the other way; the weak cases are null effects, not reversals.")
+        f"{significant.sum()} of {len(per)} franchises reach p<0.05 and none point the other way; "
+        "the weak cases are null effects, not reversals.")
     fig.savefig(FIG_DIR / "q1_gender_forest.png")
     plt.close(fig)
 
@@ -124,7 +126,7 @@ def fig_gender_forest() -> None:
 def fig_importance() -> None:
     """Which character attributes carry the signal."""
     imp = pd.read_csv(CLEAN_DIR / "q1_feature_importance.csv").head(12)
-    wiki_meta = {"infobox_field_count", "page_text_length", "appearance_count"}
+    wiki_meta = {"infobox_field_count_clean", "page_text_length", "appearance_count"}
     imp = imp.iloc[::-1]
 
     fig, ax = plt.subplots(figsize=(7.0, 4.0))
@@ -187,7 +189,7 @@ def fig_franchise_mortality() -> None:
 
 
 def fig_runspan() -> None:
-    """The one franchise property that predicts deadliness."""
+    """Franchise properties against mortality: the null result for Q3."""
     df = pd.read_csv(CLEAN_DIR / "q3_franchise_mortality.csv")
     df = df[(df.n_characters >= 30) & df.run_span.notna()]
 
@@ -212,20 +214,27 @@ def fig_runspan() -> None:
     ax.set_xlabel("Years between first and last release")
     ax.set_ylabel("Mortality (%)")
     style.strip_spines(ax)
-    ax.set_title("Longer-running franchises kill more of their cast")
+    glm = pd.read_csv(CLEAN_DIR / "q3_glm_summary.csv")
+    run_span_p = glm.loc[glm.term == "run_span", "p"].iloc[0]
+
+    ax.set_title("How long a franchise runs says nothing about how deadly it is")
     style.caption(fig,
-        "Marker size is cast size. Run span is the strongest franchise-level predictor (p=0.010), but the whole model "
-        "reaches only R2=0.22 on 36 franchises, so franchise properties explain little of the variation.")
+        f"Marker size is cast size. Run span is the strongest of the five franchise properties we tested and it still "
+        f"misses significance (p={run_span_p:.2f}); the whole model reaches R2={glm.r_squared[0]:.2f} on "
+        f"{int(glm.n_franchises[0])} franchises, with an adjusted R2 of {glm.r_squared_adj[0]:.2f} -- worse than "
+        "predicting every franchise at the overall mean.")
     fig.savefig(FIG_DIR / "q3_run_span.png")
     plt.close(fig)
 
 
 def fig_corpus() -> None:
     """What the scraped corpus actually contains."""
+    comp = pd.read_csv(CLEAN_DIR / "corpus_composition.csv").set_index("category")
+    share = comp["share_weighted"]
     parts = [
-        ("On-screen characters", 40.2, SERIES[0]),
-        ("Characters never filmed", 46.1, "#9ec5f4"),
-        ("Not a character", 12.0, BASELINE),
+        ("On-screen characters", share["on-screen character"], SERIES[0]),
+        ("Characters never filmed", share["character, never on screen"], "#9ec5f4"),
+        ("Not a character", share["not an individual character"], BASELINE),
     ]
     fig, ax = plt.subplots(figsize=(7.6, 1.7))
     left = 0.0
@@ -243,7 +252,9 @@ def fig_corpus() -> None:
     ax.axis("off")
     ax.set_title("Three in five scraped pages are not an on-screen character")
     style.caption(fig,
-        "Estimated from 600 annotated pages, reweighted to the 75,521 scraped. Analysis is restricted to the leftmost group.")
+        f"Estimated from {comp['n_annotated'].iloc[0]} annotated pages, reweighted to the "
+        f"{comp['n_corpus_represented'].iloc[0]:,} they represent. "
+        "Analysis is restricted to the leftmost group.")
     fig.savefig(FIG_DIR / "corpus_composition.png")
     plt.close(fig)
 
@@ -267,4 +278,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    from src import setup_run_log
+    setup_run_log(__spec__)
     main()

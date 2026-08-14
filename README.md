@@ -2,178 +2,254 @@
 
 Group #56 — 67978 A Needle in a Data Haystack, Hebrew University of Jerusalem.
 
-Which fictional characters die, and why? We scraped 38 Fandom wikis, enriched them
-with TMDB cast data, and asked three questions: whether a character's own
-attributes or their franchise better predicts their death, what franchise
-properties explain deadliness, and how script text relates to on-screen deaths.
+Which fictional characters die, and why? We scraped 38 Fandom wikis, enriched
+them with TMDB cast data, and asked whether a character's own attributes or the
+franchise they are in better predicts their death.
 
-Interactive demo: `docs/index.html` (see [Demo](#demo)).
-Run order and file-by-file detail: **[PIPELINE.md](PIPELINE.md)**.
+**This file is the operational one: how to set the project up, what to run, and
+where the outputs land.** For what we found and what it means, read
+[WRITEUP.md](WRITEUP.md). For how each feature is computed, read
+[FEATURES.md](FEATURES.md). For a stage-by-stage description of the pipeline,
+read [PIPELINE.md](PIPELINE.md).
 
-## Data
+| document | answers |
+|---|---|
+| README.md (this file) | how do I run it, and where does the output go |
+| [WRITEUP.md](WRITEUP.md) | what did we find |
+| [PIPELINE.md](PIPELINE.md) | what does each stage read and write |
+| [FEATURES.md](FEATURES.md) | how is each feature computed |
 
-| source | size | what it gives |
-|---|---|---|
-| 38 Fandom wikis | 75,521 pages, 262 MB | infoboxes, full page text, categories |
-| TMDB | 280 titles, 28,151 cast credits | billing order, episode counts, genre, ratings |
-| Kaggle / listofdeaths | 4 shows | per-episode death registries |
-| Transcripts | 1,136 episodes, 11 shows | dialogue, mostly without speaker labels |
+## Setup
 
-Not every scraped page is a character. From 600 annotated pages reweighted to the
-full corpus, **40% are on-screen characters**, 46% are characters who never appear
-in a film or episode (Star Wars Legends novels, Harry Potter reference books), and
-12% are not characters at all — creature types, vehicles, unnamed roles, and real
-historical figures picked up from the Young Indiana Jones wiki. All analysis is
-restricted to the first group: **15,633 characters, 35.1% of whom die**.
+Python 3.12. From the repository root:
 
-### How the label is built
+```bash
+pip install pandas numpy scikit-learn statsmodels matplotlib networkx requests
+```
 
-The wikis follow two infobox conventions, so `is_dead` is derived two ways. Thirty
-wikis record a `status` string; eight record a date of death, from which death is
-inferred. The two are not directly comparable, and rows whose status cannot be
-parsed were previously dropped rather than counted. `is_dead_v2` restricts to
-characters who appear on screen and keeps unparsed rows in the denominator.
+Two things are needed before a full run and neither is in the repository:
 
-`is_onscreen` is `has_actor OR tmdb_match`. Measured against the annotated sample:
-**precision 0.79, recall 0.77**. Neither signal is sufficient alone (0.61 and 0.58
-recall respectively).
+- **`.env`** with `TMDB_API_KEY=<key>`. Gitignored. Only the enrichment stage
+  reads it, and TMDB responses cache to `data/external/tmdb/`, so a second run
+  costs no requests.
+- **`data/raw/`** — 268 MB of scraped Fandom JSONL, gitignored because it is
+  reproducible. Regenerate with `python -m scraper.run_scraper --wiki all`,
+  which takes hours. Everything downstream of it is tracked, so you only need
+  this if you are changing the scrape or rebuilding the feature table.
 
-Annotations were produced by Claude Haiku 4.5, not by people. Inter-pass agreement
-would measure reliability rather than correctness, and the label has no external
-non-LLM validation — see [Limitations](#limitations).
+Everything under `data/clean/` and `data/gold/` **is** tracked. You can
+reproduce every number in the writeup from a fresh clone without re-scraping,
+starting at Stage 3.
 
-## Findings
+On Windows, prefix `build_pipeline.py` with `PYTHONUTF8=1`. It prints non-ASCII
+and the console defaults to cp1252, which otherwise kills the run.
 
-### Q1 — the character, and the franchise, and neither alone
+## Running it
 
-Seven feature sets, three models, two cross-validation regimes, two baselines.
+[PIPELINE.md](PIPELINE.md) has the full order with inputs and outputs per stage.
+The short version, in dependency order:
 
-| features | random split | held-out franchise |
-|---|---|---|
-| all features | **0.822** | 0.557 |
-| character + franchise | 0.730 | 0.532 |
-| character + network | 0.721 | 0.552 |
-| character | 0.684 | 0.518 |
-| network centrality only | 0.655 | 0.480 |
-| franchise only | 0.562 | 0.365 |
-| baseline | 0.351 | 0.351 |
+```bash
+# Stage 0 — collection (only if data/raw changed; slow)
+python -m scraper.run_scraper --wiki all
+PYTHONUTF8=1 python build_pipeline.py     # -> characters_raw.csv
 
-PR-AUC, best model per set. Character attributes beat franchise identity, and the
-two are complementary. Stripped of wiki-metadata proxies, character-only falls to
-0.596 — still above franchise-only, but the margin narrows.
+# Stage 1 — labels
+python -m src.labels.audit_labels
+python -m src.labels.rebuild_label        # -> characters_model.csv
+python -m src.labels.validate_registry    # check the label against outside sources
+python -m src.labels.fill_unlabelled --collect   # then Haiku, then --merge
 
-The two splits disagree in a useful way. Fandom category features add +0.09 on a
-random split and +0.005 when whole franchises are held out: they encode
-franchise-specific role vocabulary that does not transfer. **Network centrality is
-the opposite** — PageRank and HITS over the per-franchise co-mention graph add
-about +0.035 in *both* regimes, so how central a character is to the story
-generalises to franchises the model has never seen.
+# Stage 2 — enrichment (needs TMDB_API_KEY)
+python -m src.enrich.tmdb_enrich
 
-### Gender
+# Stage 3 — features
+python -m src.q1_character.features       # -> character_features.csv
 
-Being female roughly halves the odds of dying: **OR 0.55 (95% CI 0.50–0.60)**,
-or 11.4 percentage points lower death probability, after adjusting for prominence,
-role, alignment, species and franchise. The raw gap is 14.9 points, so about a
-quarter of it is explained by men holding more disposable roles.
+# Stage 4 — the questions
+python -m src.q1_character.splits         # train/test assignment; run before models
+python -m src.q1_character.models         # 9 feature sets x 3 models x 2 CV regimes
+python -m src.q1_character.evaluate       # the held-out test score
+python -m src.q1_character.effects        # gender effect sizes
+python -m src.q3_franchise.mortality      # franchise mortality, WLS, k-means
 
-Of 19 franchises where the effect could be estimated, **9 reach p<0.05 and none
-point the other way**. The weak cases (Grey's Anatomy, Avatar, The Sopranos) are
-null effects, not reversals.
+# Stage 5 — outputs
+python -m src.viz.figures                 # -> data/clean/figures/*.png
+python -m src.app.export_demo             # -> data/clean/ and docs/demo_data.json
 
-### Q3 — franchise properties explain very little
+python -m pytest tests -q
+```
 
-Weighted least squares on logit(mortality), franchise as the unit, n=36. Only run
-span (p=0.010) and first release year (p=0.027) are significant; medium, number of
-installments and audience rating are not. **R² = 0.22, adjusted R² = 0.09.**
+Every stage is idempotent: re-running overwrites its own outputs and nothing
+else. `build_pipeline.py` checkpoints to `data/clean/.ckpt/` and resumes from
+there, so an interrupted build does not start over — delete that directory to
+force a clean run.
 
-k-means over franchise properties does not recover mortality groupings. The best
-silhouette is at k=2, and that split separates large multi-title film franchises
-from everything else — the two clusters have near-identical mortality (35.0% vs
-37.8%).
+Each `python -m src.X.Y` mirrors its console output to `logs/X.Y.log`, appended
+with a timestamp header. Nothing reads those logs; they exist so you can watch a
+long stage from a second shell.
+
+## Where things live
+
+```
+build_pipeline.py  scrape -> characters_raw.csv (structural features, enrichment)
+scraper/           Fandom scraper, 38 wiki configs in wiki_configs.py
+src/
+  constants.py     shared constants, and the rule that keeps data cleaning
+                    from leaking across a train/test boundary
+  paths.py         canonical data locations — import these, don't hardcode
+  labels/          label audit, gold-set sampling, annotation, evaluation,
+                    registry validation, Haiku fill for unlabelled rows
+  enrich/          TMDB titles, cast, name matching
+  q1_character/    features, model comparison, splits, held-out evaluation,
+                    gender effect sizes
+  q2_text/         empty — see Status below
+  q3_franchise/    franchise mortality, WLS regression, k-means
+  viz/             figures.py renders every writeup figure, style.py is shared
+  app/             demo model export
+data/
+  raw/             scraped JSONL (gitignored, 268 MB)
+  external/        third-party dumps and the TMDB cache (gitignored)
+  clean/           built tables, figures/ (tracked — these are our outputs)
+  gold/            annotation sample, labels, Haiku fill (tracked)
+datasets/          transcripts, death registries, per-show character features
+docs/              the demo, served by GitHub Pages
+legacy/            pre-restructure scripts, kept for the record, never run
+logs/              per-run console output (gitignored)
+tests/             pytest
+```
+
+Two conventions worth keeping to:
+
+- **Import paths from `src/paths.py`.** No stage should hardcode a data
+  location.
+- **Constants go in `src/constants.py`.** `analysis_population()` lives there
+  and is how every question restricts rows to the same population — on screen,
+  and named. If you filter rows yourself somewhere else, the tables stop
+  agreeing with each other, which has already happened once.
 
 ## Demo
 
-`docs/` is a self-contained page: look up any of 3,336 characters to see their
+`docs/` is a self-contained page. Look up any of ~2,000 characters to see their
 predicted risk, which attributes drove it, whether they actually died, and
 comparable characters — or build a character from scratch and watch the estimate
 move.
 
-The model runs in the browser from exported logistic-regression coefficients. It
-uses only attributes a person can choose, so it scores lower (ROC-AUC 0.741) than
-the project's full model; the page says so.
-
-Locally:
-
 ```bash
-cd docs && python -m http.server 8765     # then open http://localhost:8765
+cd docs && python -m http.server 8765     # http://localhost:8765
 ```
 
-On GitHub Pages: repository **Settings → Pages → Source: Deploy from a branch**,
-branch `main`, folder `/docs`.
+On GitHub Pages: **Settings → Pages → Source: Deploy from a branch**, branch
+`main`, folder `/docs`.
 
-## Layout
+The model runs in the browser from exported logistic-regression coefficients.
+`src/app/export_demo.py` writes `demo_data.json` to both `data/clean/` and
+`docs/`, so the served page cannot lag the model that was just fit.
 
-```
-src/
-  constants.py     shared constants
-  paths.py         canonical data locations
-  labels/          label audit, gold-set sampling, annotation, evaluation, rebuild
-  enrich/          TMDB titles, cast, and name matching
-  q1_character/    feature building and the character-vs-franchise models
-  q3_franchise/    franchise mortality, regression, clustering
-  viz/             figure rendering and shared chart style
-  app/             demo model export
-scraper/           Fandom scraper (38 wiki configs)
-data/
-  raw/             scraped JSONL (gitignored, 262 MB)
-  external/        third-party dumps and the TMDB cache (gitignored)
-  clean/           built tables and figures
-  gold/            annotation sample and labels
-datasets/          transcripts, death registries, per-show character features
-docs/              the demo, served by GitHub Pages
-tests/             pytest
-```
+Two constraints on it, both deliberate and both documented at the top of
+`export_demo.py`:
 
-## Running it
+- It is fit on `trainval` and only ever displays `test` rows, so every risk
+  score and every "the model called this right" verdict is a held-out
+  prediction.
+- It exposes only attributes a person could actually choose for an invented
+  character. That rules out page length and infobox field count — our two
+  strongest features, and the two that measure how much fans wrote rather than
+  anything about the character — along with anything under 2% populated. It
+  therefore scores below the project's full model, and the page says so.
 
-See **[PIPELINE.md](PIPELINE.md)** for the full order. Short version:
+## Status
 
-```bash
-python -m src.labels.audit_labels        # label audit
-python -m src.enrich.tmdb_enrich         # needs TMDB_API_KEY in .env
-python -m src.labels.rebuild_label       # corrected label
-python -m src.q1_character.features      # ~1,000 features
-python -m src.q1_character.models        # Q1
-python -m src.q1_character.effects       # gender effect sizes
-python -m src.q3_franchise.mortality     # Q3
-python -m src.viz.figures                # figures
-python -m src.app.export_demo            # demo data
-python -m pytest tests -q
-```
+| question | state |
+|---|---|
+| Q1 — character vs franchise | done: 9 feature sets × 3 models × 2 CV regimes, plus a held-out test score |
+| Q1 — gender effect sizes | done: pooled and per-franchise |
+| Q2 — does text predict death? | **partly**: TF-IDF over per-character wiki text is built and is the best-transferring feature family. The dialogue half is not done |
+| Q3 — franchise properties | done: WLS regression, k-means, Haiku-filled mortality for the four worst franchises |
+| demo | done, deployed from `docs/` |
+| tests | 17 passing, all on `src/labels/` |
 
-On Windows, prefix the legacy top-level scripts (`build_pipeline.py`, `tfidf.py`)
-with `PYTHONUTF8=1` — they print non-ASCII and the console defaults to cp1252.
+Q2's dialogue half is blocked on death registries, not on transcripts. There are
+transcripts for 11 shows but a usable per-episode death list for only two, so
+the largest transcript set (464 Grey's Anatomy episodes) has nothing to align
+against. Most transcripts also lack speaker labels, which makes attributing a
+line to a character its own unsolved problem. `src/q2_text/` is an empty stub;
+the text features that do exist live in the Q1 pipeline, where they are
+evaluated.
 
-## Limitations
+## Known issues
 
-- **The label rests on LLM annotations.** 600 pages labelled by Haiku 4.5, with no
-  human-labelled or otherwise independent validation set. The Fandom `Deceased`
-  category looked like external validation but is written by the same editors from
-  the same source, and using it as a feature would be leakage.
-- **`is_onscreen` is noisy** (P 0.79 / R 0.77). Roughly a fifth of on-screen
-  characters are excluded and a fifth of those included do not belong. That error
-  propagates into every number here, including the gender effect sizes.
-- **The two strongest Q1 features are wiki metadata.** `infobox_field_count` and
-  `page_text_length` measure how much fans wrote, not anything about the character.
-  Dropping them costs 0.088 PR-AUC. `prominence_tier` is derived from page length
-  upstream, so even the "no wiki metadata" ablation is not fully clean.
-- **Franchises with sparse wikis carry wide label uncertainty.** Boardwalk Empire's
-  mortality is somewhere between 20% and 100% depending on how 440 characters with
-  no recorded status resolve. Figures show that range rather than a point estimate.
-- **Star Wars dominates the corpus** (56% of scraped pages, 18% after the on-screen
-  filter). Grouped cross-validation and per-franchise reporting mitigate this but
-  do not remove it.
-- **Two leakage bugs were found and fixed** by inspecting model coefficients rather
-  than trusting scores: a violence lexicon containing death words, and the
-  `status`/`dod` infobox fields the label is derived from. Both inflated results
-  before removal.
+Open, roughly in the order they would bite someone picking this up:
+
+- **Some features are absent for whole franchises, not at random.**
+  `affiliation_alignment` is missing for 12 franchises (20% of characters)
+  because those wikis have no affiliation field, and `n_relatives` is 0 for
+  seven franchises (37% of characters, including the MCU) because those wikis
+  do not use the family infobox keys. Under grouped cross-validation, a
+  held-out franchise can therefore be missing a feature the model learned to
+  lean on. Treat per-franchise feature coverage as something to check before
+  adding a feature, not after.
+- **Several wikis are under-collected** and we have not confirmed the right
+  template: The Walking Dead (49 rows), Stranger Things (78 of 221 candidate
+  pages, apparently a per-character template the scraper design does not
+  handle), Vikings, Spartacus, Westworld. Read the next item first.
+- **The busiest character-shaped template on a wiki is often not characters.**
+  Peaky Blinders' is its cast of real actors; Fast & Furious's is
+  `Infobox Car`. Check a template against real pages before trusting it.
+- **No minimum-n rule anywhere.** The Matrix contributes 4 characters and Peaky
+  Blinders 11 to grouped CV, where each franchise is one fold weighted equally
+  with Star Wars.
+- **The unnamed-role filter only catches explicit markers** —
+  `Unidentified`/`Unnamed`/`Unknown` prefixes — so Star Wars's "Unidentified
+  Ugnaught worker" is dropped while Dexter's "Acupuncturist" stays.
+  Inconsistent by construction.
+- **414 Matrix pages cannot be labelled from source at all.** Their infoboxes
+  have no status and no date-of-death field, 0 of 414, checked directly. Not a
+  parsing bug and nothing to fix.
+- **Species-based mortality is probably not clean.** A walker is a dead human;
+  a vampire is dead by species but alive in the story, so `is_dead` does not
+  mean the same thing for them. The explicit `undead` bucket is 12 rows and
+  clearly is not catching these cases. Twilight sitting at 25.5% rather than
+  near 100% suggests it is not distorting much in practice, but check before
+  leaning on per-species numbers.
+- **Fuller data for two thin franchises sits unused in `datasets/`** — 623
+  Walking Dead and 811 Prison Break rows from an earlier per-show scrape. Not
+  merged because those files have no page text or categories, so their rows
+  could not get the network and category features every other row has.
+- **Test coverage is narrow.** 17 tests, all on `src/labels/`. Nothing tests
+  feature building, the models, the Q3 regression, the figures or the demo
+  export — which is where a silent bug does the most damage to the writeup.
+- **`character_categories` in `scraper/wiki_configs.py` is dead config.**
+  It reads like it controls collection. Nothing has ever read it.
+
+Fixed, recorded because the numbers moved:
+
+- `run_span` was computed as the spread of TMDB *release* years, so any
+  franchise that is a single long-running series scored zero — Grey's Anatomy
+  ran 2005–2026 and was recorded as spanning no time at all, as were Lost, The
+  Wire and thirteen others. TMDB's `last_air_date` is now captured and used.
+  This removed the only significant predictor in Q3.
+- Gender inference from pronouns only ran when the infobox field was missing,
+  not when it was present but unparseable. The Dexter wiki writes an
+  unparseable value on 1,058 of its 1,077 scraped pages — three quarters of
+  every `Other/Unknown` in the corpus — so an entire franchise was effectively
+  ungendered while its pages carried plenty of pronouns.
+- Talking portraits and unnamed background roles were being counted as
+  characters. A portrait is definitionally dead, which made it a free win for a
+  death classifier.
+- The portrait filter was applied in one of the three places that read
+  `data/raw/*.jsonl`, so different tables disagreed. All three now share one
+  predicate in `src/constants.py`.
+- The infobox field count was partly counting the death label. Fixed with
+  `clean_infobox_field_count`; 55% of that feature's separating power was the
+  outcome written back into the input.
+- Page discovery follows template redirects but the parser matched template
+  names literally, so any page using a redirect was found and then silently
+  discarded. That cost 477 Matrix pages by itself; three other wikis had the
+  wrong template configured outright.
+- The `intro` text column was computed for every character and then dropped
+  before use — a whole feature family sitting unused on disk. It is now
+  `intro_clean`, death- and survival-stripped, TF-IDF'd inside the CV pipeline,
+  and it turned out to be the best-transferring family we have.
+- The demo was fitting on every character and then scoring those same
+  characters. It now fits on `trainval` and shows only `test` rows.

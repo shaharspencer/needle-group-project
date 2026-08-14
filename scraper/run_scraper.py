@@ -108,6 +108,23 @@ def scrape_wiki(
 
     logger.info("Total unique pages found: %d", len(all_pages))
 
+    # Pages are found by transclusion, which follows template redirects, but the
+    # parser matches the template name as literally written in the wikitext. Any
+    # page that transcludes a redirect to a configured template would be found
+    # here and then dropped for "no infobox", so collect the redirect names and
+    # let the parser accept those too.
+    effective_templates = list(config["infobox_templates"])
+    for template in config["infobox_templates"]:
+        for alias in client.template_redirects(template):
+            if alias not in effective_templates:
+                effective_templates.append(alias)
+    if len(effective_templates) > len(config["infobox_templates"]):
+        logger.info(
+            "Template aliases via redirects: %s",
+            ", ".join(effective_templates[len(config["infobox_templates"]):]),
+        )
+    parse_config = {**config, "infobox_templates": effective_templates}
+
     # Filter out non-character pages (list/aggregate/disambiguation pages)
     def _is_character_page(title: str) -> bool:
         tl = title.lower()
@@ -174,7 +191,7 @@ def scrape_wiki(
                 }
 
                 if wikitext:
-                    parsed = parse_character_page(wikitext, config)
+                    parsed = parse_character_page(wikitext, parse_config)
                     record.update(parsed)
                 else:
                     logger.debug("No wikitext for '%s' — possibly a redirect or empty.", title)
