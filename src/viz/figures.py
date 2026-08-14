@@ -227,6 +227,38 @@ def fig_runspan() -> None:
     plt.close(fig)
 
 
+def fig_text_terms(n: int = 12) -> None:
+    """Which description words carry the death signal."""
+    coefficients = pd.read_csv(CLEAN_DIR / "q2_text_coefficients.csv")
+    toward_death = coefficients.head(n)
+    toward_life = coefficients.tail(n)
+    shown = pd.concat([toward_life, toward_death]).sort_values("coefficient")
+
+    fig, ax = plt.subplots(figsize=(7.0, 5.6))
+    y = np.arange(len(shown))
+    # Red for the death direction, blue for survival, matching the demo page.
+    colors = [SERIES[7] if c > 0 else SERIES[0] for c in shown.coefficient]
+    ax.barh(y, shown.coefficient, height=0.68, color=colors)
+
+    ax.set_yticks(y, shown.term)
+    ax.axvline(0, color=INK_SECONDARY, linewidth=1.0)
+    ax.set_xlabel("Logistic regression coefficient (TF-IDF, death-stripped text)")
+    ax.xaxis.grid(True)
+    ax.yaxis.grid(False)
+    style.strip_spines(ax, keep=("bottom",))
+
+    ax.set_title("The clearest death signal is a narrative role, not a character trait")
+    style.caption(fig,
+        f"The {n} strongest terms in each direction, from a model fit on trainval only. "
+        "'antagonist' dominates, and 'command', 'background' and 'recurring' describe narrative "
+        "position rather than identity -- these are what transfer to an unseen franchise. The rest is "
+        "less portable: 'hydra', 'island' and 'games' are franchise fingerprints, and the survival "
+        "side is mostly wiki section headings ('relationships', 'category', 'history') plus more "
+        "franchise vocabulary. That mixture is why the family helps less than its headline score.")
+    fig.savefig(FIG_DIR / "q2_text_terms.png")
+    plt.close(fig)
+
+
 def fig_corpus() -> None:
     """What the scraped corpus actually contains."""
     comp = pd.read_csv(CLEAN_DIR / "corpus_composition.csv").set_index("category")
@@ -268,6 +300,7 @@ def main() -> None:
         ("q1_model_comparison", fig_model_comparison),
         ("q1_gender_forest", fig_gender_forest),
         ("q1_feature_importance", fig_importance),
+        ("q2_text_terms", fig_text_terms),
         ("q3_franchise_mortality", fig_franchise_mortality),
         ("q3_run_span", fig_runspan),
     ]:

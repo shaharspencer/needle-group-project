@@ -1,281 +1,281 @@
-franchise,media_type,tmdb_id,title,release_date,release_year,genres,vote_average,vote_count,popularity,runtime,n_seasons,n_episodes,cast_size,end_date,end_year
-Alien vs Predator,movie,348,Alien,1979-05-25,1979.0,Horror|Science Fiction,8.2,16657,24.8965,117.0,,,9,1979-05-25,1979.0
-Alien vs Predator,movie,679,Aliens,1986-07-18,1986.0,Action|Thriller|Science Fiction,7.965,11050,21.8207,137.0,,,27,1986-07-18,1986.0
-Alien vs Predator,movie,8077,Alien³,1992-05-22,1992.0,Science Fiction|Action|Horror,6.39,6500,15.8671,114.0,,,24,1992-05-22,1992.0
-Alien vs Predator,movie,8078,Alien Resurrection,1997-11-12,1997.0,Science Fiction|Horror|Action,6.174,5682,17.4457,109.0,,,38,1997-11-12,1997.0
-Alien vs Predator,movie,106,Predator,1987-06-12,1987.0,Science Fiction|Action|Adventure|Thriller,7.573,9368,20.2881,107.0,,,17,1987-06-12,1987.0
-Alien vs Predator,movie,169,Predator 2,1990-11-21,1990.0,Science Fiction|Action|Thriller,6.304,3922,15.6082,108.0,,,71,1990-11-21,1990.0
-Alien vs Predator,movie,34851,Predators,2010-07-07,2010.0,Science Fiction|Action|Thriller,6.305,4724,13.9004,107.0,,,13,2010-07-07,2010.0
-Alien vs Predator,movie,346910,The Predator,2018-09-05,2018.0,Science Fiction|Action|Thriller,5.62,5227,13.7912,107.0,,,47,2018-09-05,2018.0
-Alien vs Predator,movie,766507,Prey,2022-08-02,2022.0,Thriller|Action|Science Fiction,7.651,7888,18.5793,100.0,,,31,2022-08-02,2022.0
-Alien vs Predator,movie,1242898,Predator: Badlands,2025-11-05,2025.0,Action|Science Fiction|Adventure,7.827,3472,39.1706,107.0,,,10,2025-11-05,2025.0
-Avatar,movie,83533,Avatar: Fire and Ash,2025-12-17,2025.0,Science Fiction|Adventure|Fantasy,7.644,4112,78.5139,198.0,,,60,2025-12-17,2025.0
-Avatar,movie,19995,Avatar,2009-12-16,2009.0,Science Fiction|Action|Adventure,7.609,34436,35.602,162.0,,,68,2009-12-16,2009.0
-Avatar,movie,76600,Avatar: The Way of Water,2022-12-14,2022.0,Action|Adventure|Science Fiction,7.59,14495,28.7764,192.0,,,64,2022-12-14,2022.0
-Avatar,movie,216527,Avatar 4,2029-12-19,2029.0,Science Fiction|Adventure|Action,0.0,0,5.1063,0.0,,,20,2029-12-19,2029.0
-Avatar,movie,393209,Avatar 5,2031-12-17,2031.0,Adventure|Science Fiction|Action,0.0,0,2.9072,0.0,,,13,2031-12-17,2031.0
-Boardwalk Empire,tv,1621,Boardwalk Empire,2010-09-19,2010.0,Crime|Drama,8.021,1299,37.8118,,5.0,56.0,364,2014-10-26,2014.0
-Breaking Bad / Better Call Saul,tv,1396,Breaking Bad,2008-01-20,2008.0,Drama|Crime,8.948,18378,150.2762,,5.0,62.0,348,2013-09-29,2013.0
-Breaking Bad / Better Call Saul,tv,60059,Better Call Saul,2015-02-08,2015.0,Crime|Drama,8.711,6754,68.8984,,6.0,63.0,710,2022-08-15,2022.0
-Breaking Bad / Better Call Saul,movie,559969,El Camino: A Breaking Bad Movie,2019-10-11,2019.0,Crime|Drama|Thriller,7.048,5763,9.6433,123.0,,,31,2019-10-11,2019.0
-DC Extended Universe,movie,297761,Suicide Squad,2016-08-03,2016.0,Action|Adventure|Fantasy,5.918,22301,15.7364,122.0,,,106,2016-08-03,2016.0
-DC Extended Universe,movie,297762,Wonder Woman,2017-05-30,2017.0,Action|Adventure|Fantasy,7.206,21089,18.6615,141.0,,,82,2017-05-30,2017.0
-DC Extended Universe,movie,1255345,Etta's Mission,2017-08-29,2017.0,Adventure,8.0,3,1.2768,3.0,,,4,2017-08-29,2017.0
-DC Extended Universe,movie,141052,Justice League,2017-11-15,2017.0,Action|Adventure|Science Fiction,6.071,13828,20.7863,120.0,,,98,2017-11-15,2017.0
-DC Extended Universe,movie,297802,Aquaman,2018-12-07,2018.0,Action|Adventure|Fantasy,6.866,15091,28.7773,143.0,,,53,2018-12-07,2018.0
-DC Extended Universe,movie,287947,Shazam!,2019-03-29,2019.0,Action|Comedy|Fantasy,6.972,10350,13.3541,132.0,,,94,2019-03-29,2019.0
-DC Extended Universe,movie,475557,Joker,2019-10-01,2019.0,Crime|Thriller|Drama,8.12,28086,30.0951,122.0,,,80,2019-10-01,2019.0
-DC Extended Universe,movie,495764,Birds of Prey (and the Fantabulous Emancipation of One Harley Quinn),2020-02-05,2020.0,Action|Crime,6.868,10923,12.0254,109.0,,,97,2020-02-05,2020.0
-DC Extended Universe,movie,464052,Wonder Woman 1984,2020-12-16,2020.0,Action|Adventure|Fantasy,6.362,9177,13.6453,151.0,,,148,2020-12-16,2020.0
-DC Extended Universe,movie,791373,Zack Snyder's Justice League,2021-03-18,2021.0,Action|Adventure|Fantasy,8.08,11019,18.87,242.0,,,123,2021-03-18,2021.0
-DC Extended Universe,movie,436969,The Suicide Squad,2021-07-28,2021.0,Action|Comedy|Adventure,7.454,9767,28.5052,132.0,,,62,2021-07-28,2021.0
-DC Extended Universe,movie,414906,The Batman,2022-03-01,2022.0,Crime|Mystery|Thriller,7.667,12303,39.8526,177.0,,,86,2022-03-01,2022.0
-DC Extended Universe,movie,436270,Black Adam,2022-10-19,2022.0,Action|Adventure|Science Fiction,6.781,7163,25.7906,125.0,,,56,2022-10-19,2022.0
-DC Extended Universe,movie,594767,Shazam! Fury of the Gods,2023-03-15,2023.0,Comedy|Action|Fantasy,6.408,3727,10.9179,130.0,,,51,2023-03-15,2023.0
-DC Extended Universe,movie,298618,The Flash,2023-06-13,2023.0,Action|Science Fiction|Adventure,6.614,5158,24.5581,144.0,,,59,2023-06-13,2023.0
-DC Extended Universe,movie,565770,Blue Beetle,2023-08-16,2023.0,Action|Science Fiction|Adventure,6.62,3195,12.1396,128.0,,,34,2023-08-16,2023.0
-DC Extended Universe,movie,572802,Aquaman and the Lost Kingdom,2023-12-20,2023.0,Action|Adventure|Fantasy,6.51,3607,24.9556,124.0,,,41,2023-12-20,2023.0
-Dexter,tv,1405,Dexter,2006-10-01,2006.0,Crime|Drama|Mystery,8.242,5744,128.1368,,8.0,96.0,717,2013-09-22,2013.0
-Dexter,tv,259909,Dexter: Resurrection,2025-07-13,2025.0,Crime|Drama|Mystery,8.531,606,21.3357,,2.0,10.0,96,2025-09-07,2025.0
-Dune,tv,90228,Dune: Prophecy,2024-11-17,2024.0,Sci-Fi & Fantasy|Drama|Action & Adventure,7.21,620,25.7738,,2.0,14.0,86,2024-12-22,2024.0
-Dune,movie,438631,Dune,2021-09-15,2021.0,Science Fiction|Adventure,7.784,15306,36.2115,155.0,,,39,2021-09-15,2021.0
-Dune,movie,693134,Dune: Part Two,2024-02-27,2024.0,Science Fiction|Adventure,8.132,8347,50.0722,167.0,,,98,2024-02-27,2024.0
-Dune,movie,1170608,Dune: Part Three,2026-12-16,2026.0,Science Fiction|Adventure,0.0,0,18.4455,0.0,,,14,2026-12-16,2026.0
-Fast & Furious,movie,584,2 Fast 2 Furious,2003-06-05,2003.0,Action|Crime|Thriller,6.522,8284,2.9047,108.0,,,31,2003-06-05,2003.0
-Fast & Furious,movie,9615,The Fast and the Furious: Tokyo Drift,2006-06-03,2006.0,Action|Crime|Drama|Thriller,6.553,7770,3.3091,104.0,,,81,2006-06-03,2006.0
-Fast & Furious,movie,9799,The Fast and the Furious,2001-06-22,2001.0,Action|Crime|Thriller,7.0,11010,1.6313,106.0,,,31,2001-06-22,2001.0
-Fast & Furious,movie,51497,Fast Five,2011-04-20,2011.0,Action|Thriller|Crime,7.246,8997,1.669,131.0,,,35,2011-04-20,2011.0
-Fast & Furious,movie,82992,Fast & Furious 6,2013-05-21,2013.0,Action|Thriller|Crime,6.817,11294,1.7413,130.0,,,84,2013-05-21,2013.0
-Fast & Furious,movie,168259,Furious 7,2015-04-01,2015.0,Action|Crime|Thriller,7.215,11418,17.0565,138.0,,,50,2015-04-01,2015.0
-Fast & Furious,movie,13804,Fast & Furious,2009-04-02,2009.0,Action|Crime|Thriller,6.69,7925,1.6853,107.0,,,63,2009-04-02,2009.0
-Fast & Furious,movie,337339,The Fate of the Furious,2017-04-12,2017.0,Action|Crime|Thriller,6.9,10917,10.1781,136.0,,,87,2017-04-12,2017.0
-Fast & Furious,movie,385687,Fast X,2023-05-17,2023.0,Action|Crime|Thriller,6.984,6435,32.4797,142.0,,,39,2023-05-17,2023.0
-Fast & Furious,movie,385128,F9,2021-05-19,2021.0,Action|Adventure|Crime,6.99,7799,8.7489,143.0,,,44,2021-05-19,2021.0
-Fast & Furious,movie,755679,Fast Forever,2028-03-16,2028.0,Action|Crime|Thriller,0.0,0,17.0181,0.0,,,1,2028-03-16,2028.0
-Game of Thrones,tv,1399,Game of Thrones,2011-04-17,2011.0,Sci-Fi & Fantasy|Drama|Action & Adventure,8.5,27498,174.567,,8.0,73.0,587,2019-05-19,2019.0
-Grey's Anatomy,tv,1416,Grey's Anatomy,2005-03-27,2005.0,Drama,8.206,11004,229.279,,23.0,466.0,3243,2026-05-07,2026.0
-Harry Potter,movie,671,Harry Potter and the Philosopher's Stone,2001-11-16,2001.0,Adventure|Fantasy,7.902,29990,45.5036,152.0,,,64,2001-11-16,2001.0
-Harry Potter,movie,672,Harry Potter and the Chamber of Secrets,2002-11-13,2002.0,Adventure|Fantasy,7.708,23897,37.7194,161.0,,,77,2002-11-13,2002.0
-Harry Potter,movie,674,Harry Potter and the Goblet of Fire,2005-11-16,2005.0,Adventure|Fantasy,7.802,22469,35.2037,157.0,,,77,2005-11-16,2005.0
-Harry Potter,movie,767,Harry Potter and the Half-Blood Prince,2009-07-15,2009.0,Adventure|Fantasy,7.682,21056,31.0339,153.0,,,60,2009-07-15,2009.0
-Harry Potter,movie,673,Harry Potter and the Prisoner of Azkaban,2004-05-31,2004.0,Adventure|Fantasy,8.01,23459,34.6081,141.0,,,59,2004-05-31,2004.0
-Harry Potter,movie,675,Harry Potter and the Order of the Phoenix,2007-07-08,2007.0,Adventure|Fantasy,7.673,21080,31.6463,138.0,,,87,2007-07-08,2007.0
-Harry Potter,movie,12444,Harry Potter and the Deathly Hallows: Part 1,2010-11-17,2010.0,Adventure|Fantasy,7.733,20645,34.3108,146.0,,,106,2010-11-17,2010.0
-Harry Potter,movie,12445,Harry Potter and the Deathly Hallows: Part 2,2011-07-12,2011.0,Adventure|Fantasy,8.08,22264,33.4676,130.0,,,106,2011-07-12,2011.0
-Indiana Jones,tv,661,The Young Indiana Jones Chronicles,1992-03-04,1992.0,Action & Adventure|Drama|Sci-Fi & Fantasy,6.535,144,11.0491,,2.0,24.0,139,1993-07-24,1993.0
-Indiana Jones,movie,85,Raiders of the Lost Ark,1981-06-12,1981.0,Adventure|Action,7.926,13846,19.2795,115.0,,,50,1981-06-12,1981.0
-Indiana Jones,movie,87,Indiana Jones and the Temple of Doom,1984-05-23,1984.0,Adventure|Action,7.309,10266,14.6012,118.0,,,81,1984-05-23,1984.0
-Indiana Jones,movie,89,Indiana Jones and the Last Crusade,1989-05-24,1989.0,Adventure|Action,7.854,11237,14.7304,127.0,,,68,1989-05-24,1989.0
-Indiana Jones,movie,217,Indiana Jones and the Kingdom of the Crystal Skull,2008-05-21,2008.0,Adventure|Action,6.029,9155,12.8332,122.0,,,97,2008-05-21,2008.0
-Indiana Jones,movie,335977,Indiana Jones and the Dial of Destiny,2023-06-25,2023.0,Adventure|Action,6.503,4272,16.599,155.0,,,82,2023-06-25,2023.0
-James Bond 007,movie,253,Live and Let Die,1973-06-27,1973.0,Adventure|Action|Thriller,6.506,2336,9.6378,121.0,,,43,1973-06-27,1973.0
-James Bond 007,movie,646,Dr. No,1962-10-07,1962.0,Adventure|Action|Thriller,6.982,4127,11.8373,110.0,,,30,1962-10-07,1962.0
-James Bond 007,movie,657,From Russia with Love,1963-10-10,1963.0,Action|Thriller|Adventure,7.064,3431,11.4126,115.0,,,44,1963-10-10,1963.0
-James Bond 007,movie,658,Goldfinger,1964-09-20,1964.0,Adventure|Action|Thriller,7.362,4041,9.5657,110.0,,,49,1964-09-20,1964.0
-James Bond 007,movie,660,Thunderball,1965-12-11,1965.0,Adventure|Action|Thriller,6.669,2695,9.2175,130.0,,,38,1965-12-11,1965.0
-James Bond 007,movie,667,You Only Live Twice,1967-06-13,1967.0,Action|Thriller|Adventure,6.59,2536,10.5556,117.0,,,41,1967-06-13,1967.0
-James Bond 007,movie,668,On Her Majesty's Secret Service,1969-12-18,1969.0,Adventure|Action|Thriller,6.6,2194,7.3768,142.0,,,32,1969-12-18,1969.0
-James Bond 007,movie,681,Diamonds Are Forever,1971-12-14,1971.0,Action|Thriller,6.405,2418,7.6979,120.0,,,76,1971-12-14,1971.0
-James Bond 007,movie,682,The Man with the Golden Gun,1974-12-04,1974.0,Adventure|Action|Thriller,6.459,2327,7.29,125.0,,,28,1974-12-04,1974.0
-James Bond 007,movie,691,The Spy Who Loved Me,1977-07-07,1977.0,Adventure|Action|Thriller,6.82,2283,8.2002,125.0,,,74,1977-07-07,1977.0
-James Bond 007,movie,698,Moonraker,1979-06-26,1979.0,Action|Adventure|Thriller|Science Fiction,6.187,2268,8.0216,126.0,,,43,1979-06-26,1979.0
-James Bond 007,movie,699,For Your Eyes Only,1981-06-24,1981.0,Adventure|Action|Thriller,6.546,2129,9.3887,128.0,,,45,1981-06-24,1981.0
-James Bond 007,movie,700,Octopussy,1983-06-05,1983.0,Adventure|Action|Thriller,6.357,2262,8.663,131.0,,,68,1983-06-05,1983.0
-James Bond 007,movie,707,A View to a Kill,1985-05-24,1985.0,Adventure|Action|Thriller,6.256,2243,10.4891,131.0,,,39,1985-05-24,1985.0
-James Bond 007,movie,709,Licence to Kill,1989-06-13,1989.0,Adventure|Action|Thriller,6.439,2213,11.2842,133.0,,,44,1989-06-13,1989.0
-James Bond 007,movie,710,GoldenEye,1995-11-16,1995.0,Adventure|Action|Thriller,6.904,4423,12.5927,130.0,,,27,1995-11-16,1995.0
-James Bond 007,movie,714,Tomorrow Never Dies,1997-12-11,1997.0,Adventure|Action|Thriller,6.383,3505,11.4083,119.0,,,48,1997-12-11,1997.0
-James Bond 007,movie,10764,Quantum of Solace,2008-10-29,2008.0,Adventure|Action|Thriller,6.342,8676,12.2275,106.0,,,75,2008-10-29,2008.0
-James Bond 007,movie,36557,Casino Royale,2006-11-14,2006.0,Adventure|Action|Thriller,7.576,11888,18.7189,144.0,,,76,2006-11-14,2006.0
-James Bond 007,movie,36643,The World Is Not Enough,1999-11-17,1999.0,Adventure|Action|Thriller,6.29,3326,8.6847,128.0,,,40,1999-11-17,1999.0
-James Bond 007,movie,36669,Die Another Day,2002-11-17,2002.0,Adventure|Action|Thriller,5.996,3951,11.9517,133.0,,,44,2002-11-17,2002.0
-James Bond 007,movie,37724,Skyfall,2012-10-24,2012.0,Action|Adventure|Thriller,7.265,16293,16.294,143.0,,,69,2012-10-24,2012.0
-James Bond 007,movie,206647,Spectre,2015-10-26,2015.0,Action|Adventure|Thriller,6.573,11388,13.4686,148.0,,,83,2015-10-26,2015.0
-James Bond 007,movie,708,The Living Daylights,1987-06-29,1987.0,Action|Adventure|Thriller,6.547,2069,8.8233,130.0,,,50,1987-06-29,1987.0
-James Bond 007,movie,370172,No Time to Die,2021-09-29,2021.0,Action|Thriller|Adventure,7.339,7292,21.4995,163.0,,,63,2021-09-29,2021.0
-James Bond 007,movie,36670,Never Say Never Again,1983-10-07,1983.0,Adventure|Action|Thriller,6.084,1655,7.5193,134.0,,,37,1983-10-07,1983.0
-James Bond 007,movie,1184696,Bond 26,,,Action|Thriller,0.0,0,1.5386,0.0,,,0,,
-Jurassic Park,tv,93741,Jurassic World Camp Cretaceous,2020-09-18,2020.0,Animation|Kids|Action & Adventure|Family,8.019,1912,17.3139,,5.0,49.0,29,2022-07-21,2022.0
-Jurassic Park,tv,237512,Jurassic World: Chaos Theory,2024-05-24,2024.0,Animation|Action & Adventure|Sci-Fi & Fantasy|Kids|Family,8.324,202,21.5684,,4.0,39.0,34,2025-11-20,2025.0
-Jurassic Park,movie,329,Jurassic Park,1993-06-11,1993.0,Adventure|Science Fiction,7.976,18179,14.3702,127.0,,,22,1993-06-11,1993.0
-Jurassic Park,movie,330,The Lost World: Jurassic Park,1997-05-23,1997.0,Adventure|Action|Science Fiction,6.568,9386,0.727,129.0,,,76,1997-05-23,1997.0
-Jurassic Park,movie,331,Jurassic Park III,2001-07-18,2001.0,Adventure|Thriller|Science Fiction|Action,6.179,7992,0.8073,92.0,,,25,2001-07-18,2001.0
-Jurassic Park,movie,135397,Jurassic World,2015-06-06,2015.0,Adventure|Science Fiction|Thriller|Action,6.703,21795,23.24,124.0,,,53,2015-06-06,2015.0
-Jurassic Park,movie,351286,Jurassic World: Fallen Kingdom,2018-06-06,2018.0,Adventure|Science Fiction|Thriller|Action,6.529,12917,16.2161,129.0,,,41,2018-06-06,2018.0
-Jurassic Park,movie,507086,Jurassic World Dominion,2022-06-01,2022.0,Adventure|Science Fiction|Thriller|Action,6.598,7211,22.7426,147.0,,,48,2022-06-01,2022.0
-Jurassic Park,movie,1234821,Jurassic World Rebirth,2025-06-23,2025.0,Science Fiction|Adventure|Action,6.264,3643,51.3736,134.0,,,17,2025-06-23,2025.0
-Jurassic Park,movie,1714034,Untitled Jurassic World Rebirth Sequel,,,Science Fiction|Adventure,0.0,0,1.5919,0.0,,,3,,
-Lord of the Rings,tv,84773,The Lord of the Rings: The Rings of Power,2022-09-01,2022.0,Action & Adventure|Drama|Sci-Fi & Fantasy,7.227,3845,81.8249,,3.0,24.0,176,2024-10-03,2024.0
-Lord of the Rings,movie,120,The Lord of the Rings: The Fellowship of the Ring,2001-12-18,2001.0,Adventure|Fantasy|Action,8.441,28083,44.2467,179.0,,,117,2001-12-18,2001.0
-Lord of the Rings,movie,121,The Lord of the Rings: The Two Towers,2002-12-18,2002.0,Adventure|Fantasy|Action,8.426,24339,39.5231,179.0,,,104,2002-12-18,2002.0
-Lord of the Rings,movie,122,The Lord of the Rings: The Return of the King,2003-12-17,2003.0,Adventure|Fantasy|Action,8.503,27072,53.1591,201.0,,,74,2003-12-17,2003.0
-Lost,tv,4607,Lost,2004-09-22,2004.0,Mystery|Action & Adventure|Drama,7.965,5226,96.9128,,6.0,118.0,484,2010-05-23,2010.0
-Marvel Cinematic Universe,movie,813268,Spider-Mania,2002-04-30,2002.0,Documentary|War,5.4,4,1.2525,41.0,,,11,2002-04-30,2002.0
-Marvel Cinematic Universe,movie,14611,Ultimate Avengers 2,2006-08-08,2006.0,Adventure|Animation|Action|Science Fiction,6.813,329,3.562,73.0,,,18,2006-08-08,2006.0
-Marvel Cinematic Universe,movie,1250,Ghost Rider,2007-01-15,2007.0,Thriller|Action|Fantasy,5.616,6581,21.9983,114.0,,,27,2007-01-15,2007.0
-Marvel Cinematic Universe,movie,13647,The Invincible Iron Man,2007-01-23,2007.0,Adventure|Animation|Action|Fantasy|Science Fiction,6.142,271,3.4984,83.0,,,13,2007-01-23,2007.0
-Marvel Cinematic Universe,movie,559,Spider-Man 3,2007-05-01,2007.0,Action|Adventure|Science Fiction,6.5,15546,75.4562,139.0,,,120,2007-05-01,2007.0
-Marvel Cinematic Universe,movie,244888,Jack Kirby: Story Teller,2007-06-05,2007.0,Documentary,6.5,6,1.3219,64.0,,,12,2007-06-05,2007.0
-Marvel Cinematic Universe,movie,1979,Fantastic Four: Rise of the Silver Surfer,2007-06-13,2007.0,Science Fiction|Adventure|Action,5.634,8511,10.5591,92.0,,,53,2007-06-13,2007.0
-Marvel Cinematic Universe,movie,14830,Doctor Strange,2007-08-14,2007.0,Action|Animation|Fantasy|Science Fiction,6.752,351,3.9755,76.0,,,11,2007-08-14,2007.0
-Marvel Cinematic Universe,movie,1726,Iron Man,2008-04-30,2008.0,Action|Science Fiction|Adventure,7.664,28550,45.0887,126.0,,,65,2008-04-30,2008.0
-Marvel Cinematic Universe,movie,1724,The Incredible Hulk,2008-06-12,2008.0,Science Fiction|Action|Adventure,6.252,12959,37.6971,114.0,,,103,2008-06-12,2008.0
-Marvel Cinematic Universe,movie,14613,Next Avengers: Heroes of Tomorrow,2008-09-02,2008.0,Animation|Family|Action|Adventure|Science Fiction,7.045,312,2.9194,78.0,,,11,2008-09-02,2008.0
-Marvel Cinematic Universe,movie,13056,Punisher: War Zone,2008-12-05,2008.0,Action|Crime,5.879,1354,13.1059,102.0,,,51,2008-12-05,2008.0
-Marvel Cinematic Universe,movie,101907,Hulk vs. Thor,2009-01-27,2009.0,Action|Animation|Fantasy|Science Fiction,6.803,244,3.5445,45.0,,,14,2009-01-27,2009.0
-Marvel Cinematic Universe,movie,15257,Hulk vs. Wolverine,2009-01-27,2009.0,Animation|Action|Science Fiction|Adventure|Fantasy,7.116,292,4.9706,38.0,,,10,2009-01-27,2009.0
-Marvel Cinematic Universe,movie,10138,Iron Man 2,2010-04-28,2010.0,Adventure|Action|Science Fiction,6.855,22702,34.3055,124.0,,,86,2010-04-28,2010.0
-Marvel Cinematic Universe,movie,10195,Thor,2011-04-21,2011.0,Adventure|Fantasy|Action,6.771,22621,35.3162,115.0,,,56,2011-04-21,2011.0
-Marvel Cinematic Universe,movie,1771,Captain America: The First Avenger,2011-07-22,2011.0,Action|Adventure|Science Fiction,7.009,23039,20.2318,124.0,,,98,2011-07-22,2011.0
-Marvel Cinematic Universe,movie,76122,Marvel One-Shot: The Consultant,2011-09-13,2011.0,Adventure|Fantasy|Science Fiction|Action,6.309,637,3.1884,4.0,,,5,2011-09-13,2011.0
-Marvel Cinematic Universe,movie,76535,Marvel One-Shot: A Funny Thing Happened on the Way to Thor's Hammer,2011-10-25,2011.0,Science Fiction|Fantasy|Adventure|Action|Comedy,6.9,584,3.2123,4.0,,,4,2011-10-25,2011.0
-Marvel Cinematic Universe,movie,24428,The Avengers,2012-04-25,2012.0,Science Fiction|Action|Adventure,8.065,39197,78.3822,143.0,,,112,2012-04-25,2012.0
-Marvel Cinematic Universe,movie,119569,Marvel One-Shot: Item 47,2012-08-29,2012.0,Science Fiction|Action|Fantasy,6.429,630,3.1807,12.0,,,4,2012-08-29,2012.0
-Marvel Cinematic Universe,movie,68721,Iron Man 3,2013-04-18,2013.0,Action|Adventure|Science Fiction,6.933,23704,29.4552,130.0,,,111,2013-04-18,2013.0
-Marvel Cinematic Universe,movie,211387,Marvel One-Shot: Agent Carter,2013-10-04,2013.0,Adventure|Action|Science Fiction,7.25,923,5.8417,15.0,,,10,2013-10-04,2013.0
-Marvel Cinematic Universe,movie,76338,Thor: The Dark World,2013-10-30,2013.0,Action|Adventure|Fantasy,6.511,18570,32.6754,112.0,,,49,2013-10-30,2013.0
-Marvel Cinematic Universe,movie,253980,Marvel One-Shot: All Hail the King,2014-02-04,2014.0,Action|Comedy|Fantasy,6.749,636,3.9254,14.0,,,11,2014-02-04,2014.0
-Marvel Cinematic Universe,movie,100402,Captain America: The Winter Soldier,2014-03-20,2014.0,Action|Adventure|Science Fiction,7.654,20284,18.2753,136.0,,,75,2014-03-20,2014.0
-Marvel Cinematic Universe,movie,259910,Marvel Studios: Assembling a Universe,2014-03-18,2014.0,Documentary|TV Movie|Fantasy,6.933,172,3.4424,43.0,,,60,2014-03-18,2014.0
-Marvel Cinematic Universe,movie,118340,Guardians of the Galaxy,2014-07-30,2014.0,Action|Science Fiction|Adventure,7.907,30080,19.5088,121.0,,,74,2014-07-30,2014.0
-Marvel Cinematic Universe,movie,99861,Avengers: Age of Ultron,2015-04-22,2015.0,Action|Adventure|Science Fiction,7.275,24788,48.2703,141.0,,,75,2015-04-22,2015.0
-Marvel Cinematic Universe,movie,102899,Ant-Man,2015-07-14,2015.0,Science Fiction|Adventure|Action,7.066,21091,26.5492,117.0,,,70,2015-07-14,2015.0
-Marvel Cinematic Universe,movie,379040,Marvel's Captain America: 75 Heroic Years,2016-01-19,2016.0,Documentary,6.7,35,1.7249,42.0,,,28,2016-01-19,2016.0
-Marvel Cinematic Universe,movie,271110,Captain America: Civil War,2016-04-27,2016.0,Adventure|Action|Science Fiction,7.45,24342,54.7823,147.0,,,104,2016-04-27,2016.0
-Marvel Cinematic Universe,movie,413279,Team Thor,2016-08-28,2016.0,Comedy|Science Fiction,7.23,589,2.9782,3.0,,,3,2016-08-28,2016.0
-Marvel Cinematic Universe,movie,284052,Doctor Strange,2016-10-25,2016.0,Fantasy|Adventure|Action,7.424,23710,35.4009,115.0,,,44,2016-10-25,2016.0
-Marvel Cinematic Universe,movie,441829,Team Thor: Part 2,2017-02-14,2017.0,Science Fiction|Comedy|Fantasy,6.916,367,2.8193,5.0,,,2,2017-02-14,2017.0
-Marvel Cinematic Universe,movie,283995,Guardians of the Galaxy Vol. 2,2017-04-25,2017.0,Science Fiction|Adventure|Action,7.61,23230,31.0341,137.0,,,59,2017-04-25,2017.0
-Marvel Cinematic Universe,movie,315635,Spider-Man: Homecoming,2017-07-05,2017.0,Action|Adventure|Science Fiction,7.332,23611,199.0079,133.0,,,82,2017-07-05,2017.0
-Marvel Cinematic Universe,movie,284053,Thor: Ragnarok,2017-10-02,2017.0,Action|Science Fiction|Comedy|Adventure,7.582,22299,40.6532,131.0,,,55,2017-10-02,2017.0
-Marvel Cinematic Universe,movie,284054,Black Panther,2018-02-13,2018.0,Action|Adventure|Science Fiction,7.365,23771,33.8173,135.0,,,67,2018-02-13,2018.0
-Marvel Cinematic Universe,movie,505945,Team Darryl,2018-02-20,2018.0,Comedy|Fantasy|Science Fiction,6.168,197,2.7793,6.0,,,5,2018-02-20,2018.0
-Marvel Cinematic Universe,movie,299536,Avengers: Infinity War,2018-04-25,2018.0,Adventure|Action|Science Fiction,8.24,32550,87.1118,149.0,,,70,2018-04-25,2018.0
-Marvel Cinematic Universe,movie,363088,Ant-Man and the Wasp,2018-07-04,2018.0,Action|Adventure|Science Fiction,6.898,14369,21.5368,119.0,,,76,2018-07-04,2018.0
-Marvel Cinematic Universe,movie,299537,Captain Marvel,2019-03-06,2019.0,Action|Adventure|Science Fiction,6.775,16984,30.0785,124.0,,,52,2019-03-06,2019.0
-Marvel Cinematic Universe,movie,299534,Avengers: Endgame,2019-04-24,2019.0,Adventure|Science Fiction|Action,8.239,28295,63.2682,181.0,,,103,2019-04-24,2019.0
-Marvel Cinematic Universe,movie,429617,Spider-Man: Far From Home,2019-06-28,2019.0,Action|Adventure|Science Fiction,7.394,17368,103.56,129.0,,,141,2019-06-28,2019.0
-Marvel Cinematic Universe,movie,758025,Peter's To-Do List,2019-09-17,2019.0,Science Fiction|Action|Adventure,6.986,105,2.4177,4.0,,,7,2019-09-17,2019.0
-Marvel Cinematic Universe,movie,647375,Marvel Studios: Expanding the Universe,2019-11-12,2019.0,Documentary,5.7,30,2.0632,12.0,,,20,2019-11-12,2019.0
-Marvel Cinematic Universe,movie,497698,Black Widow,2021-07-07,2021.0,Action|Adventure|Science Fiction,7.158,11459,31.2259,134.0,,,81,2021-07-07,2021.0
-Marvel Cinematic Universe,movie,566525,Shang-Chi and the Legend of the Ten Rings,2021-09-01,2021.0,Action|Adventure|Fantasy,7.488,10595,21.9899,132.0,,,48,2021-09-01,2021.0
-Marvel Cinematic Universe,movie,524434,Eternals,2021-11-03,2021.0,Science Fiction|Action|Adventure,6.761,9294,18.493,156.0,,,89,2021-11-03,2021.0
-Marvel Cinematic Universe,movie,877188,Marvel Studios' 2021 Disney+ Day Special,2021-11-12,2021.0,Documentary,6.906,32,2.691,14.0,,,52,2021-11-12,2021.0
-Marvel Cinematic Universe,movie,634649,Spider-Man: No Way Home,2021-12-15,2021.0,Action|Adventure|Science Fiction,7.938,22645,608.6346,148.0,,,63,2021-12-15,2021.0
-Marvel Cinematic Universe,movie,936643,Marvel Studios Assembled: The Making of Hawkeye,2022-02-09,2022.0,Documentary,7.183,52,2.5999,60.0,,,47,2022-02-09,2022.0
-Marvel Cinematic Universe,movie,939356,Marvel Studios Assembled: The Making of Eternals,2022-02-16,2022.0,Documentary,7.1,59,2.528,58.0,,,22,2022-02-16,2022.0
-Marvel Cinematic Universe,movie,453395,Doctor Strange in the Multiverse of Madness,2022-05-04,2022.0,Fantasy|Action|Adventure,7.23,10622,43.513,126.0,,,62,2022-05-04,2022.0
-Marvel Cinematic Universe,movie,964943,Marvel Studios Assembled: The Making of Moon Knight,2022-05-24,2022.0,Documentary,6.786,49,2.1675,67.0,,,30,2022-05-24,2022.0
-Marvel Cinematic Universe,movie,979160,A Fan's Guide to Ms. Marvel,2022-06-01,2022.0,Documentary,7.093,75,1.5613,5.0,,,8,2022-06-01,2022.0
-Marvel Cinematic Universe,movie,616037,Thor: Love and Thunder,2022-07-06,2022.0,Fantasy|Action|Comedy,6.362,8781,27.421,119.0,,,124,2022-07-06,2022.0
-Marvel Cinematic Universe,movie,980017,Marvel Studios Assembled: The Making of Doctor Strange in the Multiverse of Madness,2022-07-07,2022.0,Documentary,7.085,53,2.3069,59.0,,,33,2022-07-07,2022.0
-Marvel Cinematic Universe,movie,1010823,Magnum Opus,2022-07-18,2022.0,Animation|Family|Science Fiction|Comedy,7.232,282,5.3946,5.0,,,3,2022-07-18,2022.0
-Marvel Cinematic Universe,movie,1001912,Marvel Studios Assembled: The Making of Ms. Marvel,2022-08-03,2022.0,Documentary,6.792,36,1.8215,62.0,,,18,2022-08-03,2022.0
-Marvel Cinematic Universe,movie,1010821,Groot Takes a Bath,2022-08-10,2022.0,Animation|Family|Comedy|Science Fiction,7.126,364,4.2544,6.0,,,3,2022-08-10,2022.0
-Marvel Cinematic Universe,movie,1010820,Groot's Pursuit,2022-08-10,2022.0,Animation|Family|Comedy|Science Fiction,7.087,286,3.994,6.0,,,4,2022-08-10,2022.0
-Marvel Cinematic Universe,movie,1010819,The Little Guy,2022-08-10,2022.0,Animation|Family|Comedy|Science Fiction,7.3,292,5.0586,6.0,,,8,2022-08-10,2022.0
-Marvel Cinematic Universe,movie,1010818,Groot's First Steps,2022-08-10,2022.0,Animation|Family|Comedy|Science Fiction,6.996,377,2.9403,6.0,,,2,2022-08-10,2022.0
-Marvel Cinematic Universe,movie,1015595,Marvel Studios Assembled: The Making of Thor: Love and Thunder,2022-09-08,2022.0,Documentary,7.0,49,3.1119,55.0,,,24,2022-09-08,2022.0
-Marvel Cinematic Universe,movie,894205,Werewolf by Night,2022-09-25,2022.0,Action|Fantasy|Horror,6.964,1577,14.0926,55.0,,,14,2022-09-25,2022.0
-Marvel Cinematic Universe,movie,505642,Black Panther: Wakanda Forever,2022-11-09,2022.0,Action|Adventure|Science Fiction,7.0,7654,28.6535,162.0,,,78,2022-11-09,2022.0
-Marvel Cinematic Universe,movie,1026208,Marvel Studios Assembled: The Making of She-Hulk: Attorney at Law,2022-11-03,2022.0,Documentary,6.6,59,1.9441,54.0,,,32,2022-11-03,2022.0
-Marvel Cinematic Universe,movie,1036996,Director by Night,2022-11-04,2022.0,Documentary,6.413,23,2.2318,54.0,,,37,2022-11-04,2022.0
-Marvel Cinematic Universe,movie,774752,The Guardians of the Galaxy Holiday Special,2022-11-24,2022.0,Comedy|Science Fiction|Adventure,7.085,2429,13.8131,45.0,,,33,2022-11-24,2022.0
-Marvel Cinematic Universe,movie,640146,Ant-Man and the Wasp: Quantumania,2023-02-15,2023.0,Action|Adventure|Science Fiction,6.221,5983,17.9137,125.0,,,65,2023-02-15,2023.0
-Marvel Cinematic Universe,movie,1076032,Marvel Studios Assembled: The Making of Black Panther: Wakanda Forever,2023-02-07,2023.0,Documentary,6.304,56,3.1548,58.0,,,20,2023-02-07,2023.0
-Marvel Cinematic Universe,movie,447365,Guardians of the Galaxy Vol. 3,2023-05-03,2023.0,Science Fiction|Adventure|Action,7.933,8631,38.4983,150.0,,,89,2023-05-03,2023.0
-Marvel Cinematic Universe,movie,717082,Stan Lee,2023-06-10,2023.0,Documentary,7.138,94,2.226,86.0,,,10,2023-06-10,2023.0
-Marvel Cinematic Universe,movie,1127361,Marvel Studios Assembled: The Making of Ant-Man and the Wasp: Quantumania,2023-07-19,2023.0,Documentary,6.2,18,3.3513,50.0,,,17,2023-07-19,2023.0
-Marvel Cinematic Universe,movie,1165487,Marvel Studios Assembled: The Making of the Guardians of the Galaxy Vol. 3,2023-09-12,2023.0,Documentary,6.412,17,3.7909,58.0,,,21,2023-09-12,2023.0
-Marvel Cinematic Universe,movie,1165500,Marvel Studios Assembled: The Making of Secret Invasion,2023-09-19,2023.0,Documentary,5.207,29,2.5587,48.0,,,18,2023-09-19,2023.0
-Marvel Cinematic Universe,movie,1154598,LEGO Marvel Avengers: Code Red,2023-10-26,2023.0,Animation|Action|Family,6.5,159,3.9545,48.0,,,13,2023-10-26,2023.0
-Marvel Cinematic Universe,movie,609681,The Marvels,2023-11-08,2023.0,Science Fiction|Adventure|Action,5.925,3540,20.78,105.0,,,34,2023-11-08,2023.0
-Marvel Cinematic Universe,movie,1192825,Marvel Studios Assembled: The Making of Loki Season 2,2023-11-22,2023.0,Documentary,7.6,21,2.0872,58.0,,,15,2023-11-22,2023.0
-Marvel Cinematic Universe,movie,1220337,Marvel Studios Assembled: The Making of Echo,2024-01-31,2024.0,Documentary,5.8,10,1.6155,47.0,,,24,2024-01-31,2024.0
-Marvel Cinematic Universe,movie,1235525,Marvel Studios Assembled: The Making of The Marvels,2024-02-06,2024.0,Documentary,5.2,13,1.7636,59.0,,,35,2024-02-06,2024.0
-Marvel Cinematic Universe,movie,1275606,Marvel Studios Assembled: The Making of X-Men '97,2024-05-21,2024.0,Documentary,5.786,14,3.3205,56.0,,,23,2024-05-21,2024.0
-Marvel Cinematic Universe,movie,533535,Deadpool & Wolverine,2024-07-24,2024.0,Action|Comedy|Science Fiction,7.582,9160,45.6325,128.0,,,59,2024-07-24,2024.0
-Marvel Cinematic Universe,movie,1359227,LEGO Marvel Avengers: Mission Demolition,2024-10-17,2024.0,Animation|Comedy|Science Fiction,6.5,128,4.9842,45.0,,,23,2024-10-17,2024.0
-Marvel Cinematic Universe,movie,1386628,Marvel Studios Assembled: The Making of Deadpool & Wolverine,2024-11-11,2024.0,Documentary,6.7,22,3.0304,59.0,,,23,2024-11-11,2024.0
-Marvel Cinematic Universe,movie,1387507,Marvel Studios Assembled: The Making of Agatha All Along,2024-11-13,2024.0,Documentary,8.111,9,1.1205,61.0,,,21,2024-11-13,2024.0
-Marvel Cinematic Universe,movie,822119,Captain America: Brave New World,2025-02-12,2025.0,Action|Thriller|Science Fiction,5.953,3262,68.5988,119.0,,,55,2025-02-12,2025.0
-Marvel Cinematic Universe,movie,986056,Thunderbolts*,2025-04-30,2025.0,Action|Science Fiction|Adventure,7.298,3863,48.3837,127.0,,,39,2025-04-30,2025.0
-Marvel Cinematic Universe,movie,617126,The Fantastic 4: First Steps,2025-07-23,2025.0,Science Fiction|Adventure|Action,6.9,3676,48.8019,115.0,,,71,2025-07-23,2025.0
-Marvel Cinematic Universe,movie,1564058,Spidey and Iron Man: Avengers Team Up!,2025-10-16,2025.0,Adventure|Family|Animation,3.8,5,3.0438,24.0,,,8,2025-10-16,2025.0
-Marvel Cinematic Universe,movie,1439930,The Punisher: One Last Kill,2026-05-12,2026.0,Action|Drama|Crime,8.295,2060,73.2371,51.0,,,35,2026-05-12,2026.0
-Marvel Cinematic Universe,movie,969681,Spider-Man: Brand New Day,2026-07-29,2026.0,Science Fiction|Action|Adventure,7.875,1667,1006.0211,145.0,,,59,2026-07-29,2026.0
-Marvel Cinematic Universe,movie,1003596,Avengers: Doomsday,2026-12-16,2026.0,Science Fiction|Action|Adventure,0.0,0,54.5758,165.0,,,37,2026-12-16,2026.0
-Marvel Cinematic Universe,movie,1003598,Avengers: Secret Wars,2027-12-15,2027.0,Science Fiction|Action|Adventure,0.0,0,14.6821,0.0,,,18,2027-12-15,2027.0
-Marvel Cinematic Universe,movie,1386618,Black Panther 3,2028-12-14,2028.0,Science Fiction|Action|Adventure,0.0,0,2.6123,0.0,,,4,2028-12-14,2028.0
-Marvel Cinematic Universe,movie,1748988,Doctor Strange 3,,,Action|Adventure|Drama|Science Fiction,0.0,0,0.0357,0.0,,,2,,
-Marvel Cinematic Universe,movie,1748901,Spider-Man 5,,,Action|Adventure|Comedy|Drama|Science Fiction,0.0,0,0.2071,0.0,,,6,,
-Marvel Cinematic Universe,movie,1738010,Ghost Rider,,,Fantasy,0.0,0,3.0919,0.0,,,1,,
-Marvel Cinematic Universe,movie,1737233,Untitled Shang-Chi and the Legend of the Ten Rings Sequel,,,Fantasy|Adventure,0.0,0,1.4393,0.0,,,1,,
-Marvel Cinematic Universe,movie,1731190,Nova,,,Science Fiction,0.0,0,1.023,0.0,,,0,,
-Marvel Cinematic Universe,movie,1474568,Untitled Deadpool/X-Men Teamup Film,,,Science Fiction,0.0,0,1.3182,0.0,,,1,,
-Marvel Cinematic Universe,movie,1293690,Untitled X-Men Film,,,Science Fiction|Action|Adventure,0.0,0,4.8115,0.0,,,3,,
-Mission: Impossible,movie,954,Mission: Impossible,1996-05-22,1996.0,Adventure|Action|Thriller,7.026,10145,19.0118,111.0,,,54,1996-05-22,1996.0
-Mission: Impossible,movie,955,Mission: Impossible II,2000-05-24,2000.0,Adventure|Action|Thriller,6.142,7709,11.5429,123.0,,,45,2000-05-24,2000.0
-Mission: Impossible,movie,956,Mission: Impossible III,2006-04-25,2006.0,Adventure|Action|Thriller,6.767,7750,12.3054,126.0,,,54,2006-04-25,2006.0
-Mission: Impossible,movie,56292,Mission: Impossible - Ghost Protocol,2011-12-07,2011.0,Action|Thriller|Adventure,7.115,10909,12.5858,133.0,,,58,2011-12-07,2011.0
-Mission: Impossible,movie,177677,Mission: Impossible - Rogue Nation,2015-07-28,2015.0,Action|Adventure,7.225,9843,13.2315,131.0,,,79,2015-07-28,2015.0
-Mission: Impossible,movie,353081,Mission: Impossible - Fallout,2018-07-25,2018.0,Action|Adventure,7.451,9271,13.6837,147.0,,,53,2018-07-25,2018.0
-Mission: Impossible,movie,575265,Mission: Impossible - The Final Reckoning,2025-05-17,2025.0,Action|Thriller|Adventure,7.175,3037,29.3532,170.0,,,82,2025-05-17,2025.0
-Mission: Impossible,movie,575264,Mission: Impossible - Dead Reckoning Part One,2023-07-08,2023.0,Action|Adventure|Thriller,7.504,5270,17.7419,164.0,,,79,2023-07-08,2023.0
-Ozark,tv,69740,Ozark,2017-07-21,2017.0,Crime|Drama,8.195,2866,36.0193,,4.0,44.0,355,2022-04-29,2022.0
-Peaky Blinders,tv,60574,Peaky Blinders,2013-09-12,2013.0,Drama|Crime,8.525,11287,77.3168,,6.0,36.0,238,2022-04-03,2022.0
-Pirates of the Caribbean,movie,22,Pirates of the Caribbean: The Curse of the Black Pearl,2003-07-09,2003.0,Adventure|Fantasy|Action,7.832,22574,27.7643,143.0,,,71,2003-07-09,2003.0
-Pirates of the Caribbean,movie,58,Pirates of the Caribbean: Dead Man's Chest,2006-07-06,2006.0,Adventure|Fantasy|Action,7.388,17432,24.664,151.0,,,72,2006-07-06,2006.0
-Pirates of the Caribbean,movie,285,Pirates of the Caribbean: At World's End,2007-05-19,2007.0,Adventure|Fantasy|Action,7.278,15700,23.1465,169.0,,,84,2007-05-19,2007.0
-Pirates of the Caribbean,movie,1865,Pirates of the Caribbean: On Stranger Tides,2011-05-15,2011.0,Adventure|Action|Fantasy,6.573,15139,21.554,136.0,,,84,2011-05-15,2011.0
-Pirates of the Caribbean,movie,166426,Pirates of the Caribbean: Dead Men Tell No Tales,2017-05-23,2017.0,Adventure|Action|Fantasy,6.665,12970,15.6386,129.0,,,77,2017-05-23,2017.0
-Prison Break,tv,2288,Prison Break,2005-08-29,2005.0,Action & Adventure|Crime|Drama,8.064,6091,100.9918,,5.0,88.0,204,2017-05-30,2017.0
-Sons of Anarchy,tv,1409,Sons of Anarchy,2008-09-03,2008.0,Crime|Drama,8.4,3342,69.3931,,7.0,92.0,295,2014-12-09,2014.0
-Spartacus,tv,46296,Spartacus,2010-01-22,2010.0,Drama,8.029,3020,71.7308,,3.0,33.0,94,2013-04-12,2013.0
-Spartacus,tv,240459,Spartacus: House of Ashur,2025-12-05,2025.0,Drama|Action & Adventure,7.287,321,34.5604,,1.0,10.0,51,2026-02-06,2026.0
-Star Wars,tv,4194,Star Wars: The Clone Wars,2008-10-03,2008.0,Action & Adventure|Sci-Fi & Fantasy|Animation,8.468,2401,54.822,,7.0,133.0,127,2020-05-04,2020.0
-Star Wars,tv,60554,Star Wars Rebels,2014-10-13,2014.0,Action & Adventure|Animation|Sci-Fi & Fantasy,7.724,1022,28.8216,,4.0,69.0,88,2018-03-05,2018.0
-Star Wars,tv,82856,The Mandalorian,2019-11-12,2019.0,Sci-Fi & Fantasy|Action & Adventure,8.408,11135,51.5894,,3.0,24.0,159,2023-04-19,2023.0
-Star Wars,tv,83867,Andor,2022-09-21,2022.0,Sci-Fi & Fantasy|Action & Adventure|Drama,8.301,2141,46.5497,,2.0,24.0,302,2025-05-13,2025.0
-Star Wars,tv,105971,Star Wars: The Bad Batch,2021-05-04,2021.0,Animation|Action & Adventure|Sci-Fi & Fantasy,8.149,1183,22.9456,,3.0,47.0,81,2024-05-01,2024.0
-Star Wars,tv,114461,Ahsoka,2023-08-22,2023.0,Sci-Fi & Fantasy|Action & Adventure,7.414,1274,20.9827,,1.0,8.0,58,2023-10-03,2023.0
-Star Wars,tv,92830,Obi-Wan Kenobi,2022-05-26,2022.0,Sci-Fi & Fantasy|Action & Adventure,7.006,2310,15.6215,,1.0,6.0,71,2022-06-22,2022.0
-Star Wars,tv,203085,Star Wars: Tales of the Jedi,2022-10-26,2022.0,Animation|Sci-Fi & Fantasy|Action & Adventure,7.95,496,9.7807,,1.0,6.0,28,2022-10-26,2022.0
-Star Wars,movie,11,Star Wars,1977-05-25,1977.0,Adventure|Action|Science Fiction,8.206,22650,35.8035,121.0,,,105,1977-05-25,1977.0
-Star Wars,movie,1891,The Empire Strikes Back,1980-05-20,1980.0,Adventure|Action|Science Fiction,8.392,18675,20.6692,124.0,,,79,1980-05-20,1980.0
-Star Wars,movie,1892,Return of the Jedi,1983-05-25,1983.0,Adventure|Action|Science Fiction,7.911,17150,17.5639,132.0,,,177,1983-05-25,1983.0
-Star Wars,movie,1893,Star Wars: Episode I - The Phantom Menace,1999-05-19,1999.0,Adventure|Action|Science Fiction,6.584,16075,18.6565,136.0,,,121,1999-05-19,1999.0
-Star Wars,movie,1894,Star Wars: Episode II - Attack of the Clones,2002-05-15,2002.0,Adventure|Action|Science Fiction,6.599,14559,14.6639,142.0,,,101,2002-05-15,2002.0
-Star Wars,movie,1895,Star Wars: Episode III - Revenge of the Sith,2005-05-17,2005.0,Adventure|Action|Science Fiction,7.474,15165,16.658,140.0,,,110,2005-05-17,2005.0
-Star Wars,movie,140607,Star Wars: The Force Awakens,2015-12-15,2015.0,Adventure|Action|Science Fiction,7.245,20763,22.6685,136.0,,,99,2015-12-15,2015.0
-Star Wars,movie,181812,Star Wars: The Rise of Skywalker,2019-12-18,2019.0,Adventure|Action|Science Fiction,6.258,11014,21.7796,142.0,,,113,2019-12-18,2019.0
-Star Wars,movie,181808,Star Wars: The Last Jedi,2017-12-13,2017.0,Adventure|Action|Science Fiction,6.743,16540,23.312,152.0,,,112,2017-12-13,2017.0
-Stranger Things,tv,66732,Stranger Things,2016-07-15,2016.0,Action & Adventure|Mystery|Sci-Fi & Fantasy,8.555,21636,122.2436,,5.0,42.0,488,2025-12-31,2025.0
-Supernatural,tv,1622,Supernatural,2005-09-13,2005.0,Drama|Mystery|Sci-Fi & Fantasy,8.314,8594,191.9333,,15.0,327.0,2167,2020-11-19,2020.0
-The 100,tv,48866,The 100,2014-03-19,2014.0,Sci-Fi & Fantasy|Action & Adventure|Drama|Crime,7.9,8735,60.6451,,7.0,100.0,237,2020-09-30,2020.0
-The Boys,tv,76479,The Boys,2019-07-25,2019.0,Sci-Fi & Fantasy|Action & Adventure,8.438,13266,124.1691,,5.0,40.0,633,2026-05-20,2026.0
-The Hunger Games,movie,131631,The Hunger Games: Mockingjay - Part 1,2014-11-19,2014.0,Science Fiction|Adventure|Thriller,6.817,16897,19.2123,123.0,,,50,2014-11-19,2014.0
-The Hunger Games,movie,131634,The Hunger Games: Mockingjay - Part 2,2015-11-18,2015.0,Action|Adventure|Science Fiction,6.901,13492,12.7805,137.0,,,56,2015-11-18,2015.0
-The Hunger Games,movie,70160,The Hunger Games,2012-03-12,2012.0,Science Fiction|Adventure|Action|Thriller,7.223,23559,12.8277,142.0,,,52,2012-03-12,2012.0
-The Hunger Games,movie,101299,The Hunger Games: Catching Fire,2013-11-15,2013.0,Adventure|Action|Science Fiction,7.428,18649,16.0089,146.0,,,57,2013-11-15,2013.0
-The Matrix,movie,603,The Matrix,1999-03-31,1999.0,Action|Science Fiction,8.3,28434,45.5194,136.0,,,37,1999-03-31,1999.0
-The Matrix,movie,604,The Matrix Reloaded,2003-05-15,2003.0,Adventure|Action|Thriller|Science Fiction,7.086,12175,18.2606,138.0,,,82,2003-05-15,2003.0
-The Matrix,movie,605,The Matrix Revolutions,2003-11-05,2003.0,Adventure|Action|Thriller|Science Fiction,6.757,11005,13.6894,129.0,,,48,2003-11-05,2003.0
-The Matrix,movie,624860,The Matrix Resurrections,2021-12-16,2021.0,Science Fiction|Action|Adventure,6.316,6628,13.7234,148.0,,,61,2021-12-16,2021.0
-The Sopranos,tv,1398,The Sopranos,1999-01-10,1999.0,Crime|Drama,8.7,3606,103.3058,,6.0,86.0,807,2007-06-10,2007.0
-The Twilight Saga,movie,8966,Twilight,2008-11-20,2008.0,Fantasy|Drama|Romance,6.278,14577,23.9116,122.0,,,45,2008-11-20,2008.0
-The Twilight Saga,movie,18239,The Twilight Saga: New Moon,2009-11-18,2009.0,Adventure|Fantasy|Drama|Romance,5.988,9852,18.8263,131.0,,,47,2009-11-18,2009.0
-The Twilight Saga,movie,50619,The Twilight Saga: Breaking Dawn - Part 1,2011-11-16,2011.0,Adventure|Fantasy|Romance,6.185,9370,14.9163,117.0,,,53,2011-11-16,2011.0
-The Twilight Saga,movie,50620,The Twilight Saga: Breaking Dawn - Part 2,2012-11-13,2012.0,Fantasy|Drama|Romance,6.452,9457,14.8918,115.0,,,69,2012-11-13,2012.0
-The Twilight Saga,movie,24021,The Twilight Saga: Eclipse,2010-06-23,2010.0,Adventure|Fantasy|Drama|Romance,6.189,9342,13.7381,124.0,,,47,2010-06-23,2010.0
-The Walking Dead,tv,1402,The Walking Dead,2010-10-31,2010.0,Action & Adventure|Drama|Sci-Fi & Fantasy,8.084,18072,132.4324,,11.0,177.0,540,2022-11-20,2022.0
-The Walking Dead,tv,194583,The Walking Dead: Dead City,2023-06-18,2023.0,Action & Adventure|Drama|Sci-Fi & Fantasy,7.902,772,66.7883,,3.0,22.0,87,2026-08-09,2026.0
-The Wire,tv,1438,The Wire,2002-06-02,2002.0,Crime|Drama,8.634,2771,76.215,,5.0,60.0,371,2008-03-09,2008.0
-Transformers,movie,1858,Transformers,2007-06-27,2007.0,Adventure|Science Fiction|Action,6.843,12417,5.433,144.0,,,93,2007-06-27,2007.0
-Transformers,movie,8373,Transformers: Revenge of the Fallen,2009-06-19,2009.0,Science Fiction|Action|Adventure,6.223,9317,5.2591,150.0,,,83,2009-06-19,2009.0
-Transformers,movie,38356,Transformers: Dark of the Moon,2011-06-28,2011.0,Action|Science Fiction|Adventure,6.239,9076,4.2074,154.0,,,105,2011-06-28,2011.0
-Transformers,movie,91314,Transformers: Age of Extinction,2014-06-25,2014.0,Science Fiction|Action|Adventure,5.971,8885,16.0364,165.0,,,71,2014-06-25,2014.0
-Transformers,movie,335988,Transformers: The Last Knight,2017-06-16,2017.0,Action|Adventure|Science Fiction,6.061,6836,11.6872,154.0,,,88,2017-06-16,2017.0
-Vikings,tv,44217,Vikings,2013-03-03,2013.0,Action & Adventure|Drama|War & Politics,8.099,7780,124.8739,,6.0,89.0,453,2020-12-30,2020.0
-Vikings,tv,116135,Vikings: Valhalla,2022-02-25,2022.0,Action & Adventure|Drama|War & Politics,7.615,1074,25.7442,,3.0,24.0,198,2024-07-11,2024.0
-Westworld,tv,63247,Westworld,2016-10-02,2016.0,Sci-Fi & Fantasy|Western,8.019,6314,46.5096,,4.0,36.0,437,2022-08-14,2022.0
+franchise,media_type,tmdb_id,title,release_date,release_year,end_date,end_year,genres,vote_average,vote_count,popularity,runtime,n_seasons,n_episodes,cast_size
+Alien vs Predator,movie,348,Alien,1979-05-25,1979.0,1979-05-25,1979.0,Horror|Science Fiction,8.2,16657,24.8965,117.0,,,9
+Alien vs Predator,movie,679,Aliens,1986-07-18,1986.0,1986-07-18,1986.0,Action|Thriller|Science Fiction,7.965,11050,21.8207,137.0,,,27
+Alien vs Predator,movie,8077,Alien³,1992-05-22,1992.0,1992-05-22,1992.0,Science Fiction|Action|Horror,6.39,6500,15.8671,114.0,,,24
+Alien vs Predator,movie,8078,Alien Resurrection,1997-11-12,1997.0,1997-11-12,1997.0,Science Fiction|Horror|Action,6.174,5682,17.4457,109.0,,,38
+Alien vs Predator,movie,106,Predator,1987-06-12,1987.0,1987-06-12,1987.0,Science Fiction|Action|Adventure|Thriller,7.573,9368,20.2881,107.0,,,17
+Alien vs Predator,movie,169,Predator 2,1990-11-21,1990.0,1990-11-21,1990.0,Science Fiction|Action|Thriller,6.304,3922,15.6082,108.0,,,71
+Alien vs Predator,movie,34851,Predators,2010-07-07,2010.0,2010-07-07,2010.0,Science Fiction|Action|Thriller,6.305,4724,13.9004,107.0,,,13
+Alien vs Predator,movie,346910,The Predator,2018-09-05,2018.0,2018-09-05,2018.0,Science Fiction|Action|Thriller,5.62,5227,13.7912,107.0,,,47
+Alien vs Predator,movie,766507,Prey,2022-08-02,2022.0,2022-08-02,2022.0,Thriller|Action|Science Fiction,7.651,7888,18.5793,100.0,,,31
+Alien vs Predator,movie,1242898,Predator: Badlands,2025-11-05,2025.0,2025-11-05,2025.0,Action|Science Fiction|Adventure,7.827,3472,39.1706,107.0,,,10
+Avatar,movie,83533,Avatar: Fire and Ash,2025-12-17,2025.0,2025-12-17,2025.0,Science Fiction|Adventure|Fantasy,7.644,4112,78.5139,198.0,,,60
+Avatar,movie,19995,Avatar,2009-12-16,2009.0,2009-12-16,2009.0,Science Fiction|Action|Adventure,7.609,34436,35.602,162.0,,,68
+Avatar,movie,76600,Avatar: The Way of Water,2022-12-14,2022.0,2022-12-14,2022.0,Action|Adventure|Science Fiction,7.59,14495,28.7764,192.0,,,64
+Avatar,movie,216527,Avatar 4,2029-12-19,2029.0,2029-12-19,2029.0,Science Fiction|Adventure|Action,0.0,0,5.1063,0.0,,,20
+Avatar,movie,393209,Avatar 5,2031-12-17,2031.0,2031-12-17,2031.0,Adventure|Science Fiction|Action,0.0,0,2.9072,0.0,,,13
+Boardwalk Empire,tv,1621,Boardwalk Empire,2010-09-19,2010.0,2014-10-26,2014.0,Crime|Drama,8.021,1299,37.8118,,5.0,56.0,364
+Breaking Bad / Better Call Saul,tv,1396,Breaking Bad,2008-01-20,2008.0,2013-09-29,2013.0,Drama|Crime,8.948,18378,150.2762,,5.0,62.0,348
+Breaking Bad / Better Call Saul,tv,60059,Better Call Saul,2015-02-08,2015.0,2022-08-15,2022.0,Crime|Drama,8.711,6754,68.8984,,6.0,63.0,710
+Breaking Bad / Better Call Saul,movie,559969,El Camino: A Breaking Bad Movie,2019-10-11,2019.0,2019-10-11,2019.0,Crime|Drama|Thriller,7.048,5763,9.6433,123.0,,,31
+DC Extended Universe,movie,297761,Suicide Squad,2016-08-03,2016.0,2016-08-03,2016.0,Action|Adventure|Fantasy,5.918,22301,15.7364,122.0,,,106
+DC Extended Universe,movie,297762,Wonder Woman,2017-05-30,2017.0,2017-05-30,2017.0,Action|Adventure|Fantasy,7.206,21089,18.6615,141.0,,,82
+DC Extended Universe,movie,1255345,Etta's Mission,2017-08-29,2017.0,2017-08-29,2017.0,Adventure,8.0,3,1.2768,3.0,,,4
+DC Extended Universe,movie,141052,Justice League,2017-11-15,2017.0,2017-11-15,2017.0,Action|Adventure|Science Fiction,6.071,13828,20.7863,120.0,,,98
+DC Extended Universe,movie,297802,Aquaman,2018-12-07,2018.0,2018-12-07,2018.0,Action|Adventure|Fantasy,6.866,15091,28.7773,143.0,,,53
+DC Extended Universe,movie,287947,Shazam!,2019-03-29,2019.0,2019-03-29,2019.0,Action|Comedy|Fantasy,6.972,10350,13.3541,132.0,,,94
+DC Extended Universe,movie,475557,Joker,2019-10-01,2019.0,2019-10-01,2019.0,Crime|Thriller|Drama,8.12,28086,30.0951,122.0,,,80
+DC Extended Universe,movie,495764,Birds of Prey (and the Fantabulous Emancipation of One Harley Quinn),2020-02-05,2020.0,2020-02-05,2020.0,Action|Crime,6.868,10923,12.0254,109.0,,,97
+DC Extended Universe,movie,464052,Wonder Woman 1984,2020-12-16,2020.0,2020-12-16,2020.0,Action|Adventure|Fantasy,6.362,9177,13.6453,151.0,,,148
+DC Extended Universe,movie,791373,Zack Snyder's Justice League,2021-03-18,2021.0,2021-03-18,2021.0,Action|Adventure|Fantasy,8.08,11019,18.87,242.0,,,123
+DC Extended Universe,movie,436969,The Suicide Squad,2021-07-28,2021.0,2021-07-28,2021.0,Action|Comedy|Adventure,7.454,9767,28.5052,132.0,,,62
+DC Extended Universe,movie,414906,The Batman,2022-03-01,2022.0,2022-03-01,2022.0,Crime|Mystery|Thriller,7.667,12303,39.8526,177.0,,,86
+DC Extended Universe,movie,436270,Black Adam,2022-10-19,2022.0,2022-10-19,2022.0,Action|Adventure|Science Fiction,6.781,7163,25.7906,125.0,,,56
+DC Extended Universe,movie,594767,Shazam! Fury of the Gods,2023-03-15,2023.0,2023-03-15,2023.0,Comedy|Action|Fantasy,6.408,3727,10.9179,130.0,,,51
+DC Extended Universe,movie,298618,The Flash,2023-06-13,2023.0,2023-06-13,2023.0,Action|Science Fiction|Adventure,6.614,5158,24.5581,144.0,,,59
+DC Extended Universe,movie,565770,Blue Beetle,2023-08-16,2023.0,2023-08-16,2023.0,Action|Science Fiction|Adventure,6.62,3195,12.1396,128.0,,,34
+DC Extended Universe,movie,572802,Aquaman and the Lost Kingdom,2023-12-20,2023.0,2023-12-20,2023.0,Action|Adventure|Fantasy,6.51,3607,24.9556,124.0,,,41
+Dexter,tv,1405,Dexter,2006-10-01,2006.0,2013-09-22,2013.0,Crime|Drama|Mystery,8.242,5744,128.1368,,8.0,96.0,717
+Dexter,tv,259909,Dexter: Resurrection,2025-07-13,2025.0,2025-09-07,2025.0,Crime|Drama|Mystery,8.531,606,21.3357,,2.0,10.0,96
+Dune,tv,90228,Dune: Prophecy,2024-11-17,2024.0,2024-12-22,2024.0,Sci-Fi & Fantasy|Drama|Action & Adventure,7.21,620,25.7738,,2.0,14.0,86
+Dune,movie,438631,Dune,2021-09-15,2021.0,2021-09-15,2021.0,Science Fiction|Adventure,7.784,15306,36.2115,155.0,,,39
+Dune,movie,693134,Dune: Part Two,2024-02-27,2024.0,2024-02-27,2024.0,Science Fiction|Adventure,8.132,8347,50.0722,167.0,,,98
+Dune,movie,1170608,Dune: Part Three,2026-12-16,2026.0,2026-12-16,2026.0,Science Fiction|Adventure,0.0,0,18.4455,0.0,,,14
+Fast & Furious,movie,584,2 Fast 2 Furious,2003-06-05,2003.0,2003-06-05,2003.0,Action|Crime|Thriller,6.522,8284,2.9047,108.0,,,31
+Fast & Furious,movie,9615,The Fast and the Furious: Tokyo Drift,2006-06-03,2006.0,2006-06-03,2006.0,Action|Crime|Drama|Thriller,6.553,7770,3.3091,104.0,,,81
+Fast & Furious,movie,9799,The Fast and the Furious,2001-06-22,2001.0,2001-06-22,2001.0,Action|Crime|Thriller,7.0,11010,1.6313,106.0,,,31
+Fast & Furious,movie,51497,Fast Five,2011-04-20,2011.0,2011-04-20,2011.0,Action|Thriller|Crime,7.246,8997,1.669,131.0,,,35
+Fast & Furious,movie,82992,Fast & Furious 6,2013-05-21,2013.0,2013-05-21,2013.0,Action|Thriller|Crime,6.817,11294,1.7413,130.0,,,84
+Fast & Furious,movie,168259,Furious 7,2015-04-01,2015.0,2015-04-01,2015.0,Action|Crime|Thriller,7.215,11418,17.0565,138.0,,,50
+Fast & Furious,movie,13804,Fast & Furious,2009-04-02,2009.0,2009-04-02,2009.0,Action|Crime|Thriller,6.69,7925,1.6853,107.0,,,63
+Fast & Furious,movie,337339,The Fate of the Furious,2017-04-12,2017.0,2017-04-12,2017.0,Action|Crime|Thriller,6.9,10917,10.1781,136.0,,,87
+Fast & Furious,movie,385687,Fast X,2023-05-17,2023.0,2023-05-17,2023.0,Action|Crime|Thriller,6.984,6435,32.4797,142.0,,,39
+Fast & Furious,movie,385128,F9,2021-05-19,2021.0,2021-05-19,2021.0,Action|Adventure|Crime,6.99,7799,8.7489,143.0,,,44
+Fast & Furious,movie,755679,Fast Forever,2028-03-16,2028.0,2028-03-16,2028.0,Action|Crime|Thriller,0.0,0,17.0181,0.0,,,1
+Game of Thrones,tv,1399,Game of Thrones,2011-04-17,2011.0,2019-05-19,2019.0,Sci-Fi & Fantasy|Drama|Action & Adventure,8.5,27498,174.567,,8.0,73.0,587
+Grey's Anatomy,tv,1416,Grey's Anatomy,2005-03-27,2005.0,2026-05-07,2026.0,Drama,8.206,11004,229.279,,23.0,466.0,3243
+Harry Potter,movie,671,Harry Potter and the Philosopher's Stone,2001-11-16,2001.0,2001-11-16,2001.0,Adventure|Fantasy,7.902,29990,45.5036,152.0,,,64
+Harry Potter,movie,672,Harry Potter and the Chamber of Secrets,2002-11-13,2002.0,2002-11-13,2002.0,Adventure|Fantasy,7.708,23897,37.7194,161.0,,,77
+Harry Potter,movie,674,Harry Potter and the Goblet of Fire,2005-11-16,2005.0,2005-11-16,2005.0,Adventure|Fantasy,7.802,22469,35.2037,157.0,,,77
+Harry Potter,movie,767,Harry Potter and the Half-Blood Prince,2009-07-15,2009.0,2009-07-15,2009.0,Adventure|Fantasy,7.682,21056,31.0339,153.0,,,60
+Harry Potter,movie,673,Harry Potter and the Prisoner of Azkaban,2004-05-31,2004.0,2004-05-31,2004.0,Adventure|Fantasy,8.01,23459,34.6081,141.0,,,59
+Harry Potter,movie,675,Harry Potter and the Order of the Phoenix,2007-07-08,2007.0,2007-07-08,2007.0,Adventure|Fantasy,7.673,21080,31.6463,138.0,,,87
+Harry Potter,movie,12444,Harry Potter and the Deathly Hallows: Part 1,2010-11-17,2010.0,2010-11-17,2010.0,Adventure|Fantasy,7.733,20645,34.3108,146.0,,,106
+Harry Potter,movie,12445,Harry Potter and the Deathly Hallows: Part 2,2011-07-12,2011.0,2011-07-12,2011.0,Adventure|Fantasy,8.08,22264,33.4676,130.0,,,106
+Indiana Jones,tv,661,The Young Indiana Jones Chronicles,1992-03-04,1992.0,1993-07-24,1993.0,Action & Adventure|Drama|Sci-Fi & Fantasy,6.535,144,11.0491,,2.0,24.0,139
+Indiana Jones,movie,85,Raiders of the Lost Ark,1981-06-12,1981.0,1981-06-12,1981.0,Adventure|Action,7.926,13846,19.2795,115.0,,,50
+Indiana Jones,movie,87,Indiana Jones and the Temple of Doom,1984-05-23,1984.0,1984-05-23,1984.0,Adventure|Action,7.309,10266,14.6012,118.0,,,81
+Indiana Jones,movie,89,Indiana Jones and the Last Crusade,1989-05-24,1989.0,1989-05-24,1989.0,Adventure|Action,7.854,11237,14.7304,127.0,,,68
+Indiana Jones,movie,217,Indiana Jones and the Kingdom of the Crystal Skull,2008-05-21,2008.0,2008-05-21,2008.0,Adventure|Action,6.029,9155,12.8332,122.0,,,97
+Indiana Jones,movie,335977,Indiana Jones and the Dial of Destiny,2023-06-25,2023.0,2023-06-25,2023.0,Adventure|Action,6.503,4272,16.599,155.0,,,82
+James Bond 007,movie,253,Live and Let Die,1973-06-27,1973.0,1973-06-27,1973.0,Adventure|Action|Thriller,6.506,2336,9.6378,121.0,,,43
+James Bond 007,movie,646,Dr. No,1962-10-07,1962.0,1962-10-07,1962.0,Adventure|Action|Thriller,6.982,4127,11.8373,110.0,,,30
+James Bond 007,movie,657,From Russia with Love,1963-10-10,1963.0,1963-10-10,1963.0,Action|Thriller|Adventure,7.064,3431,11.4126,115.0,,,44
+James Bond 007,movie,658,Goldfinger,1964-09-20,1964.0,1964-09-20,1964.0,Adventure|Action|Thriller,7.362,4041,9.5657,110.0,,,49
+James Bond 007,movie,660,Thunderball,1965-12-11,1965.0,1965-12-11,1965.0,Adventure|Action|Thriller,6.669,2695,9.2175,130.0,,,38
+James Bond 007,movie,667,You Only Live Twice,1967-06-13,1967.0,1967-06-13,1967.0,Action|Thriller|Adventure,6.59,2536,10.5556,117.0,,,41
+James Bond 007,movie,668,On Her Majesty's Secret Service,1969-12-18,1969.0,1969-12-18,1969.0,Adventure|Action|Thriller,6.6,2194,7.3768,142.0,,,32
+James Bond 007,movie,681,Diamonds Are Forever,1971-12-14,1971.0,1971-12-14,1971.0,Action|Thriller,6.405,2418,7.6979,120.0,,,76
+James Bond 007,movie,682,The Man with the Golden Gun,1974-12-04,1974.0,1974-12-04,1974.0,Adventure|Action|Thriller,6.459,2327,7.29,125.0,,,28
+James Bond 007,movie,691,The Spy Who Loved Me,1977-07-07,1977.0,1977-07-07,1977.0,Adventure|Action|Thriller,6.82,2283,8.2002,125.0,,,74
+James Bond 007,movie,698,Moonraker,1979-06-26,1979.0,1979-06-26,1979.0,Action|Adventure|Thriller|Science Fiction,6.187,2268,8.0216,126.0,,,43
+James Bond 007,movie,699,For Your Eyes Only,1981-06-24,1981.0,1981-06-24,1981.0,Adventure|Action|Thriller,6.546,2129,9.3887,128.0,,,45
+James Bond 007,movie,700,Octopussy,1983-06-05,1983.0,1983-06-05,1983.0,Adventure|Action|Thriller,6.357,2262,8.663,131.0,,,68
+James Bond 007,movie,707,A View to a Kill,1985-05-24,1985.0,1985-05-24,1985.0,Adventure|Action|Thriller,6.256,2243,10.4891,131.0,,,39
+James Bond 007,movie,709,Licence to Kill,1989-06-13,1989.0,1989-06-13,1989.0,Adventure|Action|Thriller,6.439,2213,11.2842,133.0,,,44
+James Bond 007,movie,710,GoldenEye,1995-11-16,1995.0,1995-11-16,1995.0,Adventure|Action|Thriller,6.904,4423,12.5927,130.0,,,27
+James Bond 007,movie,714,Tomorrow Never Dies,1997-12-11,1997.0,1997-12-11,1997.0,Adventure|Action|Thriller,6.383,3505,11.4083,119.0,,,48
+James Bond 007,movie,10764,Quantum of Solace,2008-10-29,2008.0,2008-10-29,2008.0,Adventure|Action|Thriller,6.342,8676,12.2275,106.0,,,75
+James Bond 007,movie,36557,Casino Royale,2006-11-14,2006.0,2006-11-14,2006.0,Adventure|Action|Thriller,7.576,11888,18.7189,144.0,,,76
+James Bond 007,movie,36643,The World Is Not Enough,1999-11-17,1999.0,1999-11-17,1999.0,Adventure|Action|Thriller,6.29,3326,8.6847,128.0,,,40
+James Bond 007,movie,36669,Die Another Day,2002-11-17,2002.0,2002-11-17,2002.0,Adventure|Action|Thriller,5.996,3951,11.9517,133.0,,,44
+James Bond 007,movie,37724,Skyfall,2012-10-24,2012.0,2012-10-24,2012.0,Action|Adventure|Thriller,7.265,16293,16.294,143.0,,,69
+James Bond 007,movie,206647,Spectre,2015-10-26,2015.0,2015-10-26,2015.0,Action|Adventure|Thriller,6.573,11388,13.4686,148.0,,,83
+James Bond 007,movie,708,The Living Daylights,1987-06-29,1987.0,1987-06-29,1987.0,Action|Adventure|Thriller,6.547,2069,8.8233,130.0,,,50
+James Bond 007,movie,370172,No Time to Die,2021-09-29,2021.0,2021-09-29,2021.0,Action|Thriller|Adventure,7.339,7292,21.4995,163.0,,,63
+James Bond 007,movie,36670,Never Say Never Again,1983-10-07,1983.0,1983-10-07,1983.0,Adventure|Action|Thriller,6.084,1655,7.5193,134.0,,,37
+James Bond 007,movie,1184696,Bond 26,,,,,Action|Thriller,0.0,0,1.5386,0.0,,,0
+Jurassic Park,tv,93741,Jurassic World Camp Cretaceous,2020-09-18,2020.0,2022-07-21,2022.0,Animation|Kids|Action & Adventure|Family,8.019,1912,17.3139,,5.0,49.0,29
+Jurassic Park,tv,237512,Jurassic World: Chaos Theory,2024-05-24,2024.0,2025-11-20,2025.0,Animation|Action & Adventure|Sci-Fi & Fantasy|Kids|Family,8.324,202,21.5684,,4.0,39.0,34
+Jurassic Park,movie,329,Jurassic Park,1993-06-11,1993.0,1993-06-11,1993.0,Adventure|Science Fiction,7.976,18179,14.3702,127.0,,,22
+Jurassic Park,movie,330,The Lost World: Jurassic Park,1997-05-23,1997.0,1997-05-23,1997.0,Adventure|Action|Science Fiction,6.568,9386,0.727,129.0,,,76
+Jurassic Park,movie,331,Jurassic Park III,2001-07-18,2001.0,2001-07-18,2001.0,Adventure|Thriller|Science Fiction|Action,6.179,7992,0.8073,92.0,,,25
+Jurassic Park,movie,135397,Jurassic World,2015-06-06,2015.0,2015-06-06,2015.0,Adventure|Science Fiction|Thriller|Action,6.703,21795,23.24,124.0,,,53
+Jurassic Park,movie,351286,Jurassic World: Fallen Kingdom,2018-06-06,2018.0,2018-06-06,2018.0,Adventure|Science Fiction|Thriller|Action,6.529,12917,16.2161,129.0,,,41
+Jurassic Park,movie,507086,Jurassic World Dominion,2022-06-01,2022.0,2022-06-01,2022.0,Adventure|Science Fiction|Thriller|Action,6.598,7211,22.7426,147.0,,,48
+Jurassic Park,movie,1234821,Jurassic World Rebirth,2025-06-23,2025.0,2025-06-23,2025.0,Science Fiction|Adventure|Action,6.264,3643,51.3736,134.0,,,17
+Jurassic Park,movie,1714034,Untitled Jurassic World Rebirth Sequel,,,,,Science Fiction|Adventure,0.0,0,1.5919,0.0,,,3
+Lord of the Rings,tv,84773,The Lord of the Rings: The Rings of Power,2022-09-01,2022.0,2024-10-03,2024.0,Action & Adventure|Drama|Sci-Fi & Fantasy,7.227,3845,81.8249,,3.0,24.0,176
+Lord of the Rings,movie,120,The Lord of the Rings: The Fellowship of the Ring,2001-12-18,2001.0,2001-12-18,2001.0,Adventure|Fantasy|Action,8.441,28083,44.2467,179.0,,,117
+Lord of the Rings,movie,121,The Lord of the Rings: The Two Towers,2002-12-18,2002.0,2002-12-18,2002.0,Adventure|Fantasy|Action,8.426,24339,39.5231,179.0,,,104
+Lord of the Rings,movie,122,The Lord of the Rings: The Return of the King,2003-12-17,2003.0,2003-12-17,2003.0,Adventure|Fantasy|Action,8.503,27072,53.1591,201.0,,,74
+Lost,tv,4607,Lost,2004-09-22,2004.0,2010-05-23,2010.0,Mystery|Action & Adventure|Drama,7.965,5226,96.9128,,6.0,118.0,484
+Marvel Cinematic Universe,movie,813268,Spider-Mania,2002-04-30,2002.0,2002-04-30,2002.0,Documentary|War,5.4,4,1.2525,41.0,,,11
+Marvel Cinematic Universe,movie,14611,Ultimate Avengers 2,2006-08-08,2006.0,2006-08-08,2006.0,Adventure|Animation|Action|Science Fiction,6.813,329,3.562,73.0,,,18
+Marvel Cinematic Universe,movie,1250,Ghost Rider,2007-01-15,2007.0,2007-01-15,2007.0,Thriller|Action|Fantasy,5.616,6581,21.9983,114.0,,,27
+Marvel Cinematic Universe,movie,13647,The Invincible Iron Man,2007-01-23,2007.0,2007-01-23,2007.0,Adventure|Animation|Action|Fantasy|Science Fiction,6.142,271,3.4984,83.0,,,13
+Marvel Cinematic Universe,movie,559,Spider-Man 3,2007-05-01,2007.0,2007-05-01,2007.0,Action|Adventure|Science Fiction,6.5,15546,75.4562,139.0,,,120
+Marvel Cinematic Universe,movie,244888,Jack Kirby: Story Teller,2007-06-05,2007.0,2007-06-05,2007.0,Documentary,6.5,6,1.3219,64.0,,,12
+Marvel Cinematic Universe,movie,1979,Fantastic Four: Rise of the Silver Surfer,2007-06-13,2007.0,2007-06-13,2007.0,Science Fiction|Adventure|Action,5.634,8511,10.5591,92.0,,,53
+Marvel Cinematic Universe,movie,14830,Doctor Strange,2007-08-14,2007.0,2007-08-14,2007.0,Action|Animation|Fantasy|Science Fiction,6.752,351,3.9755,76.0,,,11
+Marvel Cinematic Universe,movie,1726,Iron Man,2008-04-30,2008.0,2008-04-30,2008.0,Action|Science Fiction|Adventure,7.664,28550,45.0887,126.0,,,65
+Marvel Cinematic Universe,movie,1724,The Incredible Hulk,2008-06-12,2008.0,2008-06-12,2008.0,Science Fiction|Action|Adventure,6.252,12959,37.6971,114.0,,,103
+Marvel Cinematic Universe,movie,14613,Next Avengers: Heroes of Tomorrow,2008-09-02,2008.0,2008-09-02,2008.0,Animation|Family|Action|Adventure|Science Fiction,7.045,312,2.9194,78.0,,,11
+Marvel Cinematic Universe,movie,13056,Punisher: War Zone,2008-12-05,2008.0,2008-12-05,2008.0,Action|Crime,5.879,1354,13.1059,102.0,,,51
+Marvel Cinematic Universe,movie,101907,Hulk vs. Thor,2009-01-27,2009.0,2009-01-27,2009.0,Action|Animation|Fantasy|Science Fiction,6.803,244,3.5445,45.0,,,14
+Marvel Cinematic Universe,movie,15257,Hulk vs. Wolverine,2009-01-27,2009.0,2009-01-27,2009.0,Animation|Action|Science Fiction|Adventure|Fantasy,7.116,292,4.9706,38.0,,,10
+Marvel Cinematic Universe,movie,10138,Iron Man 2,2010-04-28,2010.0,2010-04-28,2010.0,Adventure|Action|Science Fiction,6.855,22702,34.3055,124.0,,,86
+Marvel Cinematic Universe,movie,10195,Thor,2011-04-21,2011.0,2011-04-21,2011.0,Adventure|Fantasy|Action,6.771,22621,35.3162,115.0,,,56
+Marvel Cinematic Universe,movie,1771,Captain America: The First Avenger,2011-07-22,2011.0,2011-07-22,2011.0,Action|Adventure|Science Fiction,7.009,23039,20.2318,124.0,,,98
+Marvel Cinematic Universe,movie,76122,Marvel One-Shot: The Consultant,2011-09-13,2011.0,2011-09-13,2011.0,Adventure|Fantasy|Science Fiction|Action,6.309,637,3.1884,4.0,,,5
+Marvel Cinematic Universe,movie,76535,Marvel One-Shot: A Funny Thing Happened on the Way to Thor's Hammer,2011-10-25,2011.0,2011-10-25,2011.0,Science Fiction|Fantasy|Adventure|Action|Comedy,6.9,584,3.2123,4.0,,,4
+Marvel Cinematic Universe,movie,24428,The Avengers,2012-04-25,2012.0,2012-04-25,2012.0,Science Fiction|Action|Adventure,8.065,39197,78.3822,143.0,,,112
+Marvel Cinematic Universe,movie,119569,Marvel One-Shot: Item 47,2012-08-29,2012.0,2012-08-29,2012.0,Science Fiction|Action|Fantasy,6.429,630,3.1807,12.0,,,4
+Marvel Cinematic Universe,movie,68721,Iron Man 3,2013-04-18,2013.0,2013-04-18,2013.0,Action|Adventure|Science Fiction,6.933,23704,29.4552,130.0,,,111
+Marvel Cinematic Universe,movie,211387,Marvel One-Shot: Agent Carter,2013-10-04,2013.0,2013-10-04,2013.0,Adventure|Action|Science Fiction,7.25,923,5.8417,15.0,,,10
+Marvel Cinematic Universe,movie,76338,Thor: The Dark World,2013-10-30,2013.0,2013-10-30,2013.0,Action|Adventure|Fantasy,6.511,18570,32.6754,112.0,,,49
+Marvel Cinematic Universe,movie,253980,Marvel One-Shot: All Hail the King,2014-02-04,2014.0,2014-02-04,2014.0,Action|Comedy|Fantasy,6.749,636,3.9254,14.0,,,11
+Marvel Cinematic Universe,movie,100402,Captain America: The Winter Soldier,2014-03-20,2014.0,2014-03-20,2014.0,Action|Adventure|Science Fiction,7.654,20284,18.2753,136.0,,,75
+Marvel Cinematic Universe,movie,259910,Marvel Studios: Assembling a Universe,2014-03-18,2014.0,2014-03-18,2014.0,Documentary|TV Movie|Fantasy,6.933,172,3.4424,43.0,,,60
+Marvel Cinematic Universe,movie,118340,Guardians of the Galaxy,2014-07-30,2014.0,2014-07-30,2014.0,Action|Science Fiction|Adventure,7.907,30080,19.5088,121.0,,,74
+Marvel Cinematic Universe,movie,99861,Avengers: Age of Ultron,2015-04-22,2015.0,2015-04-22,2015.0,Action|Adventure|Science Fiction,7.275,24788,48.2703,141.0,,,75
+Marvel Cinematic Universe,movie,102899,Ant-Man,2015-07-14,2015.0,2015-07-14,2015.0,Science Fiction|Adventure|Action,7.066,21091,26.5492,117.0,,,70
+Marvel Cinematic Universe,movie,379040,Marvel's Captain America: 75 Heroic Years,2016-01-19,2016.0,2016-01-19,2016.0,Documentary,6.7,35,1.7249,42.0,,,28
+Marvel Cinematic Universe,movie,271110,Captain America: Civil War,2016-04-27,2016.0,2016-04-27,2016.0,Adventure|Action|Science Fiction,7.45,24342,54.7823,147.0,,,104
+Marvel Cinematic Universe,movie,413279,Team Thor,2016-08-28,2016.0,2016-08-28,2016.0,Comedy|Science Fiction,7.23,589,2.9782,3.0,,,3
+Marvel Cinematic Universe,movie,284052,Doctor Strange,2016-10-25,2016.0,2016-10-25,2016.0,Fantasy|Adventure|Action,7.424,23710,35.4009,115.0,,,44
+Marvel Cinematic Universe,movie,441829,Team Thor: Part 2,2017-02-14,2017.0,2017-02-14,2017.0,Science Fiction|Comedy|Fantasy,6.916,367,2.8193,5.0,,,2
+Marvel Cinematic Universe,movie,283995,Guardians of the Galaxy Vol. 2,2017-04-25,2017.0,2017-04-25,2017.0,Science Fiction|Adventure|Action,7.61,23230,31.0341,137.0,,,59
+Marvel Cinematic Universe,movie,315635,Spider-Man: Homecoming,2017-07-05,2017.0,2017-07-05,2017.0,Action|Adventure|Science Fiction,7.332,23611,199.0079,133.0,,,82
+Marvel Cinematic Universe,movie,284053,Thor: Ragnarok,2017-10-02,2017.0,2017-10-02,2017.0,Action|Science Fiction|Comedy|Adventure,7.582,22299,40.6532,131.0,,,55
+Marvel Cinematic Universe,movie,284054,Black Panther,2018-02-13,2018.0,2018-02-13,2018.0,Action|Adventure|Science Fiction,7.365,23771,33.8173,135.0,,,67
+Marvel Cinematic Universe,movie,505945,Team Darryl,2018-02-20,2018.0,2018-02-20,2018.0,Comedy|Fantasy|Science Fiction,6.168,197,2.7793,6.0,,,5
+Marvel Cinematic Universe,movie,299536,Avengers: Infinity War,2018-04-25,2018.0,2018-04-25,2018.0,Adventure|Action|Science Fiction,8.24,32550,87.1118,149.0,,,70
+Marvel Cinematic Universe,movie,363088,Ant-Man and the Wasp,2018-07-04,2018.0,2018-07-04,2018.0,Action|Adventure|Science Fiction,6.898,14369,21.5368,119.0,,,76
+Marvel Cinematic Universe,movie,299537,Captain Marvel,2019-03-06,2019.0,2019-03-06,2019.0,Action|Adventure|Science Fiction,6.775,16984,30.0785,124.0,,,52
+Marvel Cinematic Universe,movie,299534,Avengers: Endgame,2019-04-24,2019.0,2019-04-24,2019.0,Adventure|Science Fiction|Action,8.239,28295,63.2682,181.0,,,103
+Marvel Cinematic Universe,movie,429617,Spider-Man: Far From Home,2019-06-28,2019.0,2019-06-28,2019.0,Action|Adventure|Science Fiction,7.394,17368,103.56,129.0,,,141
+Marvel Cinematic Universe,movie,758025,Peter's To-Do List,2019-09-17,2019.0,2019-09-17,2019.0,Science Fiction|Action|Adventure,6.986,105,2.4177,4.0,,,7
+Marvel Cinematic Universe,movie,647375,Marvel Studios: Expanding the Universe,2019-11-12,2019.0,2019-11-12,2019.0,Documentary,5.7,30,2.0632,12.0,,,20
+Marvel Cinematic Universe,movie,497698,Black Widow,2021-07-07,2021.0,2021-07-07,2021.0,Action|Adventure|Science Fiction,7.158,11459,31.2259,134.0,,,81
+Marvel Cinematic Universe,movie,566525,Shang-Chi and the Legend of the Ten Rings,2021-09-01,2021.0,2021-09-01,2021.0,Action|Adventure|Fantasy,7.488,10595,21.9899,132.0,,,48
+Marvel Cinematic Universe,movie,524434,Eternals,2021-11-03,2021.0,2021-11-03,2021.0,Science Fiction|Action|Adventure,6.761,9294,18.493,156.0,,,89
+Marvel Cinematic Universe,movie,877188,Marvel Studios' 2021 Disney+ Day Special,2021-11-12,2021.0,2021-11-12,2021.0,Documentary,6.906,32,2.691,14.0,,,52
+Marvel Cinematic Universe,movie,634649,Spider-Man: No Way Home,2021-12-15,2021.0,2021-12-15,2021.0,Action|Adventure|Science Fiction,7.938,22645,608.6346,148.0,,,63
+Marvel Cinematic Universe,movie,936643,Marvel Studios Assembled: The Making of Hawkeye,2022-02-09,2022.0,2022-02-09,2022.0,Documentary,7.183,52,2.5999,60.0,,,47
+Marvel Cinematic Universe,movie,939356,Marvel Studios Assembled: The Making of Eternals,2022-02-16,2022.0,2022-02-16,2022.0,Documentary,7.1,59,2.528,58.0,,,22
+Marvel Cinematic Universe,movie,453395,Doctor Strange in the Multiverse of Madness,2022-05-04,2022.0,2022-05-04,2022.0,Fantasy|Action|Adventure,7.23,10622,43.513,126.0,,,62
+Marvel Cinematic Universe,movie,964943,Marvel Studios Assembled: The Making of Moon Knight,2022-05-24,2022.0,2022-05-24,2022.0,Documentary,6.786,49,2.1675,67.0,,,30
+Marvel Cinematic Universe,movie,979160,A Fan's Guide to Ms. Marvel,2022-06-01,2022.0,2022-06-01,2022.0,Documentary,7.093,75,1.5613,5.0,,,8
+Marvel Cinematic Universe,movie,616037,Thor: Love and Thunder,2022-07-06,2022.0,2022-07-06,2022.0,Fantasy|Action|Comedy,6.362,8781,27.421,119.0,,,124
+Marvel Cinematic Universe,movie,980017,Marvel Studios Assembled: The Making of Doctor Strange in the Multiverse of Madness,2022-07-07,2022.0,2022-07-07,2022.0,Documentary,7.085,53,2.3069,59.0,,,33
+Marvel Cinematic Universe,movie,1010823,Magnum Opus,2022-07-18,2022.0,2022-07-18,2022.0,Animation|Family|Science Fiction|Comedy,7.232,282,5.3946,5.0,,,3
+Marvel Cinematic Universe,movie,1001912,Marvel Studios Assembled: The Making of Ms. Marvel,2022-08-03,2022.0,2022-08-03,2022.0,Documentary,6.792,36,1.8215,62.0,,,18
+Marvel Cinematic Universe,movie,1010821,Groot Takes a Bath,2022-08-10,2022.0,2022-08-10,2022.0,Animation|Family|Comedy|Science Fiction,7.126,364,4.2544,6.0,,,3
+Marvel Cinematic Universe,movie,1010820,Groot's Pursuit,2022-08-10,2022.0,2022-08-10,2022.0,Animation|Family|Comedy|Science Fiction,7.087,286,3.994,6.0,,,4
+Marvel Cinematic Universe,movie,1010819,The Little Guy,2022-08-10,2022.0,2022-08-10,2022.0,Animation|Family|Comedy|Science Fiction,7.3,292,5.0586,6.0,,,8
+Marvel Cinematic Universe,movie,1010818,Groot's First Steps,2022-08-10,2022.0,2022-08-10,2022.0,Animation|Family|Comedy|Science Fiction,6.996,377,2.9403,6.0,,,2
+Marvel Cinematic Universe,movie,1015595,Marvel Studios Assembled: The Making of Thor: Love and Thunder,2022-09-08,2022.0,2022-09-08,2022.0,Documentary,7.0,49,3.1119,55.0,,,24
+Marvel Cinematic Universe,movie,894205,Werewolf by Night,2022-09-25,2022.0,2022-09-25,2022.0,Action|Fantasy|Horror,6.964,1577,14.0926,55.0,,,14
+Marvel Cinematic Universe,movie,505642,Black Panther: Wakanda Forever,2022-11-09,2022.0,2022-11-09,2022.0,Action|Adventure|Science Fiction,7.0,7654,28.6535,162.0,,,78
+Marvel Cinematic Universe,movie,1026208,Marvel Studios Assembled: The Making of She-Hulk: Attorney at Law,2022-11-03,2022.0,2022-11-03,2022.0,Documentary,6.6,59,1.9441,54.0,,,32
+Marvel Cinematic Universe,movie,1036996,Director by Night,2022-11-04,2022.0,2022-11-04,2022.0,Documentary,6.413,23,2.2318,54.0,,,37
+Marvel Cinematic Universe,movie,774752,The Guardians of the Galaxy Holiday Special,2022-11-24,2022.0,2022-11-24,2022.0,Comedy|Science Fiction|Adventure,7.085,2429,13.8131,45.0,,,33
+Marvel Cinematic Universe,movie,640146,Ant-Man and the Wasp: Quantumania,2023-02-15,2023.0,2023-02-15,2023.0,Action|Adventure|Science Fiction,6.221,5983,17.9137,125.0,,,65
+Marvel Cinematic Universe,movie,1076032,Marvel Studios Assembled: The Making of Black Panther: Wakanda Forever,2023-02-07,2023.0,2023-02-07,2023.0,Documentary,6.304,56,3.1548,58.0,,,20
+Marvel Cinematic Universe,movie,447365,Guardians of the Galaxy Vol. 3,2023-05-03,2023.0,2023-05-03,2023.0,Science Fiction|Adventure|Action,7.933,8631,38.4983,150.0,,,89
+Marvel Cinematic Universe,movie,717082,Stan Lee,2023-06-10,2023.0,2023-06-10,2023.0,Documentary,7.138,94,2.226,86.0,,,10
+Marvel Cinematic Universe,movie,1127361,Marvel Studios Assembled: The Making of Ant-Man and the Wasp: Quantumania,2023-07-19,2023.0,2023-07-19,2023.0,Documentary,6.2,18,3.3513,50.0,,,17
+Marvel Cinematic Universe,movie,1165487,Marvel Studios Assembled: The Making of the Guardians of the Galaxy Vol. 3,2023-09-12,2023.0,2023-09-12,2023.0,Documentary,6.412,17,3.7909,58.0,,,21
+Marvel Cinematic Universe,movie,1165500,Marvel Studios Assembled: The Making of Secret Invasion,2023-09-19,2023.0,2023-09-19,2023.0,Documentary,5.207,29,2.5587,48.0,,,18
+Marvel Cinematic Universe,movie,1154598,LEGO Marvel Avengers: Code Red,2023-10-26,2023.0,2023-10-26,2023.0,Animation|Action|Family,6.5,159,3.9545,48.0,,,13
+Marvel Cinematic Universe,movie,609681,The Marvels,2023-11-08,2023.0,2023-11-08,2023.0,Science Fiction|Adventure|Action,5.925,3540,20.78,105.0,,,34
+Marvel Cinematic Universe,movie,1192825,Marvel Studios Assembled: The Making of Loki Season 2,2023-11-22,2023.0,2023-11-22,2023.0,Documentary,7.6,21,2.0872,58.0,,,15
+Marvel Cinematic Universe,movie,1220337,Marvel Studios Assembled: The Making of Echo,2024-01-31,2024.0,2024-01-31,2024.0,Documentary,5.8,10,1.6155,47.0,,,24
+Marvel Cinematic Universe,movie,1235525,Marvel Studios Assembled: The Making of The Marvels,2024-02-06,2024.0,2024-02-06,2024.0,Documentary,5.2,13,1.7636,59.0,,,35
+Marvel Cinematic Universe,movie,1275606,Marvel Studios Assembled: The Making of X-Men '97,2024-05-21,2024.0,2024-05-21,2024.0,Documentary,5.786,14,3.3205,56.0,,,23
+Marvel Cinematic Universe,movie,533535,Deadpool & Wolverine,2024-07-24,2024.0,2024-07-24,2024.0,Action|Comedy|Science Fiction,7.582,9160,45.6325,128.0,,,59
+Marvel Cinematic Universe,movie,1359227,LEGO Marvel Avengers: Mission Demolition,2024-10-17,2024.0,2024-10-17,2024.0,Animation|Comedy|Science Fiction,6.5,128,4.9842,45.0,,,23
+Marvel Cinematic Universe,movie,1386628,Marvel Studios Assembled: The Making of Deadpool & Wolverine,2024-11-11,2024.0,2024-11-11,2024.0,Documentary,6.7,22,3.0304,59.0,,,23
+Marvel Cinematic Universe,movie,1387507,Marvel Studios Assembled: The Making of Agatha All Along,2024-11-13,2024.0,2024-11-13,2024.0,Documentary,8.111,9,1.1205,61.0,,,21
+Marvel Cinematic Universe,movie,822119,Captain America: Brave New World,2025-02-12,2025.0,2025-02-12,2025.0,Action|Thriller|Science Fiction,5.953,3262,68.5988,119.0,,,55
+Marvel Cinematic Universe,movie,986056,Thunderbolts*,2025-04-30,2025.0,2025-04-30,2025.0,Action|Science Fiction|Adventure,7.298,3863,48.3837,127.0,,,39
+Marvel Cinematic Universe,movie,617126,The Fantastic 4: First Steps,2025-07-23,2025.0,2025-07-23,2025.0,Science Fiction|Adventure|Action,6.9,3676,48.8019,115.0,,,71
+Marvel Cinematic Universe,movie,1564058,Spidey and Iron Man: Avengers Team Up!,2025-10-16,2025.0,2025-10-16,2025.0,Adventure|Family|Animation,3.8,5,3.0438,24.0,,,8
+Marvel Cinematic Universe,movie,1439930,The Punisher: One Last Kill,2026-05-12,2026.0,2026-05-12,2026.0,Action|Drama|Crime,8.295,2060,73.2371,51.0,,,35
+Marvel Cinematic Universe,movie,969681,Spider-Man: Brand New Day,2026-07-29,2026.0,2026-07-29,2026.0,Science Fiction|Action|Adventure,7.875,1667,1006.0211,145.0,,,59
+Marvel Cinematic Universe,movie,1003596,Avengers: Doomsday,2026-12-16,2026.0,2026-12-16,2026.0,Science Fiction|Action|Adventure,0.0,0,54.5758,165.0,,,37
+Marvel Cinematic Universe,movie,1003598,Avengers: Secret Wars,2027-12-15,2027.0,2027-12-15,2027.0,Science Fiction|Action|Adventure,0.0,0,14.6821,0.0,,,18
+Marvel Cinematic Universe,movie,1386618,Black Panther 3,2028-12-14,2028.0,2028-12-14,2028.0,Science Fiction|Action|Adventure,0.0,0,2.6123,0.0,,,4
+Marvel Cinematic Universe,movie,1748988,Doctor Strange 3,,,,,Action|Adventure|Drama|Science Fiction,0.0,0,0.0357,0.0,,,2
+Marvel Cinematic Universe,movie,1748901,Spider-Man 5,,,,,Action|Adventure|Comedy|Drama|Science Fiction,0.0,0,0.2071,0.0,,,6
+Marvel Cinematic Universe,movie,1738010,Ghost Rider,,,,,Fantasy,0.0,0,3.0919,0.0,,,1
+Marvel Cinematic Universe,movie,1737233,Untitled Shang-Chi and the Legend of the Ten Rings Sequel,,,,,Fantasy|Adventure,0.0,0,1.4393,0.0,,,1
+Marvel Cinematic Universe,movie,1731190,Nova,,,,,Science Fiction,0.0,0,1.023,0.0,,,0
+Marvel Cinematic Universe,movie,1474568,Untitled Deadpool/X-Men Teamup Film,,,,,Science Fiction,0.0,0,1.3182,0.0,,,1
+Marvel Cinematic Universe,movie,1293690,Untitled X-Men Film,,,,,Science Fiction|Action|Adventure,0.0,0,4.8115,0.0,,,3
+Mission: Impossible,movie,954,Mission: Impossible,1996-05-22,1996.0,1996-05-22,1996.0,Adventure|Action|Thriller,7.026,10145,19.0118,111.0,,,54
+Mission: Impossible,movie,955,Mission: Impossible II,2000-05-24,2000.0,2000-05-24,2000.0,Adventure|Action|Thriller,6.142,7709,11.5429,123.0,,,45
+Mission: Impossible,movie,956,Mission: Impossible III,2006-04-25,2006.0,2006-04-25,2006.0,Adventure|Action|Thriller,6.767,7750,12.3054,126.0,,,54
+Mission: Impossible,movie,56292,Mission: Impossible - Ghost Protocol,2011-12-07,2011.0,2011-12-07,2011.0,Action|Thriller|Adventure,7.115,10909,12.5858,133.0,,,58
+Mission: Impossible,movie,177677,Mission: Impossible - Rogue Nation,2015-07-28,2015.0,2015-07-28,2015.0,Action|Adventure,7.225,9843,13.2315,131.0,,,79
+Mission: Impossible,movie,353081,Mission: Impossible - Fallout,2018-07-25,2018.0,2018-07-25,2018.0,Action|Adventure,7.451,9271,13.6837,147.0,,,53
+Mission: Impossible,movie,575265,Mission: Impossible - The Final Reckoning,2025-05-17,2025.0,2025-05-17,2025.0,Action|Thriller|Adventure,7.175,3037,29.3532,170.0,,,82
+Mission: Impossible,movie,575264,Mission: Impossible - Dead Reckoning Part One,2023-07-08,2023.0,2023-07-08,2023.0,Action|Adventure|Thriller,7.504,5270,17.7419,164.0,,,79
+Ozark,tv,69740,Ozark,2017-07-21,2017.0,2022-04-29,2022.0,Crime|Drama,8.195,2866,36.0193,,4.0,44.0,355
+Peaky Blinders,tv,60574,Peaky Blinders,2013-09-12,2013.0,2022-04-03,2022.0,Drama|Crime,8.525,11287,77.3168,,6.0,36.0,238
+Pirates of the Caribbean,movie,22,Pirates of the Caribbean: The Curse of the Black Pearl,2003-07-09,2003.0,2003-07-09,2003.0,Adventure|Fantasy|Action,7.832,22574,27.7643,143.0,,,71
+Pirates of the Caribbean,movie,58,Pirates of the Caribbean: Dead Man's Chest,2006-07-06,2006.0,2006-07-06,2006.0,Adventure|Fantasy|Action,7.388,17432,24.664,151.0,,,72
+Pirates of the Caribbean,movie,285,Pirates of the Caribbean: At World's End,2007-05-19,2007.0,2007-05-19,2007.0,Adventure|Fantasy|Action,7.278,15700,23.1465,169.0,,,84
+Pirates of the Caribbean,movie,1865,Pirates of the Caribbean: On Stranger Tides,2011-05-15,2011.0,2011-05-15,2011.0,Adventure|Action|Fantasy,6.573,15139,21.554,136.0,,,84
+Pirates of the Caribbean,movie,166426,Pirates of the Caribbean: Dead Men Tell No Tales,2017-05-23,2017.0,2017-05-23,2017.0,Adventure|Action|Fantasy,6.665,12970,15.6386,129.0,,,77
+Prison Break,tv,2288,Prison Break,2005-08-29,2005.0,2017-05-30,2017.0,Action & Adventure|Crime|Drama,8.064,6091,100.9918,,5.0,88.0,204
+Sons of Anarchy,tv,1409,Sons of Anarchy,2008-09-03,2008.0,2014-12-09,2014.0,Crime|Drama,8.4,3342,69.3931,,7.0,92.0,295
+Spartacus,tv,46296,Spartacus,2010-01-22,2010.0,2013-04-12,2013.0,Drama,8.029,3020,71.7308,,3.0,33.0,94
+Spartacus,tv,240459,Spartacus: House of Ashur,2025-12-05,2025.0,2026-02-06,2026.0,Drama|Action & Adventure,7.287,321,34.5604,,1.0,10.0,51
+Star Wars,tv,4194,Star Wars: The Clone Wars,2008-10-03,2008.0,2020-05-04,2020.0,Action & Adventure|Sci-Fi & Fantasy|Animation,8.468,2401,54.822,,7.0,133.0,127
+Star Wars,tv,60554,Star Wars Rebels,2014-10-13,2014.0,2018-03-05,2018.0,Action & Adventure|Animation|Sci-Fi & Fantasy,7.724,1022,28.8216,,4.0,69.0,88
+Star Wars,tv,82856,The Mandalorian,2019-11-12,2019.0,2023-04-19,2023.0,Sci-Fi & Fantasy|Action & Adventure,8.408,11135,51.5894,,3.0,24.0,159
+Star Wars,tv,83867,Andor,2022-09-21,2022.0,2025-05-13,2025.0,Sci-Fi & Fantasy|Action & Adventure|Drama,8.301,2141,46.5497,,2.0,24.0,302
+Star Wars,tv,105971,Star Wars: The Bad Batch,2021-05-04,2021.0,2024-05-01,2024.0,Animation|Action & Adventure|Sci-Fi & Fantasy,8.149,1183,22.9456,,3.0,47.0,81
+Star Wars,tv,114461,Ahsoka,2023-08-22,2023.0,2023-10-03,2023.0,Sci-Fi & Fantasy|Action & Adventure,7.414,1274,20.9827,,1.0,8.0,58
+Star Wars,tv,92830,Obi-Wan Kenobi,2022-05-26,2022.0,2022-06-22,2022.0,Sci-Fi & Fantasy|Action & Adventure,7.006,2310,15.6215,,1.0,6.0,71
+Star Wars,tv,203085,Star Wars: Tales of the Jedi,2022-10-26,2022.0,2022-10-26,2022.0,Animation|Sci-Fi & Fantasy|Action & Adventure,7.95,496,9.7807,,1.0,6.0,28
+Star Wars,movie,11,Star Wars,1977-05-25,1977.0,1977-05-25,1977.0,Adventure|Action|Science Fiction,8.206,22650,35.8035,121.0,,,105
+Star Wars,movie,1891,The Empire Strikes Back,1980-05-20,1980.0,1980-05-20,1980.0,Adventure|Action|Science Fiction,8.392,18675,20.6692,124.0,,,79
+Star Wars,movie,1892,Return of the Jedi,1983-05-25,1983.0,1983-05-25,1983.0,Adventure|Action|Science Fiction,7.911,17150,17.5639,132.0,,,177
+Star Wars,movie,1893,Star Wars: Episode I - The Phantom Menace,1999-05-19,1999.0,1999-05-19,1999.0,Adventure|Action|Science Fiction,6.584,16075,18.6565,136.0,,,121
+Star Wars,movie,1894,Star Wars: Episode II - Attack of the Clones,2002-05-15,2002.0,2002-05-15,2002.0,Adventure|Action|Science Fiction,6.599,14559,14.6639,142.0,,,101
+Star Wars,movie,1895,Star Wars: Episode III - Revenge of the Sith,2005-05-17,2005.0,2005-05-17,2005.0,Adventure|Action|Science Fiction,7.474,15165,16.658,140.0,,,110
+Star Wars,movie,140607,Star Wars: The Force Awakens,2015-12-15,2015.0,2015-12-15,2015.0,Adventure|Action|Science Fiction,7.245,20763,22.6685,136.0,,,99
+Star Wars,movie,181812,Star Wars: The Rise of Skywalker,2019-12-18,2019.0,2019-12-18,2019.0,Adventure|Action|Science Fiction,6.258,11014,21.7796,142.0,,,113
+Star Wars,movie,181808,Star Wars: The Last Jedi,2017-12-13,2017.0,2017-12-13,2017.0,Adventure|Action|Science Fiction,6.743,16540,23.312,152.0,,,112
+Stranger Things,tv,66732,Stranger Things,2016-07-15,2016.0,2025-12-31,2025.0,Action & Adventure|Mystery|Sci-Fi & Fantasy,8.555,21636,122.2436,,5.0,42.0,488
+Supernatural,tv,1622,Supernatural,2005-09-13,2005.0,2020-11-19,2020.0,Drama|Mystery|Sci-Fi & Fantasy,8.314,8594,191.9333,,15.0,327.0,2167
+The 100,tv,48866,The 100,2014-03-19,2014.0,2020-09-30,2020.0,Sci-Fi & Fantasy|Action & Adventure|Drama|Crime,7.9,8735,60.6451,,7.0,100.0,237
+The Boys,tv,76479,The Boys,2019-07-25,2019.0,2026-05-20,2026.0,Sci-Fi & Fantasy|Action & Adventure,8.438,13266,124.1691,,5.0,40.0,633
+The Hunger Games,movie,131631,The Hunger Games: Mockingjay - Part 1,2014-11-19,2014.0,2014-11-19,2014.0,Science Fiction|Adventure|Thriller,6.817,16897,19.2123,123.0,,,50
+The Hunger Games,movie,131634,The Hunger Games: Mockingjay - Part 2,2015-11-18,2015.0,2015-11-18,2015.0,Action|Adventure|Science Fiction,6.901,13492,12.7805,137.0,,,56
+The Hunger Games,movie,70160,The Hunger Games,2012-03-12,2012.0,2012-03-12,2012.0,Science Fiction|Adventure|Action|Thriller,7.223,23559,12.8277,142.0,,,52
+The Hunger Games,movie,101299,The Hunger Games: Catching Fire,2013-11-15,2013.0,2013-11-15,2013.0,Adventure|Action|Science Fiction,7.428,18649,16.0089,146.0,,,57
+The Matrix,movie,603,The Matrix,1999-03-31,1999.0,1999-03-31,1999.0,Action|Science Fiction,8.3,28434,45.5194,136.0,,,37
+The Matrix,movie,604,The Matrix Reloaded,2003-05-15,2003.0,2003-05-15,2003.0,Adventure|Action|Thriller|Science Fiction,7.086,12175,18.2606,138.0,,,82
+The Matrix,movie,605,The Matrix Revolutions,2003-11-05,2003.0,2003-11-05,2003.0,Adventure|Action|Thriller|Science Fiction,6.757,11005,13.6894,129.0,,,48
+The Matrix,movie,624860,The Matrix Resurrections,2021-12-16,2021.0,2021-12-16,2021.0,Science Fiction|Action|Adventure,6.316,6628,13.7234,148.0,,,61
+The Sopranos,tv,1398,The Sopranos,1999-01-10,1999.0,2007-06-10,2007.0,Crime|Drama,8.7,3606,103.3058,,6.0,86.0,807
+The Twilight Saga,movie,8966,Twilight,2008-11-20,2008.0,2008-11-20,2008.0,Fantasy|Drama|Romance,6.278,14577,23.9116,122.0,,,45
+The Twilight Saga,movie,18239,The Twilight Saga: New Moon,2009-11-18,2009.0,2009-11-18,2009.0,Adventure|Fantasy|Drama|Romance,5.988,9852,18.8263,131.0,,,47
+The Twilight Saga,movie,50619,The Twilight Saga: Breaking Dawn - Part 1,2011-11-16,2011.0,2011-11-16,2011.0,Adventure|Fantasy|Romance,6.185,9370,14.9163,117.0,,,53
+The Twilight Saga,movie,50620,The Twilight Saga: Breaking Dawn - Part 2,2012-11-13,2012.0,2012-11-13,2012.0,Fantasy|Drama|Romance,6.452,9457,14.8918,115.0,,,69
+The Twilight Saga,movie,24021,The Twilight Saga: Eclipse,2010-06-23,2010.0,2010-06-23,2010.0,Adventure|Fantasy|Drama|Romance,6.189,9342,13.7381,124.0,,,47
+The Walking Dead,tv,1402,The Walking Dead,2010-10-31,2010.0,2022-11-20,2022.0,Action & Adventure|Drama|Sci-Fi & Fantasy,8.084,18072,132.4324,,11.0,177.0,540
+The Walking Dead,tv,194583,The Walking Dead: Dead City,2023-06-18,2023.0,2026-08-09,2026.0,Action & Adventure|Drama|Sci-Fi & Fantasy,7.902,772,66.7883,,3.0,22.0,87
+The Wire,tv,1438,The Wire,2002-06-02,2002.0,2008-03-09,2008.0,Crime|Drama,8.634,2771,76.215,,5.0,60.0,371
+Transformers,movie,1858,Transformers,2007-06-27,2007.0,2007-06-27,2007.0,Adventure|Science Fiction|Action,6.843,12417,5.433,144.0,,,93
+Transformers,movie,8373,Transformers: Revenge of the Fallen,2009-06-19,2009.0,2009-06-19,2009.0,Science Fiction|Action|Adventure,6.223,9317,5.2591,150.0,,,83
+Transformers,movie,38356,Transformers: Dark of the Moon,2011-06-28,2011.0,2011-06-28,2011.0,Action|Science Fiction|Adventure,6.239,9076,4.2074,154.0,,,105
+Transformers,movie,91314,Transformers: Age of Extinction,2014-06-25,2014.0,2014-06-25,2014.0,Science Fiction|Action|Adventure,5.971,8885,16.0364,165.0,,,71
+Transformers,movie,335988,Transformers: The Last Knight,2017-06-16,2017.0,2017-06-16,2017.0,Action|Adventure|Science Fiction,6.061,6836,11.6872,154.0,,,88
+Vikings,tv,44217,Vikings,2013-03-03,2013.0,2020-12-30,2020.0,Action & Adventure|Drama|War & Politics,8.099,7780,124.8739,,6.0,89.0,453
+Vikings,tv,116135,Vikings: Valhalla,2022-02-25,2022.0,2024-07-11,2024.0,Action & Adventure|Drama|War & Politics,7.615,1074,25.7442,,3.0,24.0,198
+Westworld,tv,63247,Westworld,2016-10-02,2016.0,2022-08-14,2022.0,Sci-Fi & Fantasy|Western,8.019,6314,46.5096,,4.0,36.0,437
