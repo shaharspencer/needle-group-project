@@ -1,18 +1,13 @@
-"""
-Which TMDB titles belong to each of our 38 franchises.
+"""Which TMDB titles belong to each franchise.
 
-Curated by hand rather than resolved by search at runtime. Naive search is not
-reliable here: querying "Lord of the Rings" returns a making-of documentary
-before the films, "Dune" returns Legally Blonde, and "Fast" returns Fast Getaway.
-Franchises with no single collection (the MCU, the DCEU) have to come from a
-production company instead. Every id below was checked against the TMDB API
-before being written down.
+Curated by hand: search is unreliable here. "Lord of the Rings" returns a
+making-of documentary before the films, "Dune" returns Legally Blonde. The MCU
+and DCEU have no collection, so they come from a production company instead.
 
-Four ways a franchise can name its titles, and a franchise may use several:
-  tv          explicit TV series ids
+  tv          TV series ids
   collection  TMDB collection ids (film series)
-  movie       explicit film ids, for films outside any collection
-  company     production company id, for franchises with no collection
+  movie       film ids outside any collection
+  company     production company id
 """
 
 FRANCHISE_TITLES: dict[str, dict[str, list[int]]] = {
