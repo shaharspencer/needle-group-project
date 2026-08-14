@@ -122,11 +122,17 @@ These labels live in their own files (`data/gold/fill_unlabelled/`) and are
 never merged into `is_dead`. They feed exactly one number: the Q3 mortality
 estimates below.
 
-### Validating the label against an external source
+### Checking the label against a separate source
 
-The label and the features come from the same wikis, so internal consistency
-proves little. Two death registries — Game of Thrones and The 100 — were
-compiled independently, for unrelated purposes, and give an external check.
+The label and the features come from the same character pages, so internal
+consistency proves little. The nearest thing to an outside check we have is
+`listofdeaths.fandom.com`, which catalogues deaths episode by episode; we
+scraped its Game of Thrones and The 100 pages for this purpose
+(`legacy/scrapers/`). It is a separate wiki, written by different editors and
+organised around episodes rather than characters, so it is not derived from the
+infobox fields our label reads. It is not fully independent either — same
+platform, and plausibly some overlap in who edits it — so we read agreement here
+as a sanity check rather than as validation against ground truth.
 
 | franchise | matched 1:1 | registry says died, we say dead |
 |---|---|---|
