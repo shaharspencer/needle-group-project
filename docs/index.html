@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plot Armor Index</title>
+<style>
+  :root {
+    color-scheme: light;
+    --surface: #fcfcfb;
+    --plane: #f2f1ed;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --rule: #c3c2b7;
+    --blue: #2a78d6;
+    --blue-soft: #cde2fb;
+    --orange: #eb6834;
+    --red: #d03b3b;
+    --green: #0ca30c;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --surface: #1a1a19; --plane: #0d0d0d; --ink: #fff; --ink-2: #c3c2b7;
+      --muted: #898781; --grid: #2c2c2a; --rule: #383835;
+      --blue: #3987e5; --blue-soft: #17324f; --orange: #d95926;
+      --red: #e66767; --green: #0ca30c;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--plane); color: var(--ink);
+    font: 15px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  header { border-bottom: 1px solid var(--rule); padding-bottom: 22px; margin-bottom: 28px; }
+  h1 { font-size: 27px; margin: 0 0 6px; letter-spacing: -0.02em; }
+  .sub { color: var(--ink-2); max-width: 60ch; margin: 0; }
+  .stats { display: flex; gap: 30px; margin-top: 20px; flex-wrap: wrap; }
+  .stat b { display: block; font-size: 20px; font-variant-numeric: proportional-nums; }
+  .stat span { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+
+  .tabs { display: flex; gap: 4px; margin-bottom: 20px; }
+  .tab {
+    background: none; border: 1px solid transparent; border-radius: 7px;
+    padding: 7px 14px; font: inherit; font-size: 14px; color: var(--ink-2); cursor: pointer;
+  }
+  .tab[aria-selected="true"] { background: var(--surface); border-color: var(--rule); color: var(--ink); font-weight: 600; }
+
+  .panel { display: none; }
+  .panel.on { display: block; }
+
+  .cols { display: grid; grid-template-columns: 300px 1fr; gap: 22px; align-items: start; }
+  @media (max-width: 820px) { .cols { grid-template-columns: 1fr; } }
+
+  .card { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 18px; }
+  .card h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .07em;
+             color: var(--muted); margin: 0 0 14px; font-weight: 600; }
+
+  input[type=search], select {
+    width: 100%; padding: 8px 10px; font: inherit; font-size: 14px;
+    background: var(--surface); color: var(--ink);
+    border: 1px solid var(--rule); border-radius: 7px;
+  }
+  input[type=range] { width: 100%; accent-color: var(--blue); }
+  label { display: block; font-size: 12px; color: var(--muted); margin: 14px 0 5px;
+          text-transform: uppercase; letter-spacing: .06em; }
+
+  #list { margin-top: 12px; max-height: 460px; overflow-y: auto; }
+  .row {
+    display: flex; justify-content: space-between; gap: 10px; align-items: baseline;
+    padding: 7px 8px; border-radius: 6px; cursor: pointer; border: 1px solid transparent;
+  }
+  .row:hover { background: var(--plane); }
+  .row[aria-current="true"] { background: var(--blue-soft); border-color: var(--blue); }
+  .row .nm { font-size: 14px; }
+  .row .fr { font-size: 11px; color: var(--muted); }
+  .row .pc { font-family: var(--mono); font-size: 12px; color: var(--ink-2); }
+
+  .headline { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+  .big { font-size: 52px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
+  .who { font-size: 19px; font-weight: 600; }
+  .who small { display: block; font-size: 12px; color: var(--muted); font-weight: 400;
+               text-transform: uppercase; letter-spacing: .06em; margin-top: 3px; }
+
+  .meter { height: 9px; background: var(--grid); border-radius: 5px; margin: 16px 0 6px; overflow: hidden; }
+  .meter i { display: block; height: 100%; background: var(--blue); border-radius: 5px; }
+  .scale { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
+
+  .verdict { margin-top: 16px; padding: 11px 13px; border-radius: 8px;
+             background: var(--plane); font-size: 14px; border-left: 3px solid var(--rule); }
+  .verdict b { font-weight: 600; }
+  .verdict.died { border-left-color: var(--red); }
+  .verdict.lived { border-left-color: var(--green); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .06em;
+       color: var(--muted); font-weight: 600; padding-bottom: 7px; border-bottom: 1px solid var(--grid); }
+  td { padding: 6px 0; border-bottom: 1px solid var(--grid); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  .num { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+
+  .bar { position: relative; height: 16px; }
+  .bar u { position: absolute; top: 3px; height: 10px; border-radius: 2px; text-decoration: none; }
+  .bar .mid { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--rule); left: 50%; }
+
+  .note { font-size: 12.5px; color: var(--ink-2); margin-top: 22px; padding-top: 16px;
+          border-top: 1px solid var(--grid); }
+  .note code { font-family: var(--mono); font-size: 12px; }
+  footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--rule);
+           font-size: 12.5px; color: var(--muted); }
+  a { color: var(--blue); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Plot Armor Index</h1>
+  <p class="sub">How likely is a fictional character to die? This scores 15,633 on-screen
+  characters from 38 franchises on the attributes a writer actually controls — who they are,
+  how prominent they are, and how central they are to the story.</p>
+  <div class="stats" id="stats"></div>
+</header>
+
+<div class="tabs" role="tablist">
+  <button class="tab" role="tab" aria-selected="true" data-panel="lookup">Look up a character</button>
+  <button class="tab" role="tab" aria-selected="false" data-panel="build">Build a character</button>
+</div>
+
+<section class="panel on" id="lookup">
+  <div class="cols">
+    <div class="card">
+      <h2>Characters</h2>
+      <input type="search" id="q" placeholder="Search name or franchise…" autocomplete="off">
+      <div id="list"></div>
+    </div>
+    <div class="card" id="detail"></div>
+  </div>
+</section>
+
+<section class="panel" id="build">
+  <div class="cols">
+    <div class="card">
+      <h2>Attributes</h2>
+      <div id="controls"></div>
+    </div>
+    <div class="card" id="built"></div>
+  </div>
+</section>
+
+<footer>
+  Built for “A Needle in a Data Haystack”. The model is a logistic regression over
+  user-selectable attributes only; the project's full model uses many more features and scores
+  higher. Predictions describe patterns in how these stories were written — not what any
+  character deserves.
+</footer>
+
+</div>
+
+<script>
+const F = {
+  gender: "Gender", archetype: "Role", affiliation_alignment: "Alignment",
+  franchise: "Franchise", billing_order: "Billing order", pagerank_rank: "Story centrality",
+  is_human: "Human", n_relatives: "Named relatives",
+};
+let D, M, chosen = null, current = null;
+
+const pct = v => (100 * v).toFixed(0) + "%";
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function logit(c) {
+  // Mirrors the Python encoding exactly: one-hot categoricals, then the
+  // numerics standardised with the exported means and scales.
+  let z = M.intercept;
+  const parts = [];
+  for (const col of Object.keys(M.levels)) {
+    const key = col + "=" + c[col];
+    const w = M.coefficients[key];
+    if (w !== undefined) { z += w; parts.push([F[col] + ": " + c[col], w]); }
+  }
+  M.numeric.forEach((col, i) => {
+    const x = (Number(c[col]) - M.means[i]) / M.scales[i];
+    const w = (M.coefficients[col] || 0) * x;
+    z += w; parts.push([F[col], w]);
+  });
+  parts.sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]));
+  return { p: 1 / (1 + Math.exp(-z)), parts };
+}
+
+function contributions(parts) {
+  const max = Math.max(...parts.map(p => Math.abs(p[1])), 0.35);
+  return `<table><thead><tr><th>Attribute</th><th>Effect on risk</th><th class="num">log-odds</th></tr></thead><tbody>` +
+    parts.slice(0, 8).map(([name, w]) => {
+      const half = 50 * Math.abs(w) / max;
+      const style = w >= 0
+        ? `left:50%;width:${half}%;background:var(--red)`
+        : `left:${50 - half}%;width:${half}%;background:var(--blue)`;
+      return `<tr><td>${esc(name)}</td>
+        <td class="bar"><span class="mid"></span><u style="${style}"></u></td>
+        <td class="num">${w >= 0 ? "+" : ""}${w.toFixed(2)}</td></tr>`;
+    }).join("") + `</tbody></table>
+    <p class="note">Red pushes toward dying, blue toward surviving. Bars are the model's
+    log-odds contributions; the eight largest are shown.</p>`;
+}
+
+function similar(c) {
+  const scored = D.characters
+    .filter(o => o !== c)
+    .map(o => {
+      let d = Math.abs(o.risk - c.risk) * 3;
+      if (o.f !== c.f) d += 0.25;
+      if (o.a !== c.a) d += 0.2;
+      if (o.g !== c.g) d += 0.15;
+      return [d, o];
+    })
+    .sort((a, b) => a[0] - b[0]).slice(0, 5).map(x => x[1]);
+  return `<h2 style="margin-top:26px">Comparable characters</h2>
+    <table><thead><tr><th>Character</th><th>Franchise</th>
+    <th class="num">Risk</th><th class="num">Outcome</th></tr></thead><tbody>` +
+    scored.map(o => `<tr><td>${esc(o.n)}</td><td style="color:var(--muted)">${esc(o.f)}</td>
+      <td class="num">${pct(o.risk)}</td>
+      <td class="num" style="color:${o.d ? "var(--red)" : "var(--green)"}">${o.d ? "died" : "survived"}</td></tr>`).join("") +
+    `</tbody></table>`;
+}
+
+function showCharacter(c) {
+  current = c;
+  const r = logit({
+    gender: c.g, archetype: c.a, affiliation_alignment: c.al, franchise: c.f,
+    billing_order: c.b === null ? 40 : c.b, pagerank_rank: c.p,
+    is_human: c.h, n_relatives: c.r,
+  });
+  const band = r.p >= 0.6 ? "high" : r.p >= 0.35 ? "moderate" : "low";
+  const right = (r.p >= 0.5) === (c.d === 1);
+
+  document.getElementById("detail").innerHTML = `
+    <div class="headline">
+      <div class="big" style="color:${r.p >= .5 ? "var(--red)" : "var(--blue)"}">${pct(r.p)}</div>
+      <div class="who">${esc(c.n)}<small>${esc(c.f)} · ${esc(c.a)} · ${esc(c.g)}</small></div>
+    </div>
+    <div class="meter"><i style="width:${(100 * r.p).toFixed(1)}%"></i></div>
+    <div class="scale"><span>certain survival</span><span>${band} risk</span><span>certain death</span></div>
+    <div class="verdict ${c.d ? "died" : "lived"}">
+      In the story, <b>${esc(c.n)} ${c.d ? "dies" : "survives"}</b>.
+      The model ${right ? "called this correctly" : "got this wrong"}.
+    </div>
+    <h2 style="margin-top:26px">Why</h2>
+    ${contributions(r.parts)}
+    ${similar(c)}
+    <p class="note"><a href="${esc(c.u)}" target="_blank" rel="noopener">Source wiki page</a></p>`;
+
+  document.querySelectorAll("#list .row").forEach(el =>
+    el.setAttribute("aria-current", String(el.dataset.n === c.n && el.dataset.f === c.f)));
+}
+
+function renderList() {
+  const q = document.getElementById("q").value.trim().toLowerCase();
+  const hits = D.characters
+    .filter(c => !q || c.n.toLowerCase().includes(q) || c.f.toLowerCase().includes(q))
+    .slice(0, 300);
+  document.getElementById("list").innerHTML = hits.length
+    ? hits.map(c => `<div class="row" data-n="${esc(c.n)}" data-f="${esc(c.f)}">
+        <span><span class="nm">${esc(c.n)}</span><br><span class="fr">${esc(c.f)}</span></span>
+        <span class="pc">${pct(c.risk)}</span></div>`).join("")
+    : `<p class="note">No characters match “${esc(q)}”.</p>`;
+
+  document.querySelectorAll("#list .row").forEach(el => el.onclick = () =>
+    showCharacter(D.characters.find(c => c.n === el.dataset.n && c.f === el.dataset.f)));
+}
+
+function renderControls() {
+  const sel = (col) => `<label for="c_${col}">${F[col]}</label>
+    <select id="c_${col}">${M.levels[col].map(v => `<option>${esc(v)}</option>`).join("")}</select>`;
+  document.getElementById("controls").innerHTML =
+    Object.keys(M.levels).map(sel).join("") + `
+    <label for="c_billing_order">Billing order — <span id="v_b">10</span></label>
+    <input type="range" id="c_billing_order" min="0" max="40" value="10">
+    <label for="c_pagerank_rank">Story centrality — <span id="v_p">most central</span></label>
+    <input type="range" id="c_pagerank_rank" min="0" max="100" value="10">
+    <label for="c_n_relatives">Named relatives — <span id="v_r">2</span></label>
+    <input type="range" id="c_n_relatives" min="0" max="20" value="2">
+    <label for="c_is_human">Species</label>
+    <select id="c_is_human"><option value="1">Human</option><option value="0">Non-human</option></select>`;
+
+  document.querySelectorAll("#controls select, #controls input").forEach(el =>
+    el.addEventListener("input", renderBuilt));
+  renderBuilt();
+}
+
+function renderBuilt() {
+  const v = id => document.getElementById("c_" + id).value;
+  const centrality = Number(v("pagerank_rank")) / 100;
+  document.getElementById("v_b").textContent = v("billing_order");
+  document.getElementById("v_r").textContent = v("n_relatives");
+  document.getElementById("v_p").textContent =
+    centrality < .2 ? "most central" : centrality < .6 ? "mid-tier" : "peripheral";
+
+  const c = {
+    gender: v("gender"), archetype: v("archetype"),
+    affiliation_alignment: v("affiliation_alignment"), franchise: v("franchise"),
+    billing_order: Number(v("billing_order")), pagerank_rank: centrality,
+    is_human: Number(v("is_human")), n_relatives: Number(v("n_relatives")),
+  };
+  const r = logit(c);
+  document.getElementById("built").innerHTML = `
+    <div class="headline">
+      <div class="big" style="color:${r.p >= .5 ? "var(--red)" : "var(--blue)"}">${pct(r.p)}</div>
+      <div class="who">chance of dying<small>${esc(c.franchise)}</small></div>
+    </div>
+    <div class="meter"><i style="width:${(100 * r.p).toFixed(1)}%"></i></div>
+    <div class="scale"><span>certain survival</span><span>base rate ${pct(D.performance.base_rate)}</span><span>certain death</span></div>
+    <h2 style="margin-top:26px">Why</h2>${contributions(r.parts)}`;
+}
+
+fetch("demo_data.json").then(r => r.json()).then(data => {
+  D = data; M = data.model;
+  document.getElementById("stats").innerHTML = `
+    <div class="stat"><b>${D.performance.n_train.toLocaleString()}</b><span>characters scored</span></div>
+    <div class="stat"><b>${M.levels.franchise.length}</b><span>franchises</span></div>
+    <div class="stat"><b>${pct(D.performance.base_rate)}</b><span>actually die</span></div>
+    <div class="stat"><b>${D.performance.roc_auc}</b><span>ROC-AUC (5-fold)</span></div>`;
+  renderList();
+  renderControls();
+  showCharacter(D.characters.find(c => c.n === "Eddard Stark") || D.characters[0]);
+});
+
+document.getElementById("q").addEventListener("input", renderList);
+document.querySelectorAll(".tab").forEach(tab => tab.onclick = () => {
+  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", String(t === tab)));
+  document.querySelectorAll(".panel").forEach(p =>
+    p.classList.toggle("on", p.id === tab.dataset.panel));
+});
+</script>
+</body>
+</html>

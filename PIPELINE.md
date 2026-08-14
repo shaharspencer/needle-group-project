@@ -58,13 +58,44 @@ Supplies `billing_order` and `episode_count` as prominence measures, replacing
 the hardcoded page-length cutoffs, plus per-title genre, rating and season
 counts for the franchise-level analysis.
 
-## Stage 3 — research questions
+## Stage 3 — features
+
+| step | command | writes |
+|---|---|---|
+| Wide feature matrix | `python -m src.q1_character.features` | `data/clean/character_features.csv` (369 one-hot + network) |
+
+Five families, all from data already on disk: Fandom categories, infobox field
+names, family-relation counts, per-franchise co-mention graphs (PageRank, HITS,
+degree, component size), and the opening paragraph kept as text.
+
+Anything naming death **or survival** is excluded, as are the `status` and `dod`
+fields the label is derived from. Both were caught by reading model coefficients
+after the fact; a category named `Alive` is the label with the sign flipped.
+
+## Stage 4 — research questions
 
 | question | command | writes |
 |---|---|---|
-| Q1 character vs franchise | `python -m src.q1_character.models` | `data/clean/q1_model_comparison.csv`, `q1_feature_importance.csv` |
+| Q1 character vs franchise | `python -m src.q1_character.models` | `q1_model_comparison.csv`, `q1_feature_importance.csv` |
+| Q1 gender effect sizes | `python -m src.q1_character.effects` | `q1_gender_pooled.csv`, `q1_gender_by_franchise.csv` |
+| Q3 franchise mortality | `python -m src.q3_franchise.mortality` | `q3_franchise_mortality.csv`, `q3_kmeans_diagnostics.csv`, `q3_franchise_clusters.csv` |
 | Q2 script text | not built yet | |
-| Q3 franchise mortality | not built yet | |
+
+Q2 is blocked on death registries. Transcripts exist for 11 shows but episode
+death lists only for four, so the largest transcript set (464 Grey's Anatomy
+episodes) is currently unusable.
+
+## Stage 5 — outputs
+
+| step | command | writes |
+|---|---|---|
+| Figures | `python -m src.viz.figures` | `data/clean/figures/*.png` |
+| Demo data | `python -m src.app.export_demo` | `data/clean/demo_data.json` → copy to `docs/` |
+
+The demo model is a logistic regression over user-selectable attributes only, so
+it can be evaluated in JavaScript. Its coefficients, category levels and scaler
+parameters are exported; the browser reproduces the Python prediction exactly
+(verified across all 3,336 exported characters).
 
 ## Tests
 

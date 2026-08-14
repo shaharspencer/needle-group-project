@@ -1,229 +1,179 @@
-# Needle in a Haystack — Character Mortality Dataset
+# Spoiler Alert: Who Makes It to the Finale?
 
-**67,978: A Needle in a Data Haystack | Hebrew University of Jerusalem**
+Group #56 — 67978 A Needle in a Data Haystack, Hebrew University of Jerusalem.
 
-Binary classification dataset predicting fictional character deaths across 38 franchises and ~60k characters.
+Which fictional characters die, and why? We scraped 38 Fandom wikis, enriched them
+with TMDB cast data, and asked three questions: whether a character's own
+attributes or their franchise better predicts their death, what franchise
+properties explain deadliness, and how script text relates to on-screen deaths.
 
----
+Interactive demo: `docs/index.html` (see [Demo](#demo)).
+Run order and file-by-file detail: **[PIPELINE.md](PIPELINE.md)**.
 
-## Quick Start
+## Data
+
+| source | size | what it gives |
+|---|---|---|
+| 38 Fandom wikis | 75,521 pages, 262 MB | infoboxes, full page text, categories |
+| TMDB | 280 titles, 28,151 cast credits | billing order, episode counts, genre, ratings |
+| Kaggle / listofdeaths | 4 shows | per-episode death registries |
+| Transcripts | 1,136 episodes, 11 shows | dialogue, mostly without speaker labels |
+
+Not every scraped page is a character. From 600 annotated pages reweighted to the
+full corpus, **40% are on-screen characters**, 46% are characters who never appear
+in a film or episode (Star Wars Legends novels, Harry Potter reference books), and
+12% are not characters at all — creature types, vehicles, unnamed roles, and real
+historical figures picked up from the Young Indiana Jones wiki. All analysis is
+restricted to the first group: **15,633 characters, 35.1% of whom die**.
+
+### How the label is built
+
+The wikis follow two infobox conventions, so `is_dead` is derived two ways. Thirty
+wikis record a `status` string; eight record a date of death, from which death is
+inferred. The two are not directly comparable, and rows whose status cannot be
+parsed were previously dropped rather than counted. `is_dead_v2` restricts to
+characters who appear on screen and keeps unparsed rows in the denominator.
+
+`is_onscreen` is `has_actor OR tmdb_match`. Measured against the annotated sample:
+**precision 0.79, recall 0.77**. Neither signal is sufficient alone (0.61 and 0.58
+recall respectively).
+
+Annotations were produced by Claude Haiku 4.5, not by people. Inter-pass agreement
+would measure reliability rather than correctness, and the label has no external
+non-LLM validation — see [Limitations](#limitations).
+
+## Findings
+
+### Q1 — the character, and the franchise, and neither alone
+
+Seven feature sets, three models, two cross-validation regimes, two baselines.
+
+| features | random split | held-out franchise |
+|---|---|---|
+| all features | **0.822** | 0.557 |
+| character + franchise | 0.730 | 0.532 |
+| character + network | 0.721 | 0.552 |
+| character | 0.684 | 0.518 |
+| network centrality only | 0.655 | 0.480 |
+| franchise only | 0.562 | 0.365 |
+| baseline | 0.351 | 0.351 |
+
+PR-AUC, best model per set. Character attributes beat franchise identity, and the
+two are complementary. Stripped of wiki-metadata proxies, character-only falls to
+0.596 — still above franchise-only, but the margin narrows.
+
+The two splits disagree in a useful way. Fandom category features add +0.09 on a
+random split and +0.005 when whole franchises are held out: they encode
+franchise-specific role vocabulary that does not transfer. **Network centrality is
+the opposite** — PageRank and HITS over the per-franchise co-mention graph add
+about +0.035 in *both* regimes, so how central a character is to the story
+generalises to franchises the model has never seen.
+
+### Gender
+
+Being female roughly halves the odds of dying: **OR 0.55 (95% CI 0.50–0.60)**,
+or 11.4 percentage points lower death probability, after adjusting for prominence,
+role, alignment, species and franchise. The raw gap is 14.9 points, so about a
+quarter of it is explained by men holding more disposable roles.
+
+Of 19 franchises where the effect could be estimated, **9 reach p<0.05 and none
+point the other way**. The weak cases (Grey's Anatomy, Avatar, The Sopranos) are
+null effects, not reversals.
+
+### Q3 — franchise properties explain very little
+
+Weighted least squares on logit(mortality), franchise as the unit, n=36. Only run
+span (p=0.010) and first release year (p=0.027) are significant; medium, number of
+installments and audience rating are not. **R² = 0.22, adjusted R² = 0.09.**
+
+k-means over franchise properties does not recover mortality groupings. The best
+silhouette is at k=2, and that split separates large multi-title film franchises
+from everything else — the two clusters have near-identical mortality (35.0% vs
+37.8%).
+
+## Demo
+
+`docs/` is a self-contained page: look up any of 3,336 characters to see their
+predicted risk, which attributes drove it, whether they actually died, and
+comparable characters — or build a character from scratch and watch the estimate
+move.
+
+The model runs in the browser from exported logistic-regression coefficients. It
+uses only attributes a person can choose, so it scores lower (ROC-AUC 0.741) than
+the project's full model; the page says so.
+
+Locally:
 
 ```bash
-# 1. Install dependencies
-pip install requests pandas textblob kaggle
-
-# 2. Set Kaggle API token (get one at kaggle.com/settings)
-export KAGGLE_API_TOKEN=<your_token>        # Mac/Linux
-set KAGGLE_API_TOKEN=<your_token>           # Windows
-
-# 3. Build the base dataset (~35–40 min)
-python build_pipeline.py
-
-# 4. Optionally add NLP text features (~15 min)
-python add_nlp_features.py
+cd docs && python -m http.server 8765     # then open http://localhost:8765
 ```
 
-**Outputs:**
-- `data/clean/characters_raw.csv` — ~60k rows, ~100 structural features
-- `data/clean/characters_full.csv` — same + NLP text-analysis features (~130 cols)
-- `data/clean/characters_keys.csv` — name/URL index for external joins
+On GitHub Pages: repository **Settings → Pages → Source: Deploy from a branch**,
+branch `main`, folder `/docs`.
 
-**Only required input:** `data/raw/*.jsonl` (38 Fandom scrape files, one per franchise)
-
----
-
-## Data Sources
-
-### 1. Fandom Wiki Scraper (raw input)
-The raw JSONL files in `data/raw/` were scraped from [Fandom](https://www.fandom.com) wikis using the MediaWiki API. Each record contains the character's infobox fields, page text, and a pre-computed `is_dead` label derived from status keywords per franchise.
-
-**38 franchises scraped:** Star Wars, Harry Potter, MCU, Game of Thrones, Indiana Jones, James Bond, Alien vs Predator, DC Extended Universe, Jurassic Park, Pirates of the Caribbean, Grey's Anatomy, Lord of the Rings, Lost, Breaking Bad / Better Call Saul, Dune, Avatar, Transformers, Sons of Anarchy, Supernatural, The Hunger Games, The Sopranos, The Twilight Saga, Spartacus, Dexter, The 100, Vikings, Westworld, Ozark, Fast & Furious, Mission: Impossible, Stranger Things, The Boys, The Walking Dead, Prison Break, Peaky Blinders, The Matrix, Boardwalk Empire, The Wire.
-
----
-
-### 2. API Sources (fetched at runtime, no auth required)
-
-| API | URL | What we use | Rate limit |
-|-----|-----|-------------|------------|
-| **An API of Ice and Fire** | `anapioficeandfire.com/api/characters` | TV seasons, book count, POV count, allegiances, title count for GoT characters | 0.3s/page |
-| **Harry Potter API** | `hp-api.onrender.com/api/characters` | House, ancestry, Hogwarts student/staff flags | Single call |
-| **SWAPI** | `swapi.py4e.com/api/people/` | Film count, height, mass, birth year for SW characters | 0.5s/page |
-| **PotterDB** | `api.potterdb.com/v1/characters` | Blood status, house, species, nationality, animagus, patronus, titles, jobs for 5,387 HP characters | 0.5s/page, 54 pages |
-| **SW Akabab** | `akabab.github.io/starwars-api/api/all.json` | Species, affiliation count, masters/apprentices/cybernetics for 87 SW characters | Single call |
-| **TVmaze** | `api.tvmaze.com` | Episode counts, main vs guest cast, actor birthday → age at premiere for 21 TV franchises | 0.3s between episode calls (20 req/10s limit) |
-| **Fandom MediaWiki API** | `{wiki}.fandom.com/api.php` | Category count, stub flag, featured/recurring flags for all 60k characters | 0.3s/batch of 50 pages |
-
-**TVmaze endpoints used:**
-- `GET /singlesearch/shows?q={name}` — find show ID and premiere date
-- `GET /shows/{id}/cast` — main cast with actor birthdays
-- `GET /shows/{id}/episodes` — all episode IDs
-- `GET /episodes/{id}/guestcast` — guest characters per episode
-
-**Fandom MediaWiki endpoint:**
-```
-GET https://{wiki}.fandom.com/api.php
-  ?action=query
-  &titles={title1|title2|...|title50}
-  &prop=info|categories
-  &cllimit=100
-  &format=json
-```
-
----
-
-### 3. CMU Movie Summary Corpus
-- **URL:** `http://www.cs.cmu.edu/~ark/personas/data/MovieSummaries.tar.gz`
-- **Auto-downloaded** if not present in `data/external/cmu/`
-- **What we use:** `character.metadata.tsv` — actor age at film release (proxy for character apparent age)
-- **Files used:** `character.metadata.tsv` (450k character entries), `movie.metadata.tsv` (81k films)
-- **Citation:** Bamman, O'Connor & Smith (ACL 2013)
-
----
-
-### 4. Kaggle Datasets
-Requires `KAGGLE_API_TOKEN` environment variable. Auto-downloaded to `data/external/kaggle/`.
-
-| Kaggle Ref | Key File | Features | Leaky columns dropped |
-|-----------|----------|----------|-----------------------|
-| `mylesoneill/game-of-thrones` | `character-deaths.csv` | GoT nobility, book appearances (5 books) | Death Year, Book of Death, Death Chapter |
-| `mylesoneill/game-of-thrones` | `character-predictions.csv` | GoT popularity, age, dead relations, married, noble | actual, pred, alive, plod, isAlive, DateoFdeath |
-| `thedevastator/uncover-the-mystery-behind-got-characters-screen` | `GOT_screentimes.csv` | GoT screen time (minutes), episode count from IMDb | — |
-| `claudiodavi/superhero-set` | `heroes_information.csv` | Superhero alignment (good/bad/neutral), race | — |
-| `claudiodavi/superhero-set` | `super_hero_powers.csv` | 10 key powers (Immortality, Magic, Resurrection, The Force, etc.) | — |
-| `paultimothymooney/lord-of-the-rings-data` | `lotr_characters.csv` | LOTR race (Elf/Man/Hobbit/Dwarf), realm, has\_spouse | birth, death |
-| `paultimothymooney/lord-of-the-rings-data` | `WordsByCharacter.csv` | LOTR total words spoken per character | — |
-| `mexwell/the-lord-of-the-rings` | `lotr_scripts.csv` | LOTR dialogue word count per character | — |
-| `saguit03/the-hunger-games-characters` | `HungerGames_Characters_Dataset_ALL.csv` | HG district, tribute/winner/mentor flags, profession | — |
-| `thedevastator/the-hunger-games-dataset-a-survival-analysis` | `Hunger Games survival analysis data set.csv` | HG tribute age, career, training rating | — |
-| `bac3917/frank-herberts-dune-characters` | `duneCharacters_kaggle.csv` | Dune house allegiance, culture | Born, Died |
-| `kyleakepanidtaworn/marvel-characters-dataset` | `marvel_characters_dataset.csv` | Marvel identity (public/secret), teams, origin, universe | Alive |
-
----
-
-## Pipeline Architecture
+## Layout
 
 ```
-data/raw/*.jsonl (38 files)
-        │
-        ▼
-[Step 1] Parse JSONL → flat schema
-         Deduplicate (URL, then franchise+name)
-         Filter to labelled records (is_dead not None)
-        │
-        ▼
-[Step 2] Structural features
-         prominence_tier, archetype (from title/text)
-         gender (infobox + pronoun inference)
-         is_human, affiliation_alignment
-         franchise metadata (release_year, decade, era, medium, genre)
-         franchise aggregate stats (mortality_rate, size, female_ratio)
-        │
-        ├──[Step 3]── Franchise APIs (GoT, HP, SWAPI, PotterDB, SW Akabab)
-        ├──[Step 4]── TVmaze (episode counts + actor age)
-        ├──[Step 5]── CMU Movie Summary Corpus (actor age for film chars)
-        ├──[Step 6]── Kaggle datasets (GoT, Superhero, LOTR, HG, Dune, Marvel)
-        ├──[Step 7]── Fandom MediaWiki API (category counts, stub flag)
-        └──[Step 8]── Species category (computed from species fields)
-        │
-        ▼
-data/clean/characters_raw.csv   ← ~100 features, no NLP
-        │
-        ▼  (optional: python add_nlp_features.py)
-[NLP]   Page text analysis: word densities, sentiment, centrality
-        │
-        ▼
-data/clean/characters_full.csv  ← ~130 features
+src/
+  constants.py     shared constants
+  paths.py         canonical data locations
+  labels/          label audit, gold-set sampling, annotation, evaluation, rebuild
+  enrich/          TMDB titles, cast, and name matching
+  q1_character/    feature building and the character-vs-franchise models
+  q3_franchise/    franchise mortality, regression, clustering
+  viz/             figure rendering and shared chart style
+  app/             demo model export
+scraper/           Fandom scraper (38 wiki configs)
+data/
+  raw/             scraped JSONL (gitignored, 262 MB)
+  external/        third-party dumps and the TMDB cache (gitignored)
+  clean/           built tables and figures
+  gold/            annotation sample and labels
+datasets/          transcripts, death registries, per-show character features
+docs/              the demo, served by GitHub Pages
+tests/             pytest
 ```
 
----
+## Running it
 
-## Feature Reference
+See **[PIPELINE.md](PIPELINE.md)** for the full order. Short version:
 
-### Core (100% coverage)
-| Feature | Type | Description |
-|---------|------|-------------|
-| `is_dead` | int (0/1) | **Target variable** — 1=dead, 0=alive |
-| `franchise` | str | Franchise name (38 values) |
-| `content_rating` | str | PG-13, TV-MA, R, TV-14 |
-| `medium` | str | "Film" or "TV" |
-| `genre` | str | Action, Fantasy, Sci-Fi, Crime, etc. |
-| `franchise_release_year` | int | Year of first major release |
-| `franchise_decade` | str | "1970s", "2000s", etc. |
-| `franchise_era` | str | Pre-1980 / 1980s-90s / 2000s / 2010s+ |
-| `franchise_mortality_rate` | float | Fraction of characters dead in franchise |
-| `franchise_size` | int | Number of labelled characters in franchise |
-| `franchise_female_ratio` | float | Fraction female in franchise |
-| `infobox_field_count` | int | Number of infobox fields (prominence proxy) |
-| `page_text_length` | int | Length of Fandom wiki page text |
-| `prominence_tier` | str | Minor / Supporting / Major / Lead |
-| `archetype` | str | Military / Royalty / Criminal / Force User / Law/Order / Medical / Academic / Political / Religious / Worker / Entertainer / Other / Unknown |
-| `has_dob` | int (0/1) | Has a date-of-birth in infobox |
-| `has_family` | int (0/1) | Has family member fields in infobox |
-| `has_image` | int (0/1) | Has an image on the wiki page |
-| `has_alias` | int (0/1) | Has known aliases |
-| `has_pronouns` | int (0/1) | Has explicit pronoun field |
-| `appearance_count` | int | Number of appearance-related infobox fields |
-| `fandom_category_count` | int | Number of non-leaky wiki categories |
-| `fandom_is_stub` | int (0/1) | Page is a stub (minor character proxy) |
-| `fandom_is_featured` | int (0/1) | Featured or good article |
-| `fandom_is_recurring` | int (0/1) | In a "recurring character" category |
+```bash
+python -m src.labels.audit_labels        # label audit
+python -m src.enrich.tmdb_enrich         # needs TMDB_API_KEY in .env
+python -m src.labels.rebuild_label       # corrected label
+python -m src.q1_character.features      # ~1,000 features
+python -m src.q1_character.models        # Q1
+python -m src.q1_character.effects       # gender effect sizes
+python -m src.q3_franchise.mortality     # Q3
+python -m src.viz.figures                # figures
+python -m src.app.export_demo            # demo data
+python -m pytest tests -q
+```
 
-### Partially populated
-| Feature | Coverage | Description |
-|---------|----------|-------------|
-| `gender` | ~89% | Male / Female / Other/Unknown |
-| `is_human` | ~85% | 1=human, 0=non-human |
-| `affiliation_alignment` | ~60% | Good / Evil / Ambiguous / Neutral |
-| `actor_age_at_release` | ~1% | Actor age at series/film premiere |
-| `age_group` | ~1% | child / young_adult / adult / senior |
-| `tvmaze_episode_count` | TV only | Number of episodes appeared in |
-| `tvmaze_is_main_cast` | TV only | 1 if main cast member |
+On Windows, prefix the legacy top-level scripts (`build_pipeline.py`, `tfidf.py`)
+with `PYTHONUTF8=1` — they print non-ASCII and the console defaults to cp1252.
 
-### Game of Thrones specific
-`got_tv_seasons`, `got_book_count`, `got_pov_count`, `got_allegiances`, `got_titles_count`, `got_nobility`, `book1_appears`–`book5_appears`, `got_books_total`, `got_popularity`, `got_age`, `got_dead_relations`, `got_married`, `got_noble`, `got_screentime_min`, `got_episode_count_imdb`
+## Limitations
 
-### Harry Potter specific
-`hp_house`, `hp_ancestry`, `hp_hogwarts_student`, `hp_hogwarts_staff`, `pdb_house`, `pdb_blood_status`, `pdb_species`, `pdb_nationality`, `pdb_animagus`, `pdb_patronus`, `pdb_titles_count`, `pdb_jobs_count`
-
-### Star Wars specific
-`sw_film_count`, `sw_height`, `sw_mass`, `sw_birth_year`, `sw_species_detail`, `sw_affiliations_n`, `sw_has_masters`, `sw_has_apprentices`, `sw_has_cybernetics`
-
-### Other franchise features
-`lotr_race`, `lotr_realm`, `lotr_has_spouse`, `lotr_total_words`, `lotr_dialogue_words`, `hg_district`, `hg_is_tribute`, `hg_winner`, `hg_is_mentor`, `hg_profession`, `hg_age`, `hg_career`, `hg_rating`, `dune_house`, `dune_culture`, `hero_alignment`, `hero_race`, `marvel_identity`, `marvel_marital`, `marvel_has_teams`, `marvel_origin`, `marvel_universe`, `power_immortality`, `power_magic`, `power_resurrection`, `power_the_force`, `power_telepathy`, `power_mind_control`, `power_invulnerability`, `power_regeneration`, `power_flight`, `power_super_strength`
-
-### NLP features (characters_full.csv only)
-`word_count`, `sentence_count`, `paragraph_count`, `section_count`, `avg_sentence_length`, `unique_word_ratio`, `violence/conflict/leadership/family/hero/villain/power/vulnerability _word_count + _density`, `dialogue_count`, `relationship_mentions`, `named_characters_mentioned`, `social_connectedness`, `moral_alignment`, `power_vulnerability_ratio`, `has_biography_section`, `has_dialogue`, `is_described_young`, `is_described_old`, `age_mentioned`, `sentiment_score`, `name_word_count`, `has_title_in_name`, `name_centrality`, `page_mention_rank`
-
----
-
-## Leaky Columns Excluded
-
-These columns encode death information and are explicitly excluded from all outputs:
-
-| Column | Why it's leaky |
-|--------|---------------|
-| `has_dod` | 0.85 correlation with `is_dead` — having a date-of-death field means the character died |
-| `dod` | Raw date-of-death string — directly encodes the label |
-| `has_causeofdeath` | 0.18 correlation — cause-of-death fields only exist if the character died |
-| `has_death_section` | Page section titled "Death" only exists for dead characters |
-| `info_completeness` | Partially leaky — dead characters have death fields populated, boosting completeness |
-
-From Kaggle GoT predictions: `actual`, `pred`, `alive`, `plod`, `isAlive`, `DateoFdeath` — all encode survival labels from another model/dataset.
-
-From LOTR data: `birth`, `death` — raw in-universe dates.
-
-From Marvel 92k: `Alive` — direct label.
-
----
-
-## Known Limitations
-
-1. **Star Wars dominance**: 42,271 / ~60k rows (63%) are Star Wars characters. Any global model will be heavily influenced by SW patterns. Use stratified sampling or franchise-specific submodels.
-
-2. **Sparse franchise features**: GoT/HP/LOTR/HG/Dune features are only populated for their respective franchises (~1–3% of the full dataset). Tree-based models (XGBoost, LightGBM) handle NaN natively.
-
-3. **Name matching**: External datasets are merged on lowercased character names. Spelling variants (e.g., "Daenerys" vs "Daenerys Targaryen") can cause mismatches.
-
-4. **Actor age ≠ character age**: We use actor age at the time of production as a proxy for character apparent age. This is a rough approximation and is missing for ~99% of rows.
-
-5. **Label source**: `is_dead` is derived from Fandom wiki status fields using keyword matching. Some characters may be mislabelled (e.g., resurrected characters, fictional deaths).
+- **The label rests on LLM annotations.** 600 pages labelled by Haiku 4.5, with no
+  human-labelled or otherwise independent validation set. The Fandom `Deceased`
+  category looked like external validation but is written by the same editors from
+  the same source, and using it as a feature would be leakage.
+- **`is_onscreen` is noisy** (P 0.79 / R 0.77). Roughly a fifth of on-screen
+  characters are excluded and a fifth of those included do not belong. That error
+  propagates into every number here, including the gender effect sizes.
+- **The two strongest Q1 features are wiki metadata.** `infobox_field_count` and
+  `page_text_length` measure how much fans wrote, not anything about the character.
+  Dropping them costs 0.088 PR-AUC. `prominence_tier` is derived from page length
+  upstream, so even the "no wiki metadata" ablation is not fully clean.
+- **Franchises with sparse wikis carry wide label uncertainty.** Boardwalk Empire's
+  mortality is somewhere between 20% and 100% depending on how 440 characters with
+  no recorded status resolve. Figures show that range rather than a point estimate.
+- **Star Wars dominates the corpus** (56% of scraped pages, 18% after the on-screen
+  filter). Grouped cross-validation and per-franchise reporting mitigate this but
+  do not remove it.
+- **Two leakage bugs were found and fixed** by inspecting model coefficients rather
+  than trusting scores: a violence lexicon containing death words, and the
+  `status`/`dod` infobox fields the label is derived from. Both inflated results
+  before removal.
