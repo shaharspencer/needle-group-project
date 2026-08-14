@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Secrets — TMDB key etc. Never commit.
+.env
+
+# Large / regenerable data.
+# data/raw is 262MB of scraped Fandom JSONL (page_text is most of it) and is
+# reproducible via `python -m scraper.run_scraper`. data/external is 147MB of
+# third-party Kaggle/CMU dumps that we did not create.
+data/raw/
+data/external/
+data/external/tmdb/
+
+# Everything else under data/ (clean tables, gold labels, figures) IS tracked —
+# those are our outputs and need to be auditable.

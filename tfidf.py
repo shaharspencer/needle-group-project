@@ -69,7 +69,12 @@ def print_top_k_words_per_episode(df_tfidf, top_n=5):
         print(f"   Top Words: {formatted_terms}")
 
 if __name__ == "__main__":
-    TARGET_FOLDER = r"C:\Users\bard1\Documents\year5\needle in data haystack\project\datasets\transcripts\Game of Thrones"
+    import sys
+
+    # Default to the repo's own transcript folder; override with a path argument:
+    #   python tfidf.py "datasets/transcripts/The Walking Dead"
+    DEFAULT_FOLDER = Path(__file__).parent / "datasets" / "transcripts" / "Game of Thrones"
+    TARGET_FOLDER = sys.argv[1] if len(sys.argv) > 1 else str(DEFAULT_FOLDER)
 
     df = compute_folder_tfidf(TARGET_FOLDER)
     if df is not None:
