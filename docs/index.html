@@ -447,7 +447,7 @@ fetch("demo_data.json").then(r => r.json()).then(data => {
     <div class="stat"><b>${D.performance.n_test.toLocaleString()}</b><span>held-out characters scored</span></div>
     <div class="stat"><b>${M.levels.franchise.length}</b><span>franchises</span></div>
     <div class="stat"><b>${pct(D.performance.base_rate)}</b><span>actually die</span></div>
-    <div class="stat"><b>${D.performance.roc_auc}</b><span>ROC-AUC (5-fold)</span></div>`;
+    <div class="stat"><b>${D.performance.roc_auc}</b><span>ROC-AUC (test set)</span></div>`;
   document.getElementById("accuracy-plain").textContent =
     `In plain terms: given one character who died and one who didn't, this model ranks ` +
     `the one who died as riskier about ${pct(D.performance.roc_auc)} of the time.`;

@@ -25,15 +25,21 @@ Everything is built, run and committed. All three questions are answered, the
 demo is live, and every figure in the writeup is generated from the tables in
 `data/clean/` rather than drawn by hand.
 
+**Two split rules, used the same way here and in the writeup.** *Random CV* is
+stratified over characters; *grouped CV* is `GroupKFold` holding out whole
+franchises. Each is applied both to the cross-validated feature comparison and
+to the once-scored test estimate, so a score needs both labels to be unambiguous
+— "grouped test" and "grouped CV" are different numbers.
+
 **The results, in one place.** Population is 15,686 on-screen, named characters
 across 38 franchises, 35.6% of whom die.
 
 | question | answer |
 |---|---|
-| Q1 — character or franchise? | Both, mostly the character. Character attributes reach 0.633 PR-AUC against 0.556 for franchise identity and 0.743 for everything combined, on a 0.356 base rate. On the held-out test set the full model gets **0.752 PR-AUC / 0.850 ROC-AUC**, dropping to **0.664 / 0.776** when whole franchises are held out. |
+| Q1 — character or franchise? | Both, mostly the character. Character attributes reach 0.633 PR-AUC against 0.556 for franchise identity and 0.743 for everything combined, on a 0.356 base rate (all cross-validated, random split). On the test set the full model gets **0.752 PR-AUC / 0.850 ROC-AUC** under a random split, dropping to **0.664 / 0.776** under a grouped split that holds out whole franchises. |
 | Q1 — gender | Women are about half as likely to die: **adjusted OR 0.564** (95% CI 0.516–0.616), roughly 11 percentage points. 11 of 22 franchises reach p<0.05 and none point the other way. |
-| Q2 — does text predict death? | Yes, for descriptive text. TF-IDF over each character's wiki description is our best-transferring feature family: +0.066 PR-AUC on a random split, +0.058 held-out. Dialogue is a separate question we did not answer. |
-| Q3 — are some franchises deadlier? | They differ enormously (Grey's Anatomy 9.3%, The 100 72.7%) but **no franchise property predicts which**. Nothing reaches significance and adjusted R² is negative. A clean null. |
+| Q2 — does text predict death? | Yes, for descriptive text. TF-IDF over each character's wiki description is our best-transferring feature family: +0.066 PR-AUC under random CV, +0.058 under grouped CV. Dialogue is a separate question we did not answer. |
+| Q3 — are some franchises deadlier? | They differ enormously (Grey's Anatomy 9.3%, The 100 72.7%) but **no franchise property predicts which**. Nothing in the weighted least-squares model reaches significance and adjusted R² is negative. A clean null. |
 
 **If you worked on this before, two things changed the numbers.** Both were
 fields that were computed correctly for one kind of row and silently wrong for
@@ -60,10 +66,10 @@ for Q2, `in_degree` in the demo, and figure captions that read from the CSVs
 instead of restating numbers by hand — two of them had gone stale against the
 data.
 
-**What is left**, if you want something to pick up: a Future Work section for the
-writeup, and the open items under [Known issues](#known-issues) below. The
-biggest of those is that some features are missing for entire franchises rather
-than at random.
+**What is left**, if you want something to pick up: the open items under
+[Known issues](#known-issues) below. The biggest of those is that some features
+are missing for entire franchises rather than at random. The writeup now has a
+Future Work section covering the same ground.
 
 ## Setup
 
@@ -125,7 +131,7 @@ python -m src.q1_character.features       # -> character_features.csv
 
 # Stage 4 — the questions
 python -m src.q1_character.splits         # train/test assignment; run before models
-python -m src.q1_character.models         # 9 feature sets x 3 models x 2 CV regimes
+python -m src.q1_character.models         # 9 feature sets x 3 models x 2 split rules
 python -m src.q1_character.evaluate       # the held-out test score
 python -m src.q1_character.effects        # gender effect sizes
 python -m src.q2_text.coefficients        # -> q2_text_coefficients.csv
@@ -196,9 +202,15 @@ Three conventions worth keeping to:
   Claude Haiku 4.5, and neither is merged into `is_dead`. The fill feeds exactly
   one number, the Q3 mortality point estimates. Keep that separation if you add
   to it.
-- **Constants go in `src/constants.py`.** `analysis_population()` lives there
-  and is how every question restricts rows to the same population — on screen,
-  and named. If you filter rows yourself somewhere else, the tables stop
+- **Two populations, deliberately.** `analysis_population()` in
+  `src/constants.py` restricts to on-screen, named rows, but Q1/Q2 apply it to
+  `characters_model.csv` (15,686 rows, since a row needs a usable label to be
+  modelled) while Q3 applies it to `onscreen_flags.csv` (17,584 rows, keeping
+  characters whose status never parsed so they stay in the mortality
+  denominator). That gap is intended and the writeup states it; do not
+  "fix" the two to agree without reading the Q3 bounds discussion first.
+- **Constants go in `src/constants.py`.** `analysis_population()` is how every
+  question restricts rows — on screen, and named. If you filter rows yourself somewhere else, the tables stop
   agreeing with each other, which has already happened once.
 
 ## Demo
@@ -242,7 +254,7 @@ Two constraints on it, both deliberate and both documented at the top of
 
 | question | state |
 |---|---|
-| Q1 — character vs franchise | done: 9 feature sets × 3 models × 2 CV regimes, plus a held-out test score |
+| Q1 — character vs franchise | done: 9 feature sets × 3 models × 2 split rules (random and grouped), plus a once-scored test estimate |
 | Q1 — gender effect sizes | done: pooled and per-franchise |
 | Q2 — does text predict death? | done for descriptive text: TF-IDF over each character's wiki description, the best-transferring feature family we have. Dialogue is out of scope — see below |
 | Q3 — franchise properties | done: WLS regression, k-means, Haiku-filled mortality for the four worst franchises |
@@ -266,13 +278,13 @@ writes the fitted weights, which is what Figure 5 in the writeup is drawn from.
 Open, roughly in the order they would bite someone picking this up:
 
 - **Some features are absent for whole franchises, not at random.**
-  `affiliation_alignment` is missing for 12 franchises (20% of characters)
-  because those wikis have no affiliation field, and `n_relatives` is 0 for
-  seven franchises (37% of characters, including the MCU) because those wikis
-  do not use the family infobox keys. Under grouped cross-validation, a
-  held-out franchise can therefore be missing a feature the model learned to
-  lean on. Treat per-franchise feature coverage as something to check before
-  adding a feature, not after.
+  `n_relatives` is 0 across six franchises (33.7% of characters, including the
+  MCU) because those wikis do not use the family infobox keys. Under grouped
+  cross-validation, a held-out franchise can therefore be missing a feature the
+  model learned to lean on. Treat per-franchise feature coverage as something to
+  check before adding a feature, not after. (An earlier version of this note
+  also claimed `affiliation_alignment` was missing for 12 franchises; checked
+  against the analysis population, it is missing for none.)
 - **Several wikis are under-collected** and we have not confirmed the right
   template: The Walking Dead (49 rows), Stranger Things (78 of 221 candidate
   pages, apparently a per-character template the scraper design does not
@@ -280,9 +292,11 @@ Open, roughly in the order they would bite someone picking this up:
 - **The busiest character-shaped template on a wiki is often not characters.**
   Peaky Blinders' is its cast of real actors; Fast & Furious's is
   `Infobox Car`. Check a template against real pages before trusting it.
-- **No minimum-n rule anywhere.** The Matrix contributes 4 characters and Peaky
-  Blinders 11 to grouped CV, where each franchise is one fold weighted equally
-  with Star Wars.
+- **No minimum-n rule anywhere.** Folds under grouped CV are very unequal:
+  Prison Break contributes 28 characters and the MCU 3,489, and each counts as
+  one fold. (The figures previously recorded here, Matrix 4 and Peaky Blinders
+  11, predated the template-redirect fix; both franchises are now well populated
+  at 64 and 43.)
 - **The unnamed-role filter only catches explicit markers** —
   `Unidentified`/`Unnamed`/`Unknown` prefixes — so Star Wars's "Unidentified
   Ugnaught worker" is dropped while Dexter's "Acupuncturist" stays.
