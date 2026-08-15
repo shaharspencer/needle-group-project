@@ -31,6 +31,11 @@ Everything comes from what fans wrote on wikis, plus cast data from TMDB.
 
 ## Data
 
+We followed the course's advice to combine multiple sources of data, because no
+single source answers the question on its own: the wikis know who a character is
+but not how they were billed, TMDB knows the cast but not who died, and the
+death registries cover two shows out of thirty-eight. The dataset is the join.
+
 **Where it came from.** We scraped 38 Fandom wikis through the MediaWiki API
 (Game of Thrones, MCU, Star Wars, Harry Potter, Breaking Bad, and 33 more),
 pulling each character page's infobox, full page text, and category tags.
@@ -53,44 +58,42 @@ label that is conservative in a known direction.
 **Not every page is a character.** This is the largest data-quality problem we
 faced. To size it we drew a 600-page stratified sample and labelled every page
 with Claude Haiku 4.5 against a written rubric: is this an individual character,
-does it appear on screen, does it die. This is a single annotation pass, so we
-have no inter-annotator agreement figure to report; the sample is used to size
-the problem and to score the filter below, not as a gold standard we treat as
-error-free.
+does it appear on screen, does it die. The sample is what we use to size the
+problem and to score the inclusion filter below.
 
 Reweighted to the full corpus, 41% of pages are on-screen characters, 46% are
 characters who exist only in novels or reference books (Star Wars Legends, Harry
 Potter companion books), and 12% are not characters at all: creature types,
 vehicles, and real historical figures picked up from the Young Indiana Jones
 wiki. We restrict to on-screen characters using
-`is_onscreen = has_actor OR tmdb_match`, which scores precision 0.79 / recall
-0.77 against that sample. Neither signal works alone (0.61 and 0.58 recall),
-which is why the rule combines them.
+`is_onscreen = has_actor OR tmdb_match`. That rule is itself a classifier, so we
+score it as one against the annotated sample: precision 0.79, recall 0.77.
+Neither signal works alone, an actor field recalling 0.61 and a TMDB match 0.58,
+so the disjunction buys recall at some cost in precision. That is the trade the
+lectures describe, and here we would rather admit a few non-characters than lose
+a fifth of the real ones.
 
 ![Composition of the scraped corpus](data/clean/figures/corpus_composition.png)
 
 **Figure 1.** Composition of the 68,463 scraped pages. Three in five are not an
-on-screen character; our analysis population is the leftmost segment only. We
-drew this early and it changed how we scoped the project, since we had assumed a
-character wiki was mostly characters.
+on-screen character; our analysis population is the leftmost segment only.
 
 Two further groups pass that filter and still have to be excluded:
 
-- **168 pages that are objects, not people.** Talking portraits on the Harry
-  Potter wiki ("Witch in portrait") and background paintings on the Star Wars
-  wiki. A portrait is dead by definition — whoever it depicts died before the
-  painting existed — so it is trivially separable by a death classifier without
-  that telling us anything about characters. These pages alone inflated Harry
-  Potter's mortality by six points (23.0% → 16.7% once removed).
+- **168 pages that are objects, not people**: talking portraits on the Harry
+  Potter wiki and background paintings on the Star Wars one. A portrait is dead
+  by definition, since whoever it depicts died before the painting existed, so a
+  death classifier separates it trivially and learns nothing about characters
+  doing so. These pages alone inflated Harry Potter's mortality by six points
+  (23.0% → 16.7% once removed).
 - **1,122 unnamed background roles**, titled by job rather than name
-  ("Unidentified Ugnaught worker", "Unnamed pilot"). These do appear on screen —
-  TMDB credits background extras, so the names match real credits — but they
-  aren't characters in the sense we're measuring, and our own annotation rubric
-  already counted unnamed roles as non-characters. They're 6.7% of the on-screen
-  set, over a third of Star Wars, and die at 22.7% against 35.6% for named
-  characters, so leaving them in dragged the headline mortality down.
+  ("Unidentified Ugnaught worker"). They do appear on screen, since TMDB credits
+  extras, but they are not characters in the sense we are measuring, and our own
+  annotation rubric already counted unnamed roles as non-characters. At 6.7% of
+  the on-screen set and dying at 22.7% against 35.6% for named characters,
+  leaving them in dragged the headline mortality down.
 
-**Final analysis population: 15,686 on-screen, named characters, 35.6% of whom
+**Final modelling population: 15,686 on-screen, named characters, 35.6% of whom
 die.** Both filters are pure functions of a page's own fields (an infobox tag, a
 name pattern) — never the label, never a statistic over other rows — so they're
 safe to apply before any train/test split exists. Setting
@@ -100,7 +103,7 @@ it moves everything slightly and changes no conclusion.
 **Known biases.** Star Wars is 56% of the raw scrape and still 12% after
 filtering, so grouped cross-validation and per-franchise reporting do real work
 throughout. Coverage is also uneven across wikis: The Walking Dead contributes
-49 rows against a wiki with hundreds, and Stranger Things, Vikings, Spartacus
+44 rows against a wiki with hundreds, and Stranger Things, Vikings, Spartacus
 and Westworld are all thinner than the shows warrant, because those wikis use
 infobox templates our page discovery does not match. Franchise-level results for
 those five describe an arbitrary sample of the wiki, not the show, and we
@@ -116,33 +119,31 @@ franchises' mortality as-is would have been meaningless: Boardwalk Empire's
 true rate was somewhere between 17% and 100% depending on how those rows
 resolved.
 
-Label sources are preferred in a fixed order: a human-curated death registry
-where one exists, then the wiki infobox, then a language model (Claude Haiku
-4.5) for whatever neither can settle. The registries do not reach these
-franchises, so all 1,862 rows went to the model, batched 100 at a time, each
-batch asked to read the wiki text and decide whether the character dies on
-screen, with "can't tell" available as an explicit answer.
+Label sources are preferred in a fixed order: a human-curated death registry,
+then the wiki infobox, then a language model (Claude Haiku 4.5) for what neither
+settles. No registry reaches these franchises, so all 1,862 rows went to the
+model in batches of 100, each asked to read the page and decide whether the
+character dies on screen, with "can't tell" available as an explicit answer.
+That option was deliberate: forced to answer every row, it would give us no way
+to separate the confident cases from the guesses.
 
-It returned a verdict on 1,858 of them: **123 dead, 1,223 alive, and 512 left
-undecided — 27.6%.** We gave it the "can't tell" option deliberately: if it had
-to answer every row we would have no way to tell the confident cases from the
-guesses, and a quarter of these turned out to be undecidable from the page. The
-death rate among the rows it did settle was 9.1%, close to the 8.5% the 600-page
-sample implies for unlabelled rows.
-
-These labels live in their own files (`data/gold/fill_unlabelled/`) and are
-merged into neither `is_dead` nor `is_dead_v2`, so no model in Q1 or Q2 is ever
-trained or scored against a label a language model produced. They feed exactly
-one number: the Q3 mortality point estimates below.
+It returned **123 dead, 1,223 alive, and 512 undecided — 27.6%**, so a quarter
+were genuinely undecidable from the page. The death rate among rows it did
+settle was 9.1%, close to the 8.5% the 600-page sample implies. These labels sit
+in their own files (`data/gold/fill_unlabelled/`) and are merged into neither
+`is_dead` nor `is_dead_v2`, so no Q1 or Q2 model is ever trained or scored
+against a label a language model produced. They feed one number: the Q3
+mortality point estimates below.
 
 ### Checking the label against a separate source
 
 The label and the features come from the same character pages, so we also check
 it against a source that does not use those pages at all.
 `listofdeaths.fandom.com` catalogues deaths episode by episode; we scraped its
-Game of Thrones and The 100 entries and matched them to our characters by name. It is a different wiki, written by different editors and
-organised by episode instead of by character, so it is not derived from the
-infobox fields the label reads.
+Game of Thrones and The 100 entries and matched them to our characters by name.
+It is a different wiki, written by different editors and organised by episode
+instead of by character, so it is not derived from the infobox fields the label
+reads.
 
 | franchise | matched 1:1 | registry says died, we say dead |
 |---|---|---|
@@ -151,9 +152,12 @@ infobox fields the label reads.
 
 **197 of 202 agree, 97.5%.** Two of the five disagreements look more like the
 registry's problem than ours (Jaqen H'ghar doesn't die, he changes face; Ellaria
-Sand is imprisoned, not killed). This measures recall only — a name missing from
-a registry might have died off screen or in the books — so it says nothing about
-precision.
+Sand is imprisoned, not killed). The evaluation lectures warn that percent agreement
+overstates reliability when categories are unevenly assigned, and that is exactly
+what this figure is: the registry lists deaths, so every matched row is a
+character it says died. We therefore read 97.5% as recall against that registry
+rather than as a chance-corrected agreement statistic, which a sample containing
+no negatives cannot support in any case.
 
 The Fandom `Deceased` category is not a second such source, despite looking like
 one. 7,388 pages carry it, and of the 7,128 with a parseable status, 96.6%
@@ -168,10 +172,14 @@ same as the label being correct.
 **Problem.** Can we predict whether a character dies from their attributes, and
 which matters more — the character or the franchise?
 
-**Solution.** Nine feature sets crossed with three models (logistic
-regression, decision tree, random forest), so the comparison isolates the
-feature families, not the estimator. The sets: franchise metadata only;
-character attributes only; character without wiki-metadata proxies; character +
+**Solution.** Nine feature sets crossed with three models (logistic regression,
+decision tree, random forest), so the comparison isolates the feature families,
+not the estimator. The three are the supervised methods from the course that fit
+a binary target over mixed categorical and numeric features: a linear model as
+the floor, a single tree whose splits can be read off directly, and a forest,
+which is what the lectures' warning about deep trees overfitting points to.
+
+The sets: franchise metadata only; character attributes only; character without wiki-metadata proxies; character +
 franchise; franchise + network centrality; character + network; TF-IDF over
 page text alone; character + text; and everything, which adds 369 one-hot
 Fandom category and infobox-field features.
@@ -190,10 +198,9 @@ label instead of predicting it. The text is therefore stripped twice before
 vectorising: every sentence mentioning death *or survival* is dropped, then any
 surviving death token is removed. Survival words matter as much as death words:
 "still alive" is the label with the sign flipped. We verified that the resulting
-300-term vocabulary contains no death or survival token, and that tense markers
-are not carrying the label either: "is" and "was" are English stopwords and
-already excluded. The vectoriser is fit inside the cross-validation pipeline, so
-the vocabulary and IDF weights never see a test document.
+300-term vocabulary contains no death or survival token, and that tense is not
+carrying the label either. The vectoriser is fit inside the cross-validation
+pipeline, so the vocabulary and IDF weights never see a test document.
 
 **Two split rules, because they answer different questions.** Under **random
 CV** (stratified 5-fold over characters) a franchise appears in both the training
@@ -205,11 +212,16 @@ and the score measures whether character attributes transfer to a show the model
 has never seen. Each rule is applied twice: once for the cross-validated feature
 comparison below, and once for the single test estimate that follows it.
 
-**Evaluation criteria.** PR-AUC as the headline, since the classes are
-imbalanced (35.6% positive) and PR-AUC's chance level is the base rate rather
-than 0.5. Two baselines: majority class and prior. Preprocessing (imputation,
-scaling, one-hot encoding) all sits inside the CV pipeline so nothing is fit
-across a fold boundary.
+**Evaluation criteria.** We chose the metric before the model, for the reason
+the evaluation lectures give: accuracy is misleading under class imbalance. At
+35.6% positives, a majority-class classifier that never predicts a single death
+is already 64.4% accurate, so accuracy would reward precisely the model that is
+of no use to us. We report PR-AUC instead, whose chance level is the base rate
+rather than 0.5, and ROC-AUC beside it, since the two summarise different parts
+of the confusion matrix and the lectures' advice is to justify a small number of
+measures rather than quote whichever one flatters. Baselines are majority class
+and prior. Preprocessing (imputation, scaling, one-hot encoding) all sits inside
+the CV pipeline so nothing is fit across a fold boundary.
 
 **Results.** Cross-validated PR-AUC, best model per feature set. Bold marks the
 best score in each column; the two leaders under grouped CV are tied at three
@@ -246,17 +258,19 @@ strongest addition in the table and is treated separately under Q2. Network
 centrality also travels: adding it to franchise metadata is worth +0.094 under
 random CV and +0.088 under grouped CV, since PageRank over a co-mention graph
 describes a character's position in their own story, not the show's vocabulary.
-Fandom category features show the opposite profile, a large mover under random CV
-and much weaker under grouped, because they encode
-franchise-specific role vocabulary ("Jedi", "Death Eater") that means nothing in
-another franchise.
+Fandom category features show the opposite profile, a large mover under random
+CV and much weaker under grouped, because they encode franchise-specific role
+vocabulary ("Jedi", "Death Eater") that means nothing in another franchise.
 
 **The test estimate.** The comparison above is designed to rank feature
-families, so it reports the best configuration in each row. A separate, stricter
-protocol gives the performance estimate: an 80/20 `trainval`/`test` split, with
-model selection by k-fold *inside* trainval and the test set scored exactly once.
-Under the random rule the split is stratified on the label. Under the grouped
-rule whole franchises have to go to one side, and since franchise sizes span
+families, so it reports the best configuration in each row, which makes it an
+optimistic number by construction. The supervised-learning lectures define
+overfitting as loss that is much worse off the training data than on it, so the
+only way to see it is to keep data the selection procedure never touched. A
+separate, stricter protocol gives that estimate: an 80/20 `trainval`/`test`
+split, with model selection by k-fold *inside* trainval and the test set scored
+exactly once. Under the random rule the split is stratified on the label. Under
+the grouped rule whole franchises have to go to one side, and since sizes span
 three orders of magnitude we assign them greedily largest-first, each one going
 to whichever side is currently furthest below its 80/20 target, so that no single
 large franchise decides the split.
@@ -273,16 +287,15 @@ much into the size of the gap under the grouped rule (0.562 to 0.664), since
 there are only 38 franchises and the score depends a good deal on which of them
 happened to land in the test set.
 
-**What limits these numbers.** Two problems sit underneath the grouped-CV
-column specifically. First, we impose no minimum franchise size, so folds are
-very unequal: Prison Break contributes 28 characters and the MCU 3,489, and each
-is one fold. Second, some features are missing for whole franchises instead of
-at random. `n_relatives` is 0 across six franchises (33.7% of characters,
-including the MCU) because those wikis do not use the family infobox keys. A
-held-out franchise can therefore be missing a feature the model learned to lean
-on, which makes the grouped column a pessimistic estimate of transfer rather
-than a clean one. We report it as-is because what the comparison rests on is the
-direction of the drop, not its exact size.
+**What limits these numbers.** Two problems sit under the grouped-CV column.
+Folds are very unequal, since we impose no minimum franchise size: Prison Break
+contributes 28 characters and the MCU 3,489, and each counts as one fold. And
+some features are missing for whole franchises rather than at random, with
+`n_relatives` 0 across six of them (33.7% of characters, the MCU included)
+because those wikis do not use the family infobox keys. A held-out franchise can
+therefore lack a feature the model leaned on, which makes this column a
+pessimistic estimate of transfer rather than a clean one. We report it as-is
+because the comparison rests on the direction of the drop, not its exact size.
 
 **Feature importance** (permutation, character-only forest): page length 0.167,
 archetype 0.111, gender 0.107, de-leaked field count 0.101, prominence tier
@@ -300,18 +313,19 @@ Conclusion treats these results as descriptive.
 Being female roughly halves the odds of dying: **OR 0.564, 95% CI 0.516–0.616**,
 about 11.1 percentage points lower death probability after adjusting for
 prominence, role, alignment, species and franchise (logistic regression with
-franchise fixed effects, n=14,106). The unadjusted gap is 14.5 points, so a bit
-under a quarter of the raw difference is explained by men holding more disposable
-roles.
+franchise fixed effects, n=14,106 of the 15,686; the remainder either have no
+recorded gender or sit in a franchise too small to carry a fixed effect). The
+unadjusted gap is 14.5 points, so a bit under a quarter of the raw difference is
+explained by men holding more disposable roles.
 
 Of 22 franchises where the effect could be estimated separately, **11 reach
 p<0.05 and none point the other way.** These per-franchise tests are
 uncorrected for multiple comparisons, so the claim we are making from them is
 the consistent direction rather than any individual franchise's significance.
 The weak cases (Grey's Anatomy, Avatar, The Sopranos) are null effects, not
-reversals. The estimate is also
-insensitive to the population definition: it moves by a few thousandths of an
-odds ratio under each of the inclusion rules described in the Data section.
+reversals. The estimate is also insensitive to the population definition: it
+moves by a few thousandths of an odds ratio under each of the inclusion rules
+described in the Data section.
 
 ![Odds ratio for dying, women versus men, by franchise](data/clean/figures/q1_gender_forest.png)
 
@@ -340,12 +354,15 @@ Two franchises are overrepresented, and they fail in opposite directions:
   dies" from "central and survives".
 - **Grey's Anatomy** is the mirror image: 2.5x overrepresented, and on the same
   widened count all 42 of its errors above 0.5 run the other way, with characters
-  who die predicted as very likely to live. Base mortality is 9.3%, so the model has learned that almost
-  nobody dies on this show, right nine times in ten, and wrong for every
-  one-off death.
+  who die predicted as very likely to live. Base mortality is 9.3%, so the model
+  has learned that almost nobody dies on this show, right nine times in ten and
+  wrong for every one-off death.
 
-Both are base-rate anchoring, in opposite directions, and nothing in our feature
-set separates a central character who dies from a central character who survives.
+In confusion-matrix terms Spartacus is a false-positive problem and Grey's
+Anatomy a false-negative one, so no single threshold fixes both: the two
+franchises need it moved in opposite directions. Both are base-rate anchoring,
+and nothing in our feature set separates a central character who dies from a
+central character who survives.
 We could have added franchise-specific corrections for these two, but that would
 hide a real limit of what wiki metadata supports, so we left them in.
 
@@ -387,20 +404,19 @@ text helps as much as it does and no more.
 
 ![Strongest TF-IDF terms in each direction](data/clean/figures/q2_text_terms.png)
 
-**Figure 5.** Strongest TF-IDF coefficients in each direction. The transferable
-signal is real but partial: `antagonist`, `command`, `background` and `recurring`
-would mean the same thing in a franchise the model has never seen, while `hydra`,
-`island` and `games` sit on the same side and would not.
+**Figure 5.** Strongest TF-IDF coefficients in each direction, showing the
+portable terms and the franchise fingerprints side by side.
 `src/q2_text/coefficients.py` writes these weights and asserts that no death or
-survival token survived the stripping, so the vocabulary can be checked directly.
+survival token survived the stripping, so the vocabulary can be checked
+directly.
 
-**Scope.** This answers the question for descriptive text about a character, not
-for dialogue. We hold transcripts for 1,136 episodes across 11
-shows, but an episode-level death registry for only two of them, so the largest
-transcript set (Grey's Anatomy, 464 episodes) has no outcome to align against;
-most transcripts also carry no speaker labels, making attribution of a line to a
-character a prerequisite problem in its own right. A dialogue model fit on the
-two aligned shows would not support a claim about the other nine.
+**Scope.** This answers the question for descriptive text, not dialogue. We hold
+transcripts for 1,136 episodes across 11 shows but an episode-level death
+registry for only two, so the largest transcript set (Grey's Anatomy, 464
+episodes) has no outcome to align against, and most transcripts carry no speaker
+labels, making attribution of a line to a character a prerequisite problem in
+itself. A model fit on the two aligned shows would not support a claim about the
+other nine.
 
 ---
 
@@ -417,9 +433,16 @@ size, so a franchise with 40 characters does not count the same as one with
 characters within a franchise are plainly not independent draws (Pearson
 chi-square/df of 36.6), and it returned p < 1e-10 on every term from 38 data
 points. Weighting a franchise-level model by cast size keeps the size
-information without pretending the sample size is the character count. Then k-means over the property
-vectors, with k chosen by silhouette and checked for stability across 10
-seeds.
+information without pretending the sample size is the character count.
+
+Then k-means over the property vectors. We standardise first because the clustering
+lectures make the choice of distance measure the substantive decision, and raw
+Euclidean distance is meaningless when cast size runs to thousands while mean
+rating sits between 6 and 9. k is chosen by silhouette and checked for stability
+across 10 seeds. We treat the result as exploratory, in the sense the lectures
+mean when they call clustering subjective: 38 points in 8 dimensions can be
+grouped several defensible ways, so a clustering is something to interpret, not
+a hypothesis test.
 
 **Which rows Q3 counts.** Mortality here is computed over 17,584 on-screen,
 named characters, not the 15,686 that reach the modelling table. The difference
@@ -444,11 +467,10 @@ model-supplied labels described above wherever they resolved a row.
 | Lost | 330 | 203 (61.5%) | 23.2–69.0% | 26.6% |
 
 The bounds are wide enough that these four franchises carry little weight in
-what follows. The simpler alternative would be to assume the corpus death rate
-applies to unlabelled rows too; comparing that against our resolved labels, the
-two agree for Lost (26.6% vs 27.1%) and diverge for Prison Break (21.3% vs
-13.8%). That is the pattern we would expect, since a flat corpus-wide rate is
-least reliable for a show whose own mortality profile is unusual.
+what follows. They also show why the simpler alternative, assuming the corpus
+death rate applies to unlabelled rows, is not safe: it matches our resolved
+labels for Lost (26.6% vs 27.1%) but not for Prison Break (21.3% vs 13.8%),
+a flat rate being least reliable exactly where a show's own profile is unusual.
 
 **Results.** Mortality does vary a lot by franchise, from Grey's Anatomy at
 9.3% to The 100 at 72.7% among franchises with at least 100 characters. But
@@ -495,17 +517,43 @@ willingness to kill a lead) is not in TMDB's fields.
 
 ## Future Work
 
-The obvious next question is dialogue, which is blocked on alignment rather than
-on data volume: per-episode death registries exist for two of our eleven
-transcript shows, and most transcripts carry no speaker labels, so attributing a
-line to a character has to be solved first. Second, a proper reliability figure
-for the annotation, since a second pass over the 600-page sample would give a
-Cohen's kappa where we currently have none. Third, the franchise-level feature
-gaps above: either handle per-franchise missingness deliberately or restrict
-grouped CV to franchises carrying the full feature set, with a minimum franchise
-size imposed at the same time. The most interesting extension is harder. Every feature we
-have is retrospective, so testing whether a death was actually foreseeable would
-mean rebuilding the features from what was knowable partway through a series and
+What we did not get to, roughly in order of how much it would change the
+answers:
+
+- **Community detection on the co-mention graph.** We build the graph but only
+  take centrality off it, when the community-detection lectures are about finding
+  the dense subgroups inside exactly this kind of graph. Communities would test
+  what centrality cannot: whether characters in the same narrative community
+  share fates. That is the distinction our Spartacus errors turn on, where
+  PageRank cannot separate a central character who dies from a central one who
+  survives, but membership of a doomed faction might.
+- **Significance tests on the model comparison.** We rank nine feature sets by
+  point estimates and read the ordering directly. Whether 0.699 genuinely beats
+  0.692 is a question for a statistical test across folds, not for eyeballing,
+  and running one would tell us which rows of that table are real differences.
+- **A cost-sensitive loss.** Our two worst franchises fail in opposite
+  directions, one on false positives and one on false negatives. Fitting against
+  a weighted loss instead of an unweighted one would let us state what a missed
+  death costs relative to a false alarm, rather than leaving it implicit.
+- **A reliability figure for the annotation.** Claude Haiku 4.5 labelled the
+  600-page sample and the unresolved-status rows as a single coder, and
+  `src/labels/eval_labels.py` already computes Cohen's kappa between two passes
+  if a second exists. Relabelling that sample independently would produce it.
+  Following the lectures on inter-reliability, kappa rather than raw agreement is
+  the figure to quote: with 41% of pages on-screen characters and 12% not
+  characters at all, the categories are uneven enough that percent agreement
+  would flatter the coding.
+- **Dialogue**, for the reasons given under Q2: the alignment problem has to be
+  solved before the modelling one.
+- **The thin franchises and the feature gaps.** Fuller per-show scrapes for The
+  Walking Dead and Prison Break sit unused in `datasets/` because they carry no
+  page text or categories. Separately, grouped CV should either handle
+  per-franchise missingness deliberately or restrict itself to franchises
+  carrying the full feature set, with a minimum franchise size imposed.
+
+The most interesting extension is harder. Every feature we have is
+retrospective, so testing whether a death was actually foreseeable would mean
+rebuilding the features from what was knowable partway through a series and
 predicting forward from there.
 
 ---
@@ -514,17 +562,14 @@ predicting forward from there.
 
 Character attributes carry more signal about death than franchise identity does,
 and the two combine: 0.633 PR-AUC from character features alone against 0.556
-from the franchise, and 0.743 from everything together, against a 0.356 base
-rate. On the test set the full model reaches **0.752 PR-AUC / 0.850 ROC-AUC**
-under a random split and **0.664 / 0.776** when whole franchises are held out.
-The most useful single addition was text: TF-IDF over each character's
-death-stripped wiki description, which on its own beats their structured
-attributes and is the only feature family that helps as much on an unseen
-franchise as on a familiar one. The gender effect is real and stable:
-women are about half as likely to die, adjusted, consistent across 11 of 22
-franchises with no reversals. Franchise-level properties, by contrast, explain
-none of why some shows kill more than others: no term in the model reaches
-significance and adjusted R² is negative.
+from the franchise and 0.743 from everything together, on a 0.356 base rate. The
+full model reaches **0.752 PR-AUC / 0.850 ROC-AUC** on the test set, falling to
+**0.664 / 0.776** when whole franchises are held out. The most useful single
+addition was text, which on its own beats the structured attributes and is the
+only family that helps as much on an unseen franchise as a familiar one. The
+gender effect is real and stable: women are about half as likely to die,
+adjusted, across 11 of 22 franchises with no reversals. Franchise properties, by
+contrast, explain none of why some shows kill more than others.
 
 The main limitation is the data itself. A wiki is written after the story is
 over, by people who write more about the characters they cared about. Our two

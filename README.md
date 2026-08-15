@@ -282,9 +282,7 @@ Open, roughly in the order they would bite someone picking this up:
   MCU) because those wikis do not use the family infobox keys. Under grouped
   cross-validation, a held-out franchise can therefore be missing a feature the
   model learned to lean on. Treat per-franchise feature coverage as something to
-  check before adding a feature, not after. (An earlier version of this note
-  also claimed `affiliation_alignment` was missing for 12 franchises; checked
-  against the analysis population, it is missing for none.)
+  check before adding a feature, not after.
 - **Several wikis are under-collected** and we have not confirmed the right
   template: The Walking Dead (49 rows), Stranger Things (78 of 221 candidate
   pages, apparently a per-character template the scraper design does not
@@ -294,9 +292,7 @@ Open, roughly in the order they would bite someone picking this up:
   `Infobox Car`. Check a template against real pages before trusting it.
 - **No minimum-n rule anywhere.** Folds under grouped CV are very unequal:
   Prison Break contributes 28 characters and the MCU 3,489, and each counts as
-  one fold. (The figures previously recorded here, Matrix 4 and Peaky Blinders
-  11, predated the template-redirect fix; both franchises are now well populated
-  at 64 and 43.)
+  one fold.
 - **The unnamed-role filter only catches explicit markers** —
   `Unidentified`/`Unnamed`/`Unknown` prefixes — so Star Wars's "Unidentified
   Ugnaught worker" is dropped while Dexter's "Acupuncturist" stays.
