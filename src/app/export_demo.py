@@ -1,31 +1,11 @@
 """Export the demo model and character table as JSON.
 
-The demo runs entirely in the browser, so the model has to be small enough to
-evaluate in JavaScript. That is the first cut: no random forest, no 369 one-hot
-category features, no TF-IDF vocabulary.
-
-The second cut is the one that matters, and it is why the demo exposes nine
-attributes rather than the hundred-odd the full model sees. An attribute earns
-a place here only if a user can meaningfully choose it for an invented
-character. That excludes:
-
-  wiki-attention features   page_text_length and infobox_field_count are our
-                            two strongest predictors, and both measure how much
-                            fans wrote, not who the character is. prominence_tier
-                            is out for the same reason -- it is page length in
-                            four buckets, so a user picking "Lead" would really
-                            be picking "long wiki page", which is the circularity
-                            the writeup spends its Impediments section on.
-  sparse attributes         the power_* flags, age_group and hero_alignment are
-                            all under 2% populated, so a control for them would
-                            be inert for almost every character.
-  franchise restatements    medium, genre and content_rating are properties of
-                            the franchise, which is already a control.
-
-What survives is a logistic regression over attributes that are either intrinsic
-to the character (gender, role, alignment, species, named relatives) or describe
-their position in the story rather than the wiki (billing order, PageRank rank,
-in-degree). It scores below the full model, and the demo says so.
+Constraints for the demo model:
+1. Must be small enough to run in the browser in JavaScript (no random forest, TF-IDF).
+2. Features must be user-selectable for an invented character. This excludes:
+   - wiki-attention features (page_text_length, infobox_field_count, prominence_tier)
+   - sparse attributes (power_*, age_group, hero_alignment)
+   - franchise restatements (medium, genre, content_rating)
 
   python -m src.app.export_demo
 """

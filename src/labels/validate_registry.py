@@ -1,21 +1,8 @@
 """Check the death label against human-curated death registries.
 
-Everything else about the label is either derived from the wiki infoboxes or
-estimated with LLM annotations, both of which come back to the same wiki text.
-This is the one check that uses a source with no connection to it: episode-level
-death lists compiled by other people, for other reasons.
-
-  Game of Thrones  datasets/Game Of Thrones/game-of-thones-deaths.csv
-  The 100          datasets/The 100/the_100_deaths.csv
-
-What it measures is recall. A registry lists deaths, so a character in it should
-be labelled dead; a character absent from it may still have died off screen or in
-the books, so absence proves nothing and precision cannot be read off this.
-
-Matching is exact on a normalised name and restricted to names that occur once on
-each side. Without that restriction the six different "High Septon (...)" pages on
-the Game of Thrones wiki all collapse onto the registry's single High Septon and
-score as five errors, which pulls apparent recall from 98.5% down to 86.4%.
+What it measures is recall: a character in a death registry should be labelled
+dead. Matching is exact on a normalised name and restricted to names that occur 
+once on each side.
 
   python -m src.labels.validate_registry
 """

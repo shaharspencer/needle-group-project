@@ -1,20 +1,8 @@
 """Build the wide feature matrix for Q1 from the raw scrape.
 
-Everything here comes from data already on disk. Five families:
-
-  categories   Fandom category lines, one-hot over the most common ones.
-               99.3% of pages carry them and they encode species, occupation,
-               affiliation and status.
-  infobox      which infobox fields exist, rather than only how many.
-  relations    counts of named family members.
-  network      per-franchise co-mention graph. An edge runs from a character
-               to every other character named on their page. PageRank, HITS
-               and degree measure how central a character is to the story,
-               which is the link-analysis question.
-  intro        the opening paragraph, kept as text for TF-IDF downstream.
-
-Anything naming death is excluded throughout. A "Deceased" category or a
-cause-of-death field restates the label rather than predicting it.
+Extracts five feature families: categories, infobox, relations, network, and intro.
+See FEATURES.md for detailed definitions. Anything naming death is excluded 
+throughout to prevent label leakage.
 
   python -m src.q1_character.features
 """

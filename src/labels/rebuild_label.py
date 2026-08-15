@@ -1,13 +1,7 @@
 """Build the modelling table: characters_raw plus is_onscreen and is_dead_v2.
 
-is_dead_v2 differs from is_dead in two ways:
-  - characters whose infobox status could not be parsed count as alive rather
-    than being dropped
-  - the analysis is restricted to characters who appear on screen
-
-is_onscreen is `has_actor OR tmdb_match`. Measured against the annotated
-sample: precision 0.79, recall 0.77. Neither signal alone is enough -- an actor
-field alone recalls 0.61, and a TMDB cast match alone 0.58.
+is_dead_v2 differs from is_dead by keeping unparsed statuses (as alive) and 
+restricting to on-screen characters. is_onscreen is `has_actor OR tmdb_match`.
 
   python -m src.labels.rebuild_label
 """

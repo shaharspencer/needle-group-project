@@ -1,36 +1,10 @@
 """Assign every character to trainval or test, once, and write it down.
 
-Until this existed the project reported cross-validated scores for 21
-configurations (seven feature sets by three models) and then quoted the best one
-per feature set. Those numbers are chosen on the same folds they are measured on,
-so they are optimistic: with 21 attempts, the maximum of a noisy estimate is
-above its mean.
-
-The fix is nested, not a third fixed split: `evaluate.py` runs k-fold CV *inside*
-trainval to pick a winner -- reusing the same cross-validation regime `models.py`
-already uses, so selection isn't at the mercy of one arbitrarily-drawn dev set --
-then refits the winner on all of trainval and scores it on test exactly once.
-A fixed train/dev/test split was tried first and dropped: with only 38
-franchises, one held-out dev slice landed at 50.7% mortality against 32.6% for
-train, purely from which handful of franchises it happened to contain. Folding
-dev into a k-fold selection loop removes that single-draw noise; test still
-needs to be a fixed, disjoint slice, since scoring it more than once is exactly
-the problem this file exists to avoid.
-
-Two regimes, because they answer different questions and neither is a substitute
-for the other:
-
+Two regimes, because they answer different questions:
   random   rows split at random, stratified on the outcome. Franchises appear in
            both splits, so the model may use franchise base rates.
   grouped  whole franchises go to one split. Nothing about a test franchise is
-           visible during training, which is the harder and more honest question:
-           does this transfer to a story we have never seen?
-
-Assigning franchises to the grouped split is not a coin flip, because franchise
-sizes span three orders of magnitude -- Star Wars has 2,785 on-screen named
-characters and The Matrix 4. Franchises are dealt by largest-remaining-deficit
-(see `grouped_split`) so trainval and test land close to their target share and
-close to the corpus death rate, without needing every stratum to be enormous.
+           visible during training, to see if the model transfers to unseen stories.
 
   python -m src.q1_character.splits
 """
@@ -64,15 +38,7 @@ class Splits:
 
     @staticmethod
     def grouped_split(df: pd.DataFrame) -> pd.Series:
-        """Whole franchises to one split, greedily balancing size and mortality.
-
-        Round-robin-by-size alone can deal an unlucky hand: with only 38
-        franchises to distribute, whichever 7-8 land in dev by chance might
-        happen to be unusually deadly ones. Assigning largest-first to
-        whichever split most needs both more rows and a mortality rate closer
-        to the corpus average keeps train/dev/test comparable on both axes,
-        not just on row count.
-        """
+        """Whole franchises to one split, greedily balancing size and mortality."""
         overall_rate = df[TARGET].mean()
         stats = (
             df.groupby("franchise")[TARGET]

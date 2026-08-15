@@ -14,7 +14,6 @@ WIKI_CONFIGS = {
         "base_url": "https://marvelcinematicuniverse.fandom.com",
         "api_url": "https://marvelcinematicuniverse.fandom.com/api.php",
         "content_rating": "PG-13",
-        "character_categories": ["Marvel Cinematic Universe Characters", "Characters"],
         "infobox_templates": ["Character"],
         "field_map": {
             "real name": "real_name", "status": "status", "species": "species", 
@@ -32,7 +31,6 @@ WIKI_CONFIGS = {
         "base_url": "https://gameofthrones.fandom.com",
         "api_url": "https://gameofthrones.fandom.com/api.php",
         "content_rating": "TV-MA",
-        "character_categories": ["Individuals", "Characters"],
         "infobox_templates": ["Character", "Infobox Character"],
         "dod_only": True,
         "field_map": {
@@ -50,7 +48,6 @@ WIKI_CONFIGS = {
         "base_url": "https://walkingdead.fandom.com",
         "api_url": "https://walkingdead.fandom.com/api.php",
         "content_rating": "TV-MA",
-        "character_categories": ["Characters", "TV Series Characters"],
         "infobox_templates": [
             "Character", "Infobox", "TV Character", "TV Character Infobox",
             "Comic Character", "Video Game Character", "Fear Character",
@@ -73,7 +70,6 @@ WIKI_CONFIGS = {
         "base_url": "https://starwars.fandom.com",
         "api_url": "https://starwars.fandom.com/api.php",
         "content_rating": "PG-13",
-        "character_categories": ["Individuals", "Characters"],
         "infobox_templates": ["Character", "Individual"],
         "dod_only": True,
         "field_map": {
@@ -91,7 +87,6 @@ WIKI_CONFIGS = {
         "base_url": "https://harrypotter.fandom.com",
         "api_url": "https://harrypotter.fandom.com/api.php",
         "content_rating": "PG-13",
-        "character_categories": ["Individuals", "Characters"],
         "infobox_templates": ["Individual infobox", "Character"],
         "dod_only": True,
         "field_map": {
@@ -109,7 +104,6 @@ WIKI_CONFIGS = {
         "base_url": "https://thehungergames.fandom.com",
         "api_url": "https://thehungergames.fandom.com/api.php",
         "content_rating": "PG-13",
-        "character_categories": ["Characters"],
         "infobox_templates": ["Character"],
         "field_map": {
             "name": "real_name", "fate": "status", "status": "status", "species": "species", 
@@ -126,7 +120,6 @@ WIKI_CONFIGS = {
         "base_url": "https://lotr.fandom.com",
         "api_url": "https://lotr.fandom.com/api.php",
         "content_rating": "PG-13",
-        "character_categories": ["Characters", "Characters by race"],
         "infobox_templates": ["Infobox Person", "Infobox Person Hobbits", "Infobox Person Men", "Infobox Person Elves", "Infobox Person Dwarves", "Infobox Person Maiar", "Character"],
         "dod_only": True,
         "field_map": {
@@ -144,7 +137,6 @@ WIKI_CONFIGS = {
         "base_url": "https://james-camerons-avatar.fandom.com",
         "api_url": "https://james-camerons-avatar.fandom.com/api.php",
         "content_rating": "PG-13",
-        "character_categories": ["Characters", "Film characters"],
         "infobox_templates": ["Infobox character", "Character"],
         "field_map": {
             "name": "real_name", "status": "status", "species": "species", 

@@ -1,20 +1,8 @@
-"""Which words in a character's description push toward death, and which away.
+"""Extract and display the strongest TF-IDF coefficients predicting death/survival.
 
-Q1 establishes *that* the text features help. This answers *why* by reading the
-fitted weights, which is the only part of the text result a reader can check by
-eye rather than take on trust.
-
-The vectoriser settings are imported from `src.q1_character.models` rather than
-restated, so the vocabulary here is necessarily the same one the scored model
-used. Two disciplines carry over from that module:
-
-  - fit on `trainval` only, never the held-out test rows;
-  - the text is `intro_clean`, which has had every death- or survival-mentioning
-    sentence dropped and then any surviving death token removed. Without that
-    step this would mostly recover "was killed by" and say nothing.
-
-A single fit on trainval, not a cross-validated average. This output is read for
-its ranking, not quoted as a performance estimate.
+Fits a single logistic regression on trainval using the death-stripped `intro_clean` 
+text. The output is read for its ranking to see which words push toward death or 
+away from it, not quoted as a performance estimate.
 
   python -m src.q2_text.coefficients
 """

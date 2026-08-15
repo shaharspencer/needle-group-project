@@ -1,19 +1,8 @@
-"""Q1 effect sizes: how much does gender change the odds of dying?
+"""Compute gender effect sizes on mortality odds.
 
-The model comparison says gender matters. This says by how much, which is the
-form the research question asks for.
-
-Three estimates, because they answer different things:
-
-  unadjusted  the raw difference in death rates. Confounded: if men hold more
-              disposable roles, this attributes the role effect to gender.
-  adjusted    conditioned on prominence, archetype, alignment and species,
-              with franchise fixed effects. This is the headline number.
-  per         the same adjusted model fitted inside each franchise, so a
-              franchise can disagree with the pooled result.
-
-Reported as an odds ratio with a 95% interval, and as a percentage-point
-difference in predicted death probability, which is easier to state plainly.
+Estimates unadjusted, adjusted (conditioned on prominence, archetype, alignment, 
+species, and franchise), and per-franchise effects. Reported as odds ratios with 
+95% intervals and percentage-point differences in predicted death probability.
 
   python -m src.q1_character.effects
 """

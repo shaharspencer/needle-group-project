@@ -180,10 +180,10 @@ def fig_franchise_mortality() -> None:
     style.strip_spines(ax, keep=("bottom",))
     ax.legend(loc="lower right")
 
-    ax.set_title("Franchise mortality, with what we do not know about it")
+    ax.set_title("How deadly is each franchise?")
     style.caption(fig,
-        "Dot is the estimate, grey bar the 95% Wilson interval, blue band the range if every character with no recorded "
-        "status turned out to have died. Franchises whose wikis fill in status consistently have no band at all.")
+        "Dot = point estimate, grey bar = 95% Wilson interval, blue band = range if every unlabelled character died. "
+        "Franchises with complete wiki coverage have no blue band.")
     fig.savefig(FIG_DIR / "q3_franchise_mortality.png")
     plt.close(fig)
 
@@ -247,15 +247,63 @@ def fig_text_terms(n: int = 12) -> None:
     ax.yaxis.grid(False)
     style.strip_spines(ax, keep=("bottom",))
 
-    ax.set_title("The clearest death signal is a narrative role, not a character trait")
+    ax.set_title("Narrative role is the strongest text signal for death")
     style.caption(fig,
-        f"The {n} strongest terms in each direction, from a model fit on trainval only. "
-        "'antagonist' dominates, and 'command', 'background' and 'recurring' describe narrative "
-        "position rather than identity -- these are what transfer to an unseen franchise. The rest is "
-        "less portable: 'hydra', 'island' and 'games' are franchise fingerprints, and the survival "
-        "side is mostly wiki section headings ('relationships', 'category', 'history') plus more "
-        "franchise vocabulary. That mixture is why the family helps less than its headline score.")
+        f"Top {n} terms in each direction (trainval only). Portable terms like 'antagonist', 'command', 'background' "
+        "describe narrative position and transfer across franchises. Less portable terms ('hydra', 'island') are "
+        "franchise fingerprints; survival-side terms ('relationships', 'category') are wiki section headings.")
     fig.savefig(FIG_DIR / "q2_text_terms.png")
+    plt.close(fig)
+
+
+def fig_text_transfer() -> None:
+    """How much does each model lose when franchises are held out?"""
+    report = pd.read_csv(CLEAN_DIR / "q1_model_comparison.csv")
+
+    feats = ["text", "character+text"]
+    models = ["logistic", "forest"]
+    labels = {"text": "Text only", "character+text": "Character + text"}
+    model_labels = {"logistic": "Logistic regression", "forest": "Random forest"}
+
+    fig, ax = plt.subplots(figsize=(7.0, 3.4))
+    x = np.arange(len(feats))
+    width = 0.32
+
+    for i, model in enumerate(models):
+        random_scores, grouped_scores = [], []
+        for feat in feats:
+            r = report[(report.features == feat) & (report.model == model)]
+            random_scores.append(r[r.regime == "random"].pr_auc.iloc[0])
+            grouped_scores.append(r[r.regime == "grouped"].pr_auc.iloc[0])
+
+        offset = (i - 0.5) * width
+        color = SERIES[i]
+
+        # Grouped score as solid bar, random-to-grouped drop as lighter extension
+        bars = ax.bar(x + offset, grouped_scores, width * 0.9, color=color,
+                      label=model_labels[model])
+        ax.bar(x + offset, [r - g for r, g in zip(random_scores, grouped_scores)],
+               width * 0.9, bottom=grouped_scores, color=color, alpha=0.25)
+
+        for j, (r, g) in enumerate(zip(random_scores, grouped_scores)):
+            ax.text(x[j] + offset, g - 0.015, f"{g:.3f}", ha="center", va="top",
+                    fontsize=8, color=SURFACE, fontweight="bold")
+            ax.text(x[j] + offset, r + 0.008, f"−{r - g:.3f}", ha="center",
+                    va="bottom", fontsize=7.5, color=INK_SECONDARY)
+
+    ax.set_xticks(x, [labels[f] for f in feats])
+    ax.set_ylabel("PR-AUC")
+    ax.set_ylim(0, 0.82)
+    ax.yaxis.grid(True)
+    ax.xaxis.grid(False)
+    style.strip_spines(ax, keep=("left",))
+    ax.legend(loc="upper right")
+
+    ax.set_title("Logistic regression transfers better than random forest on text")
+    style.caption(fig,
+        "Solid bar = grouped CV (franchise held out). Faded extension = how much was lost vs. random CV. "
+        "The forest drops more because it memorises franchise-specific term combinations.")
+    fig.savefig(FIG_DIR / "q2_text_transfer.png")
     plt.close(fig)
 
 
@@ -301,6 +349,7 @@ def main() -> None:
         ("q1_gender_forest", fig_gender_forest),
         ("q1_feature_importance", fig_importance),
         ("q2_text_terms", fig_text_terms),
+        ("q2_text_transfer", fig_text_transfer),
         ("q3_franchise_mortality", fig_franchise_mortality),
         ("q3_run_span", fig_runspan),
     ]:

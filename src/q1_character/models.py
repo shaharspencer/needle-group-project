@@ -1,19 +1,9 @@
-"""Q1: do character attributes or the franchise predict death better?
+"""Compare models to see if character attributes or franchise predict death better.
 
-Three feature sets are trained and compared:
-  franchise  the franchise and its metadata only
-  character  who the character is, with no franchise information
-  both
-
-The gap between them answers the question. Random forest importances then say
-which character attributes carry the signal.
-
-Scored under two splitting regimes, because they answer different questions.
-A random split lets the model learn each franchise's base rate, which is the
-only regime in which "a GoT character versus a Harry Potter character" is a
-fair comparison. A grouped split holds out whole franchises, so franchise
-identity is useless by construction and what is measured is whether character
-attributes transfer to a franchise never seen in training.
+Evaluates 3 models (logistic, tree, forest) across multiple feature sets 
+(franchise, character, both, etc.). Scored under random (franchise identity usable) 
+and grouped (franchise held out) CV splits. Uses random forest permutation 
+importances to identify which character attributes carry the signal.
 
   python -m src.q1_character.models
 """

@@ -1,19 +1,8 @@
-"""Pick a model with k-fold CV inside trainval, then score it once on test.
+"""Select and holdout-score a final model.
 
-`models.py` compares every feature set against every model under cross
-validation and reports the best cell per feature set. That is the right tool
-for "which family of features carries the signal" and the wrong tool for "how
-well does this actually do": the winner of 21 comparisons is chosen on the same
-numbers it is reported with, so a single reported PR-AUC from that table is
-optimistic.
-
-This fixes that without giving up the averaging that makes cross-validated
-comparison reliable in the first place. A single fixed dev split was tried and
-dropped -- with only 38 franchises, one held-out slice landed at 50.7%
-mortality against 32.6% for train, purely from which franchises it happened to
-contain (see splits.py). k-fold selection *inside* trainval keeps the averaging;
-test is still a fixed slice, touched exactly once, because scoring it more than
-once is exactly the problem this file exists to avoid.
+Uses k-fold CV inside the trainval split to select a model, then scores it 
+exactly once on the fixed test slice. Avoids the optimistic bias of reporting 
+the CV winner's score.
 
   python -m src.q1_character.evaluate
 """

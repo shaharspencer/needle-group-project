@@ -1,17 +1,8 @@
-"""Q3: which franchises are deadliest, and what explains it?
+"""Analyze franchise-level mortality rates.
 
-Builds one row per franchise: on-screen mortality with a Wilson interval, plus
-franchise properties from TMDB (how many titles, how long it ran, genre,
-rating, popularity). Then two analyses:
-
-  regression  binomial GLM of deaths out of characters on franchise
-              properties, so franchises with 40 characters do not carry the
-              same weight as ones with 4,000.
-  clustering  k-means over the franchise property vectors, with k chosen by
-              silhouette and checked for stability across seeds.
-
-n is 38 franchises, which is small. Intervals are reported everywhere and the
-regression is read as description rather than inference.
+Computes mortality with Wilson intervals for each franchise. Performs a binomial 
+GLM regression of deaths on franchise properties (weighted by cast size) and 
+k-means clustering over franchise property vectors.
 
   python -m src.q3_franchise.mortality
 """

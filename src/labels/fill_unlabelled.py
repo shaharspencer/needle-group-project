@@ -1,22 +1,12 @@
 """Collect the characters no other source can label, for Haiku to annotate.
 
-Labels are preferred in this order (see README, "Where labels come from"):
+Labels are preferred in this order:
+  1. human-curated death registry
+  2. infobox status / date-of-death field
+  3. Claude Haiku 4.5
 
-  1. a human-curated death registry, where one exists
-  2. the infobox status / date-of-death field -- also human-written
-  3. Claude Haiku 4.5, only for what neither of the above can settle
-
-This script is step 3, and only step 3: it collects exactly the rows that
-reach this point with no answer, so Haiku fills gaps rather than overrules
-anyone. A row belongs here only if it is in the analysis population (on
-screen, named), its infobox status could not be parsed, and no death
-registry names it either -- registries only list deaths, so a registry
-checks off the "dead" rows here but can never resolve the rest to "alive".
-
-Output goes through the same chunk -> Haiku subagent -> merge pipeline as
-the gold set (see annotate.py), into its own directory. It is never merged
-into is_dead or is_dead_v2. rebuild_label.py reads it back as a clearly
-separate is_dead_haiku column.
+This script collects exactly the rows that reach step 3 with no answer. Output 
+is never merged into is_dead; rebuild_label.py reads it as is_dead_haiku.
 
   python -m src.labels.fill_unlabelled --collect
   python -m src.labels.fill_unlabelled --merge --pass-id 1

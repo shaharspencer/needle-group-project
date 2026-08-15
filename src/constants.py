@@ -3,28 +3,9 @@
 ## Rejection-rule policy
 
 Every predicate here that drops or reclassifies a row (`is_non_character`,
-`is_unnamed_role`, `clean_infobox_field_count`) runs before train/dev/test
-splitting even exists (see `src/q1_character/splits.py`), over the whole
-corpus test rows included. That is only safe because each one is a pure
-function of that row's own raw scraped fields -- which infobox keys are
-present, the name string -- and never touches:
-
-  - `is_dead` or anything derived from it
-  - a statistic computed across other rows (no percentile, no corpus-wide
-    count, no fitted threshold)
-  - anything estimated from dev or test outcomes
-
-A rule that fails any of those would be deciding what belongs in the dataset
-using information the model is not supposed to have yet, which is a leakage
-channel independent of anything happening inside the models themselves. Any
-new rejection rule should be checked against this before being added.
-
-One honest exception to note, not a violation of the rule above but adjacent
-to it: `is_non_character` was written after noticing implausible predictions
-while browsing the demo, which draws on the whole corpus. The rule itself
-uses no label and no cross-row statistic, so it is still safe to apply
-everywhere -- but the process that produced it looked at outputs before
-splits existed.
+`is_unnamed_role`, `clean_infobox_field_count`) must be a pure function of 
+that row's own raw scraped fields. To prevent data leakage, they must never 
+touch `is_dead`, statistics computed across other rows, or dev/test outcomes.
 """
 
 import os

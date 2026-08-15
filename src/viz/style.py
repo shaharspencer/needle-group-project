@@ -1,8 +1,6 @@
-"""Shared chart styling.
+"""Shared chart styling: palette, typography, grid.
 
-Colours are the validated reference palette: fixed categorical order, one hue
-per entity, hairline chrome. Figures render on the light surface because they
-are embedded in a PDF writeup.
+Figures render on a light surface for PDF embedding.
 """
 
 import matplotlib as mpl
