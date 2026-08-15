@@ -46,8 +46,8 @@ Code: see `README.md` for the full run order.
   - 30 wikis → `status` string (`"Deceased"` / `"Alive"`)
   - 8 wikis → date-of-death field (filled → dead)
   - Collapsed into binary `is_dead_v2`
-- `is_dead_v2` vs. raw `is_dead`: unparseable status → **alive** instead of dropped (affects 11.9% of rows, see below)
-- 1,862 rows with no parseable status (4 franchises) labelled by **Claude Haiku 4.5**, "can't tell" allowed explicitly:
+- `is_dead_v2` used for Q1/Q2 modelling is built **only from characters with a parseable status** — rows where the infobox status couldn't be parsed are dropped upstream (`build_pipeline.py`) before `is_dead_v2` is ever computed, so none of the 15,686-character modelling population carries a defaulted label. The "unparseable → alive" convention is a separate, Q3-only choice (see Unresolved rows, below and Q3 → Setup): the franchise-mortality denominator there intentionally keeps these characters and counts them as alive unless resolved by a registry or Haiku.
+- 1,858 of those dropped rows (spread across ~20 franchises, concentrated in 4: The Wire, Prison Break, Boardwalk Empire, Lost) were labelled by **Claude Haiku 4.5**, "can't tell" allowed explicitly:
   - 123 dead / 1,223 alive / 512 undecided (27.6% undecidable)
   - stored in their own file (`data/gold/fill_unlabelled/haiku_fill.csv`) as a separate column, never merged into `is_dead`/`is_dead_v2`
 - **What they are used for, and why:**
@@ -82,11 +82,12 @@ Code: see `README.md` for the full run order.
   - Star Wars = 56% of raw scrape, still 12% after filtering → **[Course: grouped cross-validation]** used throughout Q1/Q2 specifically to prevent this one franchise from dominating both train and test
   - 5 franchises (Walking Dead, Stranger Things, Vikings, Spartacus, Westworld) undercounted (infobox template mismatch) → excluded from franchise-level analysis below a 30-character threshold
 
-### Unresolved rows (11.9% of the population)
+### Unresolved rows (10.8% of the wider Q3 population)
 
-- 1,862 rows with unparseable status, concentrated in 4 franchises (The Wire, Prison Break, Boardwalk Empire, Lost — 46%–85% unlabelled each)
+- 1,898 on-screen, named characters have unparseable status across the corpus — excluded entirely from the 15,686-character Q1/Q2 modelling population (see Labels, above), but kept in Q3's wider 17,584-character population, where they count toward the mortality denominator
+- Unevenly distributed: 4 franchises (The Wire, Prison Break, Boardwalk Empire, Lost — 46%–85% unlabelled each) account for 1,139 of the 1,898; the remaining ~760 are small counts spread across roughly 20 other franchises (e.g. 158 in MCU, 132 in James Bond 007) with mostly-parseable status
 - Label source priority: human-curated death registry → wiki infobox → Claude Haiku 4.5 (only for what neither settles)
-- No registry covers these franchises → all 1,862 rows sent to the model in batches of 100 (outcome under Labels, above)
+- No registry covers the 4 concentrated franchises → their unresolved rows (1,139) are among the 1,858 sent to Haiku in batches of 100 (outcome under Labels, above)
 - These 4 franchises are reported as a **range**, not a point estimate, in Q3
 
 ### External validation of the label
