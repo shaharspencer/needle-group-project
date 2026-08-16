@@ -265,7 +265,7 @@ def fig_text_transfer() -> None:
     labels = {"text": "Text only", "character+text": "Character + text"}
     model_labels = {"logistic": "Logistic regression", "forest": "Random forest"}
 
-    fig, ax = plt.subplots(figsize=(7.0, 3.4))
+    fig, ax = plt.subplots(figsize=(7.0, 3.8))
     x = np.arange(len(feats))
     width = 0.32
 
@@ -280,28 +280,31 @@ def fig_text_transfer() -> None:
         color = SERIES[i]
 
         # Grouped score as solid bar, random-to-grouped drop as lighter extension
-        bars = ax.bar(x + offset, grouped_scores, width * 0.9, color=color,
-                      label=model_labels[model])
+        ax.bar(x + offset, grouped_scores, width * 0.9, color=color,
+               label=model_labels[model])
         ax.bar(x + offset, [r - g for r, g in zip(random_scores, grouped_scores)],
                width * 0.9, bottom=grouped_scores, color=color, alpha=0.25)
 
         for j, (r, g) in enumerate(zip(random_scores, grouped_scores)):
+            # Grouped score inside the solid bar
             ax.text(x[j] + offset, g - 0.015, f"{g:.3f}", ha="center", va="top",
                     fontsize=8, color=SURFACE, fontweight="bold")
-            ax.text(x[j] + offset, r + 0.008, f"−{r - g:.3f}", ha="center",
-                    va="bottom", fontsize=7.5, color=INK_SECONDARY)
+            # Drop label inside the faded extension
+            mid = g + (r - g) / 2
+            ax.text(x[j] + offset, mid, f"−{r - g:.3f}", ha="center", va="center",
+                    fontsize=7.5, color=INK_SECONDARY)
 
     ax.set_xticks(x, [labels[f] for f in feats])
     ax.set_ylabel("PR-AUC")
-    ax.set_ylim(0, 0.82)
+    ax.set_ylim(0, 0.78)
     ax.yaxis.grid(True)
     ax.xaxis.grid(False)
     style.strip_spines(ax, keep=("left",))
-    ax.legend(loc="upper right")
+    ax.legend(loc="upper left")
 
     ax.set_title("Logistic regression transfers better than random forest on text")
     style.caption(fig,
-        "Solid bar = grouped CV (franchise held out). Faded extension = how much was lost vs. random CV. "
+        "Solid bar = grouped CV (franchise held out). Faded extension = drop from random CV. "
         "The forest drops more because it memorises franchise-specific term combinations.")
     fig.savefig(FIG_DIR / "q2_text_transfer.png")
     plt.close(fig)
