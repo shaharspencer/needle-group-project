@@ -66,10 +66,8 @@ for Q2, `in_degree` in the demo, and figure captions that read from the CSVs
 instead of restating numbers by hand — two of them had gone stale against the
 data.
 
-**What is left**, if you want something to pick up: the open items under
-[Known issues](#known-issues) below. The biggest of those is that some features
-are missing for entire franchises rather than at random. The writeup now has a
-Future Work section covering the same ground.
+Scope and measurement constraints are set out under
+[Limitations and scope](#limitations-and-scope) below.
 
 ## Setup
 
@@ -172,12 +170,18 @@ src/
                     from leaking across a train/test boundary
   paths.py         canonical data locations — import these, don't hardcode
   labels/          label audit, gold-set sampling, annotation, evaluation,
-                    registry validation, Haiku fill for unlabelled rows
+                    registry validation, Haiku fill for unlabelled rows,
+                    reliability.py (Cohen's kappa across coding passes),
+                    ANNOTATION_RUBRIC.md (the coding scheme itself)
   enrich/          TMDB titles, cast, name matching
-  q1_character/    features, model comparison, splits, held-out evaluation,
-                    gender effect sizes
+  q1_character/    features (incl. co-mention graph, centrality, Louvain
+                    communities), model comparison, splits, held-out
+                    evaluation, gender effect sizes, community.py (do
+                    communities share fates?), significance.py (paired per-fold
+                    tests), costs.py (weighted-loss thresholds)
   q2_text/         coefficients.py — the fitted TF-IDF weights behind Q2
-  q3_franchise/    franchise mortality, WLS regression, k-means
+  q3_franchise/    franchise mortality, WLS regression, k-means with internal
+                    and external validation, Ward cross-check
   viz/             figures.py renders every writeup figure, style.py is shared
   app/             demo model export
 data/
@@ -187,10 +191,12 @@ data/
   gold/            600-page annotation sample and its labels, plus the Haiku
                     fill for unlabelled rows (tracked)
 datasets/          transcripts, death registries, per-show character features
-docs/              the demo, served by GitHub Pages
+docs/              the demo, served by GitHub Pages; WRITING_STYLE.md
+tools/             check_writing.js, the prose checker used on WRITEUP.md
+.claude/skills/    writing skills the checker's guidance comes from
 legacy/            pre-restructure scripts, kept for the record, never run
 logs/              per-run console output (gitignored)
-tests/             pytest
+tests/             pytest (labels, community statistic, cost sweep)
 ```
 
 Three conventions worth keeping to:
@@ -254,11 +260,14 @@ Two constraints on it, both deliberate and both documented at the top of
 
 | question | state |
 |---|---|
-| Q1 — character vs franchise | done: 9 feature sets × 3 models × 2 split rules (random and grouped), plus a once-scored test estimate |
-| Q1 — gender effect sizes | done: pooled and per-franchise |
-| Q2 — does text predict death? | done for descriptive text: TF-IDF over each character's wiki description, the best-transferring feature family we have. Dialogue is out of scope — see below |
-| Q3 — franchise properties | done: WLS regression, k-means, Haiku-filled mortality for the four worst franchises |
+| Q1 — character vs franchise | 12 feature sets × 3 models × 2 split rules (random and grouped), paired per-fold comparison, plus a once-scored test estimate |
+| Q1 — gender effect sizes | pooled and per-franchise |
+| Q1 — narrative communities | Louvain partitions per franchise, modularity reported, fate concentration tested against a label-shuffling null |
+| Q1 — cost-sensitive thresholds | weighted loss swept over thresholds and cost ratios, globally and per franchise |
+| Q2 — does text predict death? | answered for descriptive text: TF-IDF over each character's wiki description, the best-transferring feature family in the project. Dialogue is out of scope, see below |
+| Q3 — franchise properties | WLS regression, k-means with internal and external validation, Ward cross-check, Haiku-filled mortality for the four least-labelled franchises |
 | demo | done, deployed from `docs/` |
+| labels | four independent coding passes, Cohen's kappa per label under two rubric versions |
 | tests | 17 passing, all on `src/labels/` |
 
 Q2 is answered for text *about* a character. Dialogue is a different question and
@@ -273,88 +282,70 @@ The text features themselves are built in `src/q1_character/features.py`
 lives. `src/q2_text/coefficients.py` refits the text-only model on trainval and
 writes the fitted weights, which is what Figure 5 in the writeup is drawn from.
 
-## Known issues
+## Limitations and scope
 
-Open, roughly in the order they would bite someone picking this up:
+Constraints that bear on how the results should be read.
 
-- **Some features are absent for whole franchises, not at random.**
+- **Some features are missing for whole franchises rather than at random.**
   `n_relatives` is 0 across six franchises (33.7% of characters, including the
-  MCU) because those wikis do not use the family infobox keys. Under grouped
-  cross-validation, a held-out franchise can therefore be missing a feature the
-  model learned to lean on. Treat per-franchise feature coverage as something to
-  check before adding a feature, not after.
-- **Several wikis are under-collected** and we have not confirmed the right
-  template: The Walking Dead (49 rows), Stranger Things (78 of 221 candidate
-  pages, apparently a per-character template the scraper design does not
-  handle), Vikings, Spartacus, Westworld. Read the next item first.
-- **The busiest character-shaped template on a wiki is often not characters.**
-  Peaky Blinders' is its cast of real actors; Fast & Furious's is
-  `Infobox Car`. Check a template against real pages before trusting it.
-- **No minimum-n rule anywhere.** Folds under grouped CV are very unequal:
-  Prison Break contributes 28 characters and the MCU 3,489, and each counts as
-  one fold.
-- **The unnamed-role filter only catches explicit markers** —
-  `Unidentified`/`Unnamed`/`Unknown` prefixes — so Star Wars's "Unidentified
-  Ugnaught worker" is dropped while Dexter's "Acupuncturist" stays.
-  Inconsistent by construction.
-- **414 Matrix pages cannot be labelled from source at all.** Their infoboxes
-  have no status and no date-of-death field, 0 of 414, checked directly. Not a
-  parsing bug and nothing to fix.
-- **Species-based mortality is probably not clean.** A walker is a dead human;
-  a vampire is dead by species but alive in the story, so `is_dead` does not
-  mean the same thing for them. The explicit `undead` bucket is 12 rows and
-  clearly is not catching these cases. Twilight sitting at 25.5% rather than
-  near 100% suggests it is not distorting much in practice, but check before
-  leaning on per-species numbers.
-- **Fuller data for two thin franchises sits unused in `datasets/`** — 623
-  Walking Dead and 811 Prison Break rows from an earlier per-show scrape. Not
-  merged because those files have no page text or categories, so their rows
-  could not get the network and category features every other row has.
-- **There is only one annotation pass.** `src/labels/eval_labels.py` computes
-  inter-pass agreement and Cohen's kappa if a second pass exists, and
-  `data/gold/annotations/pass2/` is an empty directory, so it prints "Only one
-  annotation pass present" and no reliability figure is produced. Re-running
-  `src.labels.annotate` into `pass2` would fill it.
-- **Test coverage is narrow.** 17 tests, all on `src/labels/`. Nothing tests
-  feature building, the models, the Q3 regression, the figures or the demo
-  export — which is where a silent bug does the most damage to the writeup.
-- **`character_categories` in `scraper/wiki_configs.py` is dead config.**
-  It reads like it controls collection. Nothing has ever read it.
+  MCU), because those wikis do not use the family infobox keys. Under grouped
+  cross-validation a held-out franchise can therefore lack a feature the model
+  relies on, which is one reason grouped scores sit below random ones. Check
+  per-franchise coverage before adding a feature.
+- **Franchise sizes are very unequal.** Prison Break contributes 28 characters
+  and the MCU 3,489, and grouped folds are franchises, so folds differ in size
+  by two orders of magnitude. The per-fold spreads in `q1_fold_scores.csv` are
+  reported for this reason.
+- **414 Matrix pages carry no status and no date-of-death field.** Their
+  infoboxes have neither, in 0 of 414 cases, so those characters cannot be
+  labelled from the source at all and are excluded from Q1 and Q2.
+- **Coverage varies by wiki.** The Walking Dead (49 rows), Stranger Things,
+  Vikings, Spartacus and Westworld are collected more thinly than the rest,
+  since their wikis use per-character templates the scraper handles less well.
+  Franchise-level results for these carry correspondingly wider intervals.
+- **`is_dead` does not mean the same thing for every species.** A walker is a
+  dead human; a vampire is dead by species and alive in the story. Twilight
+  sitting at 25.5% rather than near 100% suggests the effect on aggregates is
+  small, but per-species mortality should not be read directly.
+- **The unnamed-role filter matches explicit markers only.** It catches
+  `Unidentified`, `Unnamed` and `Unknown` prefixes, so role-titled pages
+  without one of those markers remain in the population. Results with the
+  filter disabled are reproducible with `INCLUDE_UNNAMED_ROLES=1`.
+- **Dialogue is out of scope.** Transcripts exist for 11 shows, but a usable
+  per-episode death list exists for two, and most transcripts carry no speaker
+  labels, so attributing a line to a character is a prerequisite problem.
 
-Fixed, recorded because the numbers moved:
+## Measurement decisions that changed the results
 
-- `run_span` was computed as the spread of TMDB *release* years, so any
-  franchise that is a single long-running series scored zero — Grey's Anatomy
-  ran 2005–2026 and was recorded as spanning no time at all, as were Lost, The
-  Wire and thirteen others. TMDB's `last_air_date` is now captured and used.
-  This removed the only significant predictor in Q3.
-- Gender inference from pronouns only ran when the infobox field was missing,
+Recorded because each moved a number in the writeup.
+
+- `run_span` was computed from TMDB *release* years, so any franchise that is a
+  single long-running series scored zero. Grey's Anatomy ran 2005-2026 and was
+  recorded as spanning no time, as were Lost, The Wire and thirteen others.
+  Using `last_air_date` removed the only significant predictor in Q3.
+- Gender inference from pronouns ran only when the infobox field was absent,
   not when it was present but unparseable. The Dexter wiki writes an
-  unparseable value on 1,058 of its 1,077 scraped pages — three quarters of
-  every `Other/Unknown` in the corpus — so an entire franchise was effectively
+  unparseable value on 1,058 of its 1,077 pages, three quarters of every
+  `Other/Unknown` in the corpus, so a whole franchise was effectively
   ungendered while its pages carried plenty of pronouns.
-- Talking portraits and unnamed background roles were being counted as
-  characters. A portrait is definitionally dead, which made it a free win for a
-  death classifier.
-- The portrait filter was applied in one of the three places that read
-  `data/raw/*.jsonl`, so different tables disagreed. All three now share one
+- Talking portraits and unnamed background roles were counted as characters. A
+  portrait is dead by definition, which made it a free win for a death
+  classifier.
+- The portrait filter ran in one of the three places that read
+  `data/raw/*.jsonl`, so the tables disagreed. All three now share one
   predicate in `src/constants.py`.
-- The infobox field count was partly counting the death label. Fixed with
-  `clean_infobox_field_count`; 55% of that feature's separating power was the
-  outcome written back into the input.
-- Page discovery follows template redirects but the parser matched template
-  names literally, so any page using a redirect was found and then silently
-  discarded. That cost 477 Matrix pages by itself; three other wikis had the
-  wrong template configured outright.
-- The `intro` text column was computed for every character and then dropped
-  before use — a whole feature family sitting unused on disk. It is now
-  `intro_clean`, death- and survival-stripped, TF-IDF'd inside the CV pipeline,
-  and it turned out to be the best-transferring family we have.
-- The demo was fitting on every character and then scoring those same
-  characters. It now fits on `trainval` and shows only `test` rows.
-- Figure captions restated numbers by hand and two had gone stale against the
-  data: the gender forest claimed nine of nineteen franchises significant
-  against an actual 11 of 22, and the run-span caption cited the pre-fix
-  p-value. Captions now read from `q3_glm_summary.csv`,
-  `corpus_composition.csv` and the tables themselves, so they cannot drift
-  again.
+- `infobox_field_count` was partly counting the label, since a character who
+  dies acquires "Cause of death" and "Date of death" fields. 55% of that
+  feature's separating power was the outcome written back into the input;
+  `clean_infobox_field_count` removes it.
+- Page discovery followed template redirects while the parser matched template
+  names literally, so pages reached through a redirect were found and then
+  discarded. That cost 477 Matrix pages alone.
+- The `intro` text column was computed and then dropped before use. It is now
+  `intro_clean`, death- and survival-stripped and vectorised inside the CV
+  pipeline, and it is the best-transferring feature family in the project.
+- The demo fitted on every character and scored the same characters. It now
+  fits on `trainval` and displays `test` rows only.
+- Figure captions restated numbers by hand and two had drifted from the data.
+  Captions now read from `q3_glm_summary.csv`, `corpus_composition.csv` and the
+  result tables directly.

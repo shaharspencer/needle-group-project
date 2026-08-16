@@ -45,8 +45,7 @@ whole corpus, so any of them hands the model the answer for its own franchise.
 All computed per franchise on a **co-mention graph**, built from page text: an
 edge runs from page A to page B when every name token of B appears in A's text.
 So an edge means "A's page talks about B." This is the one feature family that
-describes the story rather than the wiki's documentation of it, and it's the
-family that transfers best to franchises the model hasn't seen.
+describes the story rather than the wiki's documentation of it, and it's one family that describes the story rather than the wiki's documentation of it.
 
 | feature | type | how it's computed |
 |---|---|---|
@@ -57,6 +56,35 @@ family that transfers best to franchises the model hasn't seen.
 | `component_size` | numeric | Size of the weakly connected component the character sits in. |
 | `n_relatives` | numeric | Count of comma/semicolon-separated entries across the infobox family fields. |
 | `n_categories` | numeric | Number of Fandom category tags on the page, after death/survival categories are removed. |
+
+## Text
+
+| feature | type | how it's computed |
+|---|---|---|
+| `intro_clean` | text | The first 700 characters of the page, with every sentence matching `DEATH_TERMS` removed (`strip_death_text` in `src/q1_character/features.py`). TF-IDF'd **inside** each CV fold, capped at a 300-term vocabulary with `min_df=20`, English stopwords removed, sublinear term frequency. The vocabulary is checked afterwards against the same pattern that did the stripping, so the check cannot drift from the stripper. |
+
+## Community position
+
+Built from the same co-mention graph, collapsed to an undirected weighted graph
+and partitioned per franchise with the **Louvain** method (`community_*` columns
+in `src/q1_character/features.py`). A reciprocated co-mention gets weight 2, a
+one-way mention weight 1. Across the 38 franchises this finds 1,885 communities;
+median modularity Q is 0.426 and 36 of 38 franchises clear Q > 0.3.
+
+| feature | type | how it's computed |
+|---|---|---|
+| `community_size` | numeric | Number of characters in the character's Louvain community. |
+| `community_share` | numeric | That size as a fraction of the franchise's cast, so it is comparable between the MCU and Peaky Blinders. |
+| `embeddedness` | numeric | Share of the character's co-mention weight that stays inside their own community. High means the character belongs to one storyline; low means they move between storylines. |
+| `community_rank` | numeric | The character's weighted-degree rank within their own community, scaled 0 (most connected) to 1. Separates the character a storyline is built around from the rest of it. |
+
+`community_id` is **not** a feature. It is an arbitrary integer with no meaning
+across franchises, and one-hot encoding it would let a model memorise
+"community 4 of Game of Thrones", which is exactly what the grouped split
+exists to detect.
+
+None of these read the label. Whether community membership predicts fate is a
+separate question, asked in `src/q1_character/community.py`.
 
 ## Wide category features (the `rich` set only)
 

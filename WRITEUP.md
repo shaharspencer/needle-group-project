@@ -9,241 +9,403 @@
 | Bar Dalal | bar.dalal@mail.huji.ac.il | bar.dalal |
 | Ido Oron | ido.oron@mail.huji.ac.il | ido_oron |
 
-Interactive demo: **https://shaharspencer.github.io/needle-group-project/**
-
----
+Demo: **https://shaharspencer.github.io/needle-group-project/**
 
 ## Domain
 
-We study whether a fictional character dies on-screen, based on their attributes (prominence, role, gender), the franchise they appear in (genre, medium, rating), and how they're described on fan wikis. Our unit of observation is one character in one franchise; the label is binary (dies or survives across the full story as aired). The data comes from Fandom wikis (character descriptions, infobox fields) and TMDB (cast credits, billing order, production metadata).
-
----
-
-## Code Structure
-
-| folder | purpose |
-|---|---|
-| `scraper/` | Wiki configuration per franchise (`wiki_configs.py`): URLs, infobox templates, field mappings, status keywords. |
-| `build_pipeline.py` | Main data-collection script: scrapes wikis, parses infoboxes, joins TMDB credits, writes raw + clean CSVs. |
-| `src/labels/` | Label construction: `rebuild_label.py` builds `is_dead_v2` from infobox/registry; `fill_unlabelled.py` fills gaps via Haiku for Q3 only; `validate_registry.py` checks against external death registries; `eval_labels.py` scores the on-screen filter. |
-| `src/constants.py` | Shared filter rules (non-character detection, unnamed-role regex, analysis population definition). |
-| `src/q1_character/` | Q1 models: `features.py` builds the feature matrix and co-mention network graph (PageRank, HITS, degree); `models.py` runs 3 models × 9 feature sets under CV; `splits.py` assigns characters to train/test; `evaluate.py` scores the winner on held-out test; `effects.py` estimates the gender odds ratio. |
-| `src/q2_text/` | Q2 text analysis: `coefficients.py` extracts and displays the strongest TF-IDF terms. |
-| `src/q3_franchise/` | Q3 franchise analysis: `mortality.py` computes franchise mortality rates, runs the WLS regression and k-means clustering. |
-| `src/enrich/` | TMDB enrichment: `tmdb_enrich.py` joins cast credits by name matching (`name_match.py`); `tmdb_titles.py` maps franchises to TMDB title IDs. |
-| `src/viz/` | All figure generation (`figures.py`). |
-| `src/app/` | `export_demo.py` fits a reduced logistic regression and exports JSON for the browser demo. |
-| `docs/` | GitHub Pages demo (HTML/JS/CSS). |
-| `tests/` | pytest suite covering label logic, filter consistency, and pipeline smoke tests. |
-| `legacy/` | Earlier exploration notebooks (not used in final pipeline). |
-| `FEATURES.md` | Exact definitions for every model feature. |
-| `PIPELINE.md` | Stage-by-stage run order with commands. |
-
----
+We study whether a fictional character dies on screen. The unit of observation
+is one character in one franchise, and the label is binary: does the character
+die at some point in the story as aired. We predict it from the character's own
+attributes, the franchise they belong to, where they sit in their story's cast,
+and how fan wikis describe them.
 
 ## Data
 
-### Sources
+We scraped 38 Fandom wikis (Game of Thrones, the MCU, Star Wars, Harry Potter,
+Breaking Bad and 33 more), giving 68,463 pages and about 262 MB of raw JSONL.
+From the TMDB API we pulled 280 titles and 28,151 cast credits for billing
+order, episode counts, genre and rating. Two Kaggle death registries and
+`listofdeaths.fandom.com` are used only for validation.
 
-| source | provides | amount |
-|---|---|---|
-| Fandom wikis (38 wikis: GoT, MCU, Star Wars, HP, Breaking Bad, +33 more) | infobox fields, page text, category tags | 68,463 pages, ~262 MB raw |
-| TMDB API (280 titles) | cast credits, billing order, episode counts, genre, rating | 28,151 cast credits |
-| Kaggle death registries | ground-truth death per episode | 2 of 38 shows |
-| listofdeaths.fandom.com | episode-by-episode death catalogue | external validation only |
+The label `is_dead_v2` comes from infobox fields
+(`src/labels/rebuild_label.py`): 30 wikis give a status string, eight a date
+of death instead. Characters whose status will not parse are dropped from
+Q1. For Q3 only, 1,858 such characters, concentrated in four franchises, were
+labelled by Claude Haiku 4.5 with "can't tell" allowed (123 dead, 1,223
+alive, 512 undecided).
 
-Per-wiki scraping configuration is in `scraper/wiki_configs.py`; the collection logic is in `build_pipeline.py`. We joined wiki data with TMDB credits and validated against the death registries where available. Final modelling table: 68,463 rows × 129 columns.
+### How good are the labels?
 
-### Labels
+Every annotation pass was run by Haiku 4.5 against a written rubric
+(`src/labels/ANNOTATION_RUBRIC.md`), coded twice independently over a
+stratified sample of 600 pages. With no human coders, these figures measure
+how repeatable the coding scheme is. We report Cohen's kappa rather than raw
+agreement because when one label dominates, two coders can agree most of the
+time just by both defaulting to it; kappa subtracts out that chance agreement
+and raw agreement does not.
 
-The primary label (`is_dead_v2`) is built from wiki infobox fields in `src/labels/rebuild_label.py`: 30 wikis supply a status string ("Deceased"/"Alive"); 8 wikis use a date-of-death field. Characters with unparseable status are excluded from the Q1/Q2 modelling population entirely.
+Our first rubric left four cases undecided, the largest being historical
+figures played by actors in the story. Writing those rules down and
+re-coding moved kappa on "does it die" from 0.38 to 0.67, and on "is it a
+character" from 0.26 to 0.53 (Figure 2); raw agreement moved much less, 0.70
+to 0.84.
 
-For Q3 only, 1,858 characters with unparseable status (concentrated in The Wire, Prison Break, Boardwalk Empire, Lost) were labelled by Claude Haiku 4.5 (`src/labels/fill_unlabelled.py`), with "can't tell" allowed: 123 dead / 1,223 alive / 512 undecided. These labels are never used in Q1/Q2. They narrow the franchise-mortality estimate in Q3 from a wide range to a point estimate for 4 franchises, reported alongside bounds.
+Kappa between `is_dead_v2` and an annotation pass is 0.86 (n = 296, first
+pass) and 0.65 (n = 405, second); we report both since the larger sample
+gives the lower number, but either way this checks a model against the same
+infoboxes, so the external check matters more: against
+`listofdeaths.fandom.com`, a different wiki with different editors, 197 of
+202 matched characters agree for Game of Thrones and The 100
+(`src/labels/validate_registry.py`). The registry only lists characters who
+died, so this measures recall, not our false-positive rate.
 
 ### Data quality
 
-**Not every page is a character.** We annotated a 600-page stratified sample and found the corpus is 41% on-screen characters, 46% novel/reference-only, 12% non-characters (creatures, vehicles, real people). Our inclusion rule (`is_onscreen = has_actor OR tmdb_match`, implemented in `src/constants.py`) scores precision 0.79 / recall 0.77 against this sample.
+Most scraped pages are not on-screen characters: reweighted by stratum, the
+corpus is 41% on-screen characters, 46% novel or reference-only, and 12% not
+characters at all (Figure 1). We keep a page only if its infobox names an
+actor or we matched it to a TMDB cast credit; against the annotated sample
+that rule scores precision 0.79, recall 0.77. We also removed 168 object
+pages (portraits, dead by definition) and 1,122 unnamed background roles.
 
-- **Figure 1** (`corpus_composition.png`) — what the scraped corpus actually contains. Three in five scraped pages are not on-screen characters; all analysis is restricted to the leftmost segment.
+Our final, clean analysis population is 15,686 named on-screen characters, of
+whom 35.6% die. We watched out for one franchise dominating that population:
+Star Wars is 56% of the raw scrape and still 12% after filtering, so we report
+every Q1 result under grouped cross-validation as well as random.
 
-We also removed 168 object pages (portraits/paintings from HP/Star Wars) that are dead by definition and 1,122 unnamed background roles that match our `UNNAMED_RE` regex in `src/constants.py`. Neither filter uses the label or cross-row statistics, so they don't cause leakage.
+## Q1: Do character attributes predict death better than franchise identity?
 
-**Final population: 15,686 named, on-screen characters, 35.6% die.** Star Wars is 56% of the raw scrape but only 12% after filtering, which is why we use grouped CV throughout Q1/Q2.
+### Problem description
 
-### External validation
+Does franchise identity add anything beyond the character, or does it just
+substitute for it? And does a character's position in the story's social
+structure matter beyond their own attributes?
 
-We matched our labels against `listofdeaths.fandom.com` (different wiki, different editors, organized by episode) for GoT and The 100 (`src/labels/validate_registry.py`):
+### Our solution
 
-| franchise | matched | agree |
-|---|---|---|
-| Game of Thrones | 134 | 132 (98.5%) |
-| The 100 | 68 | 65 (95.6%) |
+We trained logistic regression, a decision tree and a random forest on 12
+feature sets (`src/q1_character/models.py`), built from franchise identity,
+character attributes, network centrality, community position and TF-IDF text,
+plus combinations of those (`FEATURES.md` lists every feature). The largest
+adds 369 one-hot columns from Fandom categories and infobox fields combined.
 
-197/202 agree (97.5%). This is recall against the registry, not chance-corrected agreement — the registry lists only deaths, so there are no true negatives in the matched sample. Two of the 5 disagreements look like registry errors (Jaqen H'ghar changes face; Ellaria Sand is imprisoned).
+All three models use `class_weight="balanced"`, since only 35.6% of
+characters die and without it a model can score well by getting survivors
+right while ignoring deaths. We left logistic regression at C = 1.0, since
+tuning it per feature set would confound the model with the features we are
+comparing. The forest uses 400 trees, where the out-of-fold score stopped
+moving.
 
----
+The tree settings follow the supervised learning lecture's two overfitting
+remedies, pre- and post-pruning, tried against an unpruned tree under grouped
+CV. Unpruned, the tree needs 4,315 leaves at depth 36 for 0.375 PR-AUC,
+barely above the 0.356 base rate. Pre-pruning (`max_depth=6`,
+`min_samples_leaf=50`) reaches 0.462 with 43 leaves; post-pruning
+(`ccp_alpha=0.001`) reaches 0.475 with 17. The two remedies are within fold
+noise of each other on score, so we choose on size: post-pruning wins.
 
-## Q1: Is it who you are, or what show you're in?
+To capture where a character sits in the cast, we built a co-mention graph
+per franchise from page text: an edge runs from A to B when every name token
+of B appears on A's page, weighted by whether the mention goes both ways.
+From it we took PageRank, HITS hub and authority scores, and in- and
+out-degree. We partitioned each graph into communities using Louvain, which greedily
+maximises modularity in O(n log n); we ruled out Girvan-Newman on cost, since
+it recomputes edge betweenness after every removal and our Star Wars graph
+has 42,268 nodes. Because Louvain's result depends on node order, we reran
+every franchise at five seeds: membership agreement was 92% and modularity
+varied by at most 0.008.
 
-### Problem
+It finds 1,885 communities across the 38 franchises, with median modularity Q
+of 0.426 and 36 of 38 clearing the Q > 0.3 threshold the lecture treats as
+real structure; Peaky Blinders and Supernatural fall below it, so we treat
+their community columns as noise. From each partition we take community size,
+its share of the cast, embeddedness (how much of a character's co-mention
+weight stays inside their own community) and degree rank, but not the
+community id itself, since one-hot encoding an arbitrary integer would let the
+model memorise per-franchise identity.
 
-Can character attributes predict death? Does franchise identity add signal beyond the character, or substitute for it?
+To prevent leakage, we drop every sentence that mentions death or survival, fit
+the TF-IDF vectoriser inside each CV fold so no test vocabulary reaches
+training, and then check the resulting 300-term vocabulary against the same
+pattern that did the stripping (`src/q2_text/coefficients.py`).
 
-### Solution
+### Evaluation criteria
 
-We trained logistic regression (C=1.0), decision tree (no depth limit), and random forest (300 trees, max depth 12) on 9 feature sets (`src/q1_character/models.py`): franchise only; character only; character without wiki-metadata proxies; character + franchise; franchise + network; character + network; TF-IDF text only; character + text; everything (including 369 one-hot Fandom category columns). Feature definitions are in `FEATURES.md`; the feature matrix is built by `src/q1_character/features.py`.
+We compare every model against two dummy classifiers that do no learning: one
+always predicts "survives", the majority outcome, and the other guesses at
+random in proportion to the base rate. Both score 0.356 PR-AUC, so any model
+that cannot beat 0.356 has learned nothing. We report PR-AUC first and
+ROC-AUC second, since accuracy would reward the majority dummy with 64.4% at
+this base rate, while PR-AUC's chance level is the base rate itself and reads
+directly against these baselines.
 
-**Network features:** we built a per-franchise co-mention graph from wiki page text — two characters share an edge if one's name appears on the other's page, weighted by mention count (graph construction is in `src/q1_character/features.py`). From this graph we extracted PageRank, HITS hub/authority, and in/out degree per character.
+### Setup
 
-**Text leakage control:** a dead character's page says "was killed by" — raw TF-IDF would just rediscover the label. We strip every sentence mentioning death or survival, then verify the resulting 300-term vocabulary contains no death/survival tokens (`src/q2_text/coefficients.py` asserts this). The vectoriser is fit inside each CV fold so no test vocabulary leaks into training.
-
-### Evaluation
-
-**Metric:** PR-AUC (primary), ROC-AUC (secondary). With a 35.6% base rate, accuracy is misleading (majority-class gets 64.4%), so we use PR-AUC where chance level equals the base rate. No human subjects were used.
-
-**Setup — two experiments:**
-
-*Experiment A (feature-set comparison):* 5-fold CV over all 15,686 characters, under two grouping rules. Random CV lets characters from the same franchise appear in both train and validation. Grouped CV (`GroupKFold` on franchise) holds out entire franchises, so the model is tested on a franchise it has never seen.
-
-*Experiment B (held-out test):* The winning config from Experiment A is re-tuned by 5-fold CV inside an 80% trainval split, then scored once on the untouched 20% test split (`src/q1_character/evaluate.py`). Split assignment is in `src/q1_character/splits.py`. For the grouped rule, franchises are assigned largest-first to whichever side is furthest below its quota, keeping the realized split close to 80/20 despite franchise sizes spanning 11 to 3,489.
-
-### Results
-
-**Experiment A — CV comparison:**
-
-| features | random CV | grouped CV |
-|---|---|---|
-| everything | **0.743** | **0.545** |
-| character + text | 0.699 | **0.545** |
-| character + franchise | 0.692 | 0.485 |
-| character + network | 0.680 | 0.519 |
-| franchise + network | 0.650 | 0.486 |
-| text only | 0.650 | 0.509 |
-| character only | 0.633 | 0.487 |
-| character, no wiki metadata | 0.590 | 0.504 |
-| franchise only | 0.556 | 0.398 |
-| baseline | 0.356 | 0.356 |
-
-Character attributes beat franchise identity (0.633 vs. 0.556); combined beats either. The full model drops 0.198 from random → grouped CV, meaning much of the random-CV score comes from memorizing per-show base rates. Network centrality transfers well (+0.094 random, +0.088 grouped). Fandom categories don't — "Jedi" and "Death Eater" mean nothing on unseen franchises.
-
-**Experiment B — held-out test:**
-
-| split rule | test PR-AUC | test ROC-AUC |
-|---|---|---|
-| random | **0.752** | 0.850 |
-| grouped | **0.664** | 0.776 |
-
-Test exceeded CV under both rules — the selection procedure didn't overfit. The grouped gap (0.562 CV → 0.664 test) shouldn't be over-read: only 38 franchises, result depends on the draw.
-
-**Feature importance** (permutation, character-only forest): page length 0.167, archetype 0.111, gender 0.107, de-leaked field count 0.101, prominence tier 0.101, billing order 0.092. The two strongest features are wiki-page measurements, not character attributes.
-
-**Gender effect** (`src/q1_character/effects.py`): women have roughly half the odds of dying (OR 0.564, 95% CI 0.516–0.616, ≈11.1pp gap), adjusted for prominence, role, alignment, species, and franchise. Unadjusted gap is 14.5pp, so less than a quarter is explained by men holding more disposable roles. Per-franchise: 22 estimable, 11 reach p<0.05, none reverse direction.
-
-### Visualization
-
-- **Figure 2** (`q1_model_comparison.png`) — PR-AUC by feature set, one panel per split rule. Bars that barely shrink left-to-right (network, text) carry transferable signal; bars that collapse (franchise, categories) were memorizing.
-- **Figure 3** (`q1_feature_importance.png`) — permutation importance, colour-coded by character attribute vs. wiki-page measurement. The colour split is the takeaway: our two tallest bars are page measurements.
-- **Figure 4** (`q1_gender_forest.png`) — per-franchise gender odds ratios with 95% CIs. Every marker sits left of 1; interval width proxies sample size.
-
-### Impediments
-
-We ranked out-of-fold trainval errors and found two franchises overrepresented — failing in opposite directions. **Spartacus** (14% of worst-100 errors, only 1.4% of data): mostly false positives. Base mortality 71%; centrality doesn't help — Agron and Nasir are both central, one dies, one doesn't. **Grey's Anatomy** (2.5× overrepresented): all false negatives. Base mortality 9.3%. These two need the threshold moved in opposite directions — no single global threshold fixes both. Left uncorrected: franchise-specific patches would hide a real limit.
-
----
-
-## Q2: Does the text predict death?
-
-### Problem
-
-Does unstructured wiki text carry signal beyond structured attributes?
-
-### Solution
-
-TF-IDF (300-term vocabulary cap) over each character's wiki description, same death/survival-stripping as Q1. Vectoriser fit inside each CV fold. `src/q2_text/coefficients.py` asserts no death/survival token survived stripping.
-
-### Evaluation
-
-Same metric (PR-AUC), baselines (majority-class, prior-probability), and ground truth (`is_dead_v2`) as Q1. Same CV folds and franchise grouping, so Q1 and Q2 results are directly comparable row-for-row. Success criterion: text improves PR-AUC over character-only under **both** split rules — grouped improvement specifically tests transfer to an unseen franchise.
+We ran two experiments. The first is 5-fold CV over all 15,686 characters
+under random CV (characters from one franchise fall in both train and
+validation) and grouped CV (`GroupKFold` on franchise, holding out whole
+franchises so the model is scored on one it has never seen). The second
+takes the best CV configuration (all features, random forest), refits it with
+the same hyperparameters on an 80% trainval split, and scores it once on the
+untouched 20% test split (`src/q1_character/evaluate.py`).
 
 ### Results
 
-`character + text` (0.545 grouped CV) ties the everything-model (369 more columns) as the best grouped-CV configuration. Text alone (0.650) beats character attributes alone (0.633). Adding text to character: +0.066 (random), +0.058 (grouped). Text is the only feature family that transfers to an unseen franchise as well as to a familiar one.
+In Figure 3 you can see PR-AUC for all 12 feature sets under both split rules.
+Character attributes outscore franchise identity, 0.633 against 0.556, and the
+two together beat either alone. The full model loses 0.189 moving from random
+to grouped CV, so much of its random-CV score was memorised per-show base
+rates. Franchise identity collapses to 0.398 on an unseen franchise, barely
+above the 0.356 baseline: its one-hot column is all zeros there, leaving only
+genre, medium, rating and year. Community position adds 0.024 over character
+attributes alone, but only 0.004 once centrality is already in the model.
 
-Under grouped CV, **logistic regression beats random forest** on character+text (0.545 vs. 0.533), despite losing under random CV (0.645 vs. 0.699). The forest drops 0.166 going from random to grouped; logistic drops only 0.100. The forest memorizes franchise-specific term combos ("hydra" + "command" = MCU villain); logistic regression treats terms independently and can't do that, which helps when the test franchise is new.
+Ranking feature sets by a single number does not tell us whether the ordering
+would survive a different fold assignment, so we rescored every set per fold
+and compared each against character-only with a paired Wilcoxon signed-rank
+test (`src/q1_character/significance.py`). Five paired folds cannot produce a
+p-value below 0.0625, so we read the fold win count and the spread instead.
+That spread is 0.009 to 0.013 across random folds and 0.034 to 0.082 across
+grouped ones, wider than most of the gaps in the figure.
 
-Strongest coefficient: `antagonist` (+3.81). Other portable terms: `command` (+1.74), `background` (+1.43), `recurring` (+1.27), `military` (+0.82), `criminal` (+0.81). On the survival side, terms are less portable: `relationships` (−2.77), `category` (−2.69), `characters` (−2.66) are wiki section headings, while `hospital` (−2.33, Grey's Anatomy), `awakening` (−2.44, Star Wars), `debra` (−1.92, Dexter) are franchise fingerprints. Of the top 40 terms (20 each direction), roughly a third are portable narrative terms, a third are franchise fingerprints, and the rest are wiki structural. The death side is more portable than the survival side — which is why adding text helps transfer but doesn't help as much as its random-CV score would suggest.
+The full ten-set breakdown is in `q1_significance.csv`; the extremes are
+everything (+0.077 grouped, 5/5 folds; +0.111 random, 5/5) and franchise only
+(-0.104 grouped, 1/5; -0.085 random, 0/5). Six sets beat character-only on
+all five random folds; only two manage it under the grouped rule, and every
+network or community variant falls to three folds out of five. Several sets,
+including community-only (-0.044 grouped) and franchise-only, come out
+negative. We treat the community contribution to prediction as suggestive,
+not established.
+
+Louvain builds each partition from co-mentions alone, with no access to who
+lives or dies, so we can check afterward whether membership lines up with
+fate anyway (`src/q1_character/community.py`). Per franchise we compute
+
+  D = P(same fate | same community) − P(same fate | different community)
+
+against 2,000 within-franchise label shuffles, which hold the graph and the
+death count fixed and only move who dies. The statistic is the pairwise
+community-membership measure from class, applied to fate. We need the shuffle
+because a positive D on its own could just be the base rate.
+
+Thirteen of 33 franchises exceed the null at p < 0.05, largest in serialised
+drama, led by Lost (D = 0.109, z = 15.1) and Breaking Bad (0.115, z = 9.3),
+ahead of Dune, Game of Thrones and The 100. The cast-weighted mean across all
+franchises is +0.012, well below any of those per-franchise highs.
+
+The permutation p-value is one-sided and only ever flags positive clustering;
+four franchises (the MCU, Grey's Anatomy, Ozark and Spartacus) have z-scores
+below -2.3, which we read as significant in the opposite direction even
+though this test does not flag them. We apply no correction for testing 33
+franchises at once, and one of the thirteen, Supernatural, has a partition we
+already called noise (Q = 0.234).
+
+Neither modularity (Figure 5, right panel) nor fragmentation explains which
+franchises land negative: fragmentation fits Ozark (81 communities for 146
+characters) and Grey's Anatomy, but not the MCU, our least fragmented
+franchise (21 communities for 3,489 characters). The four negative franchises
+share no obvious genre, medium or mortality rate, from Spartacus at 72.5% to
+Grey's Anatomy at 9.3%; some of this is likely just the multiple-comparisons
+noise noted above.
+
+On the held-out test, random split gives 0.756 PR-AUC / 0.849 ROC-AUC and
+grouped gives 0.667 / 0.772, both above CV, so selection is unlikely to have
+overfit, though with only 38 franchises the grouped figure depends heavily on
+which ones landed in the test half.
+
+To see which features carry the signal we shuffled each one in turn and measured
+how far PR-AUC dropped. On the character-only forest that ranks page length
+0.167, archetype 0.111, gender 0.107, de-leaked field count 0.101, prominence
+tier 0.101 and billing order 0.092; the top two are both measurements of the
+wiki page, not of the character. We measured on the fitted model instead of
+out of fold, which is known to flatter continuous features like page length,
+so the ordering is safer to trust than the values. `prominence_tier` is
+itself derived from page length, so the shuffle splits credit between the two.
+
+On gender (`src/q1_character/effects.py`), women have roughly half the odds of
+dying (OR 0.564, 95% CI 0.516 to 0.616, about 11.1 percentage points), adjusted
+for billing order, archetype, alignment, whether the character is human, and
+franchise. The unadjusted gap is 14.5 points, so the covariates we adjust for
+account for under a quarter of it. Archetype plausibly sits downstream of
+gender rather than confounding it, since roles are not assigned evenly by
+gender; if so, the adjusted number understates gender's total effect rather
+than cleaning it. Of 22 franchises where the effect is estimable, none
+reverse direction (Figure 7).
 
 ### Visualization
 
-- **Figure 5** (`q2_text_terms.png`) — strongest TF-IDF coefficients in each direction. Portable narrative terms (antagonist, command, background) cluster on the death side; franchise fingerprints and wiki headings dominate the survival side.
-- **Figure 6** (`q2_text_transfer.png`) — how much each model loses going from random to grouped CV on text features. The forest's taller faded bar shows it relies more on franchise-specific patterns.
+Figure 3 (`q1_model_comparison.png`) is the feature-set comparison, one panel
+per split rule. Figure 4 (`q1_fold_spread.png`) shows the five folds behind
+each bar, since means alone hide how much the grouped folds disagree. Figure
+5 (`q1_community_fate.png`) gives fate concentration D per franchise against
+its null, and against modularity to show the two are unrelated. Figure 6
+(`q1_feature_importance.png`) is permutation importance, coloured by whether
+the feature measures the character or the wiki page. Figure 7
+(`q1_gender_forest.png`) is a forest plot of per-franchise gender odds ratios.
+Figure 8 (`q1_cost_curves.png`) plots weighted loss against threshold at six
+cost ratios, with the threshold each franchise would pick for itself beside
+it.
 
 ### Impediments
 
-Answers the question for descriptive wiki text, not dialogue. 1,136 transcripts across 11 shows exist, but episode-level death registry covers only 2 and most transcripts lack speaker labels — attribution is a prerequisite problem in itself.
-
----
+Ranking out-of-fold errors turned up two franchises failing oppositely:
+Spartacus gives 14% of the worst 100 errors from 1.4% of the data, almost all
+false positives at 71% base mortality, where centrality cannot separate
+anyone; Grey's Anatomy is overrepresented 2.5 times, almost all false
+negatives against its 9.3% base rate. Scoring a threshold by `w1 x FN + FP`,
+where w1 is how many false alarms one missed death is worth
+(`src/q1_character/costs.py`), the best threshold moves from 0.80 at
+w1 = 0.5 down to 0.13 at w1 = 10. At w1 = 3, Spartacus's own threshold (0.05)
+and Grey's Anatomy's (0.64) diverge sharply from the default 0.50. We left
+this uncorrected, since per-franchise thresholds need a labelled sample from
+each new franchise, which grouped CV assumes we have none of.
 
 ## Q3: Are some franchises deadlier?
 
-### Problem
+### Problem description
 
-Do mortality rates differ by franchise, and do franchise properties (genre, medium, rating, run length) explain the difference?
+Do mortality rates differ by franchise, and do franchise properties (genre,
+medium, rating, run length) explain the difference?
 
-### Solution
+### Our solution
 
-Code: `src/q3_franchise/mortality.py`. We first tried a binomial GLM treating every character as an independent trial, but it returned p<1e-10 on everything — pseudo-replication, since a franchise's 3,647 MCU characters are obviously not independent (Pearson χ²/df = 36.6, should be ≈1).
+A binomial GLM that treats every character as an independent trial returned
+p < 1e-10 on everything, which is too good to be true: a franchise's 3,647
+MCU characters are not independent draws, so the model is wildly overconfident
+(Pearson χ²/df = 36.6, versus an expected value near 1). We instead collapsed
+to one row per franchise and regressed `logit(mortality)` on release year,
+run span, title count, medium and rating, weighted by cast size
+(`src/q3_franchise/mortality.py`). That drops us to 38 observations and costs
+most of our power. A mixed-effects or quasibinomial model would have kept the
+character-level rows while still correcting for the clustering, but we did
+not try one. Cast size is also a rougher precision weight than the correct
+n·p̂·(1−p̂) for a logit-transformed proportion.
 
-So we collapsed to one row per franchise (38 rows), regressed `logit(mortality)` on franchise properties (release year, run span, title count, medium, rating), weighted by cast size. We also ran k-means (k chosen by silhouette score, checked across 10 seeds) over standardized franchise vectors. 38 points in 8 dimensions is thin, so we treat the clustering as exploratory.
+Run span is measured as first to last air date. A release-year-based version
+conflates multi-film franchises with long-running TV shows and gives a
+spurious p = 0.022; testing both definitions and keeping the one that changes
+significance is itself a caveat on the p = 0.185 we report from just 38
+observations.
 
-### Evaluation
+The eight properties we cluster on exclude mortality itself, since clustering
+on the outcome would give clusters that differ in mortality by construction.
+We standardised them first: `first_year` runs in the thousands and
+`female_ratio` in [0,1], so unstandardised, Euclidean distance would mostly be
+measuring release year. K came from ten k-means++ seeds, chosen by the
+silhouette score; we also tracked average distance to centroid as a second
+diagnostic but did not use it to pick k.
 
-Population: 17,584 on-screen named characters — wider than Q1/Q2's 15,686, because excluding unlabelled characters from a *rate* would bias it. For the 4 mostly-unlabelled franchises, we report lower bound (unparsed → alive), upper bound (unparsed → dead), and a point estimate using Haiku-resolved labels where available. Every mortality estimate carries a Wilson interval alongside the label bounds.
+### Evaluation criteria
+
+We count a franchise property as explaining mortality if its coefficient
+reaches p < 0.05 with the franchise as the unit of analysis, and if the model
+beats predicting the mean on adjusted R². The comparison for the clustering is
+whether a partition built without mortality separates franchises that differ in
+it.
+
+### Setup
+
+The Q3 population is 17,584 on-screen named characters, wider than Q1's
+15,686, because dropping unlabelled characters from a *rate* would bias it. For
+the four mostly-unlabelled franchises we report a range, treating unparsed
+characters as alive for a lower bound and as dead for an upper bound, plus a
+point estimate from the Haiku-resolved labels. Every estimate carries a Wilson
+interval, which behaves well at small counts or extreme rates unlike a normal
+approximation.
 
 ### Results
 
-Mortality varies widely: Grey's Anatomy 9.3% to The 100 72.7%. But **no franchise property is significant.** Run span closest at p=0.185; R² = 0.079, adjusted R² = −0.065 — worse than predicting the mean. k-means: best k=2 (silhouette 0.43, stable across 10 seeds) splits 6 large multi-title film franchises (MCU, Star Wars, HP, LOTR, Fast & Furious, Transformers) from the other 32, at 35.4% vs. 37.1% mortality — not a meaningful gap.
+Among the 27 franchises with reliable status parsing, mortality runs from 9.3%
+(Grey's Anatomy) to 72.6% (The 100), with The Walking Dead at 79.5% on 44
+characters. No franchise property is significant. Run span comes closest at p =
+0.185. R² is 0.079 and adjusted R² is −0.065, which means the model does worse
+than just predicting the average mortality for every franchise.
 
-For the 4 mostly-unlabelled franchises:
+The four mostly-unlabelled franchises carry the widest bounds and weakest
+point estimates (Figure 11), from The Wire (14.3-99.2%, point estimate
+16.3%) to Lost (23.2-69.0%, 26.6%).
 
-| franchise | bounds | point estimate |
-|---|---|---|
-| The Wire | 14.3–99.2% | 16.3% |
-| Prison Break | 6.6–91.3% | 21.3% |
-| Boardwalk Empire | 19.7–99.8% | 23.2% |
-| Lost | 23.2–69.0% | 26.6% |
+The silhouette peaks at k = 2 (0.428, with 92.5% of franchise pairs assigned
+consistently across ten seeds). The elbow curve supports no k at all, falling
+smoothly from 2.41 at k = 2 to 1.21 at k = 8 with no bend, so the two selection
+rules disagree about whether there is any structure to find.
 
-**Measurement check that changed the answer:** run span defined on release years alone reaches p=0.022 — but that just separates multi-film franchises from TV shows, not duration. Defined correctly (first-to-last air date for TV): both p and R² vanish. A significant coefficient can measure the wrong construct entirely.
+For internal validation we used the three measures from the clustering
+lecture; the k = 2 partition holds up on all of them: cohesion 2.82 against
+separation 5.60, a correlation of −0.65 between the distance matrix and the
+same-cluster adjacency matrix (negative is what we want, since same-cluster
+pairs should be the close ones), and 94.7% pair agreement with Ward
+agglomerative clustering cut at the same k.
+
+The external check is weaker than it appears. Scored against `medium`, which
+was not a clustered column, the partition gives weighted purity 0.684 and
+entropy 0.804; the six-franchise cluster comes out pure film. But
+`n_titles` is a clustered column, and film franchises here average 14.1
+titles against 1.3 for TV, so `medium` is largely recoverable from what we
+clustered on; that agreement is close to guaranteed and should not count as
+external evidence.
+
+The split separates six large multi-title film franchises from the other 32,
+at 35.4% and 37.1% mortality, a difference within noise: the grouping the
+data supports reflects franchise size and medium, independent of mortality.
 
 ### Visualization
 
-- **Figure 7** (`q3_franchise_mortality.png`) — mortality per franchise with Wilson CI and label-bounds band layered on each bar. The four wide-banded franchises are the low-confidence ones.
-- **Figure 8** (`q3_run_span.png`) — mortality vs. run span, marker size ∝ cast size. The flat fit line visually confirms the null result.
+Figure 11 (`q3_franchise_mortality.png`) gives mortality per franchise, each
+bar carrying a Wilson interval and a band for the label bounds; the four very
+wide bands are the franchises we could not label. Figure 12 (`q3_run_span.png`)
+plots mortality against run span with marker size proportional to cast size,
+and its flat fit line is the null result. Figure 13
+(`q3_cluster_diagnostics.png`) is the elbow and silhouette curves with the Ward
+dendrogram beside them.
 
----
+### Impediments
 
-## Interactive Demo
+The pseudo-replication and run-span-definition problems are described above.
+The remaining one is coverage: four franchises have almost no parseable
+status, so we can only give a range for them (The Wire: 14.3-99.2% on
+infobox evidence alone). The Haiku labels narrow that, but those four stay
+the weakest rows; re-scraping would not help, since those wikis do not carry
+the fields.
+
+## Interactive demo
 
 **"Plot Armor Index"** — https://shaharspencer.github.io/needle-group-project/
 
-A browser-only logistic regression over user-selectable attributes (gender, role, alignment, franchise, billing order, centrality, relatives, species), exported by `src/app/export_demo.py`. It uses fewer features than the full Q1 model and says so on the page.
+The demo is a browser-only logistic regression over user-selectable
+attributes, exported by `src/app/export_demo.py`, using fewer features than
+the full Q1 model. One tab looks up a held-out test character and breaks its
+score down per feature; the other lets you build a character by hand and
+watch the risk update.
 
-Two tabs: **Look up a character** lets you search held-out test characters, see a per-feature contribution breakdown ("why did the model score this character this way?") and the 5 nearest-risk neighbours. **Build a character** lets you set every feature by hand and watch the predicted death risk update live — a what-if tool for exploring what the model learned. Every displayed character is from the held-out test set, never a training row, so "got it right / wrong" reflects real generalization.
+## Future work
 
----
-
-## Future Work
-
-- **Community detection** on the co-mention graph — we only extract centrality; community structure (e.g. Louvain) would test whether characters in the same narrative cluster share fates.
-- **Significance tests** on the Q1 feature-set comparison — PR-AUCs are ranked by point estimate; a paired cross-fold test would tell us if e.g. 0.699 vs. 0.692 is real.
-- **Cost-sensitive loss** — Spartacus and Grey's Anatomy fail in opposite directions; a weighted loss would let us set the relative cost explicitly.
-- **Inter-rater reliability** — the 600-page sample was labelled by a single coder (Haiku); `src/labels/eval_labels.py` already computes Cohen's kappa if a second pass is added.
-- **Prospective features** — rebuild features from what was knowable partway through a series and predict forward, rather than from post-hoc wiki text.
-
----
+- Rebuild the feature matrix from what a viewer could have known partway
+  through a series, since everything we use now comes from wiki text written
+  after the story ended.
+- Speaker attribution across the 1,136 transcripts we hold would let the text
+  feature draw on what characters say, not just what is written about them.
+- Passing the cost matrix into the loss would let the model learn a different
+  boundary, instead of moving the threshold after fitting.
+- Two people coding the same 600 pages would separate rubric ambiguity from
+  the model being inconsistent with itself.
+- Clique percolation would let bridge characters belong to several
+  communities, instead of the one Louvain assigns them.
 
 ## Conclusion
 
-Character attributes carry more signal than franchise identity: 0.633 PR-AUC (character alone) vs. 0.556 (franchise alone) vs. 0.743 (everything), on a 0.356 base rate. Held-out test: 0.752 PR-AUC / 0.850 ROC-AUC, falling to 0.664 / 0.776 with whole franchises held out. Text is the single most useful addition and the only feature family that transfers as well to an unseen franchise. Women are roughly half as likely to die (adjusted, 11/22 franchises significant, no reversals). Franchise properties explain none of the variation in franchise-level mortality.
+Character attributes carry more signal than franchise identity (0.633 PR-AUC
+against 0.556, 0.744 combined, on a 0.356 base rate). The best model holds up
+on a held-out test: 0.756 PR-AUC and 0.849 ROC-AUC, falling to 0.667
+and 0.772 when whole franchises are held out instead. Text is the most useful
+single addition and the one that transfers best. None of the five franchise
+properties we tested came out significant, and the adjusted R² is negative,
+so that model does worse than just predicting the average.
 
-**Main limitation:** wikis are written after the story ends, by fans who write more about characters they cared about, and our two strongest features (page length, infobox field count) measure fan attention, which death itself attracts. The two families built from the story's own structure — network centrality, narrative-role text terms — are also the two that survive the move to an unseen franchise.
+Wikis get written after the story ends, by fans who write more about the
+characters they liked, and that limits our two strongest features: page
+length and infobox field count both partly measure attention rather than the
+character itself, and dead characters draw more of it. Features built from
+the story's own structure are less exposed to this bias and hold up better on
+a franchise the model has not seen, which is why we report grouped
+cross-validation everywhere alongside random.

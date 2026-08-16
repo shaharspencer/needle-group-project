@@ -13,6 +13,7 @@ from sklearn.linear_model import LogisticRegression
 
 from src.constants import analysis_population
 from src.paths import CLEAN_DIR
+from src.q1_character.features import DEATH_TERMS
 from src.q1_character.models import (
     TEXT_COLUMN, TEXT_MAX_FEATURES, TEXT_MIN_DF,
 )
@@ -20,15 +21,18 @@ from src.q1_character.models import (
 TARGET = "is_dead_v2"
 TOP_N = 20
 
-# Anchored on word boundaries, unlike the substring rule used when stripping the
-# text itself. The vocabulary here is single tokens, and a substring test flags
-# "soldier" for containing "die" -- an occupation, not a death word. Over-broad
-# checks that cry wolf get switched off, which is worse than no check.
-LEAK_RE = (
-    r"^(death|deaths|dead|die|dies|died|dying|kill|kills|killed|killing|"
-    r"murder|murders|murdered|deceased|corpse|corpses|grave|graves|funeral|"
-    r"posthumous|posthumously|surviv\w*|alive|living)$"
-)
+# The check runs the same pattern that did the stripping. It used to run a
+# separate hand-written list, which is how the two drifted apart: the stripper
+# was missing `die`, `dies` and `dying` while this list contained them, so the
+# check passed on a vocabulary the stripper had never actually protected. Any
+# term this flags is a term `strip_death_text` should have removed, by
+# construction, so the assertion now tests the thing it claims to test.
+LEAK_RE = DEATH_TERMS
+
+
+def leaked_terms(vocabulary) -> list[str]:
+    """Vocabulary entries the stripper should have removed."""
+    return [term for term in vocabulary if LEAK_RE.search(str(term))]
 
 
 class TextCoefficients:
@@ -90,13 +94,13 @@ def main() -> None:
     print(f"\nTop {TOP_N} pushing toward survival:")
     print(coefficients.tail(TOP_N).iloc[::-1].to_string(index=False))
 
-    leaked = coefficients[coefficients["term"].str.contains(LEAK_RE, regex=True)]
-    if len(leaked):
+    leaked = leaked_terms(coefficients["term"])
+    if leaked:
         raise SystemExit(
-            f"death or survival tokens reached the vocabulary: "
-            f"{leaked['term'].tolist()}"
+            f"death or survival tokens reached the vocabulary: {leaked}"
         )
-    print("\nNo death or survival token in the vocabulary.")
+    print(f"\nNo death or survival token in the {len(coefficients)}-term "
+          "vocabulary, checked against the same pattern that stripped the text.")
     print(f"Wrote {out_path}")
 
 

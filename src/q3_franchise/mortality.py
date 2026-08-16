@@ -1,8 +1,25 @@
 """Analyze franchise-level mortality rates.
 
-Computes mortality with Wilson intervals for each franchise. Performs a binomial 
-GLM regression of deaths on franchise properties (weighted by cast size) and 
-k-means clustering over franchise property vectors.
+Computes mortality with Wilson intervals for each franchise, regresses
+logit(mortality) on franchise properties weighted by cast size, and clusters
+the franchises.
+
+There are 38 franchises and 8 standardised properties to cluster them on. At
+that size the failure modes the clustering lecture lists for k-means are all
+live, so the clustering is validated along the lines the lecture sets out:
+
+  1. k-means++ seeding, repeated over ten seeds, which addresses the lecture's
+     warning that k-means results vary with the initial centroids.
+  2. k chosen from the silhouette and from the average distance to the centroid
+     across k. The lecture presents the second as the elbow method. They can
+     disagree, so both are printed.
+  3. Internal validation of the chosen partition: cohesion, separation, and the
+     correlation between the distance matrix and the same-cluster adjacency
+     matrix.
+  4. External validation against a franchise attribute withheld from the
+     clustering, scored by entropy and purity.
+  5. Ward agglomerative clustering as a cross-check, since 38 points is few
+     enough to read off a dendrogram.
 
   python -m src.q3_franchise.mortality
 """
@@ -11,7 +28,9 @@ import numpy as np
 import pandas as pd
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
-from sklearn.cluster import KMeans
+from scipy.cluster.hierarchy import fcluster, linkage
+from scipy.spatial.distance import pdist, squareform
+from sklearn.cluster import AgglomerativeClustering, KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import StandardScaler
 
@@ -22,6 +41,17 @@ TARGET_COUNT = "n_dead"
 K_RANGE = range(2, 9)
 SEEDS = range(10)
 MIN_FRANCHISE_N = 30
+
+# Franchise properties the clustering runs on. Mortality is deliberately absent:
+# it is the outcome, and clustering on it would guarantee clusters that differ
+# in mortality.
+CLUSTER_FEATURES = [
+    "n_characters", "female_ratio", "n_titles", "n_tv", "first_year",
+    "run_span", "mean_rating", "mean_popularity",
+]
+
+# Attribute held out of the clustering and used to score it from outside.
+EXTERNAL_LABEL = "medium"
 
 # Share of on-screen characters with no parsed status that the annotated sample
 # found actually die. Used to place a point estimate between the bounds.
@@ -200,23 +230,37 @@ class FranchiseMortality:
         return model, usable
 
     @staticmethod
-    def cluster(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
-        """k-means over franchise properties, excluding mortality itself."""
-        features = [
-            "n_characters", "female_ratio", "n_titles", "n_tv", "first_year",
-            "run_span", "mean_rating", "mean_popularity",
-        ]
-        usable = df.dropna(subset=features).copy()
-        X = StandardScaler().fit_transform(usable[features])
+    def cluster(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, np.ndarray]:
+        """k-means over franchise properties, excluding mortality itself.
+
+        Mortality is the outcome under study, so including it would produce
+        clusters that differ in mortality by construction and tell us nothing.
+        Standardising first is required rather than cosmetic: first_year runs
+        in the thousands and female_ratio in [0,1], and Euclidean distance on
+        the raw columns would be a distance on release year alone.
+        """
+        usable = df.dropna(subset=CLUSTER_FEATURES).copy()
+        X = StandardScaler().fit_transform(usable[CLUSTER_FEATURES])
 
         diagnostics = []
         for k in K_RANGE:
-            scores, labellings = [], []
+            scores, inertias, labellings = [], [], []
             for seed in SEEDS:
-                model = KMeans(n_clusters=k, n_init=10, random_state=seed)
+                # init="k-means++" is sklearn's default and is named here
+                # because it is the specific remedy the lecture gives for
+                # k-means landing in different places on different seeds.
+                model = KMeans(
+                    n_clusters=k, init="k-means++", n_init=10, random_state=seed
+                )
                 labels = model.fit_predict(X)
                 scores.append(silhouette_score(X, labels))
+                # Average distance to the assigned centroid, which is the
+                # quantity the elbow method plots. inertia_ is the sum of
+                # squared distances, so the root of its mean is the average
+                # distance in the original standardised units.
+                inertias.append(np.sqrt(model.inertia_ / len(X)))
                 labellings.append(labels)
+
             # Stability: how often two franchises land together across seeds.
             agreements = []
             for a in range(len(labellings)):
@@ -224,18 +268,96 @@ class FranchiseMortality:
                     same_a = labellings[a][:, None] == labellings[a][None, :]
                     same_b = labellings[b][:, None] == labellings[b][None, :]
                     agreements.append((same_a == same_b).mean())
+
             diagnostics.append({
                 "k": k,
                 "silhouette": float(np.mean(scores)),
+                "mean_distance_to_centroid": float(np.mean(inertias)),
                 "stability": float(np.mean(agreements)),
             })
 
         diag = pd.DataFrame(diagnostics)
         best_k = int(diag.loc[diag["silhouette"].idxmax(), "k"])
         usable["cluster"] = KMeans(
-            n_clusters=best_k, n_init=10, random_state=0
+            n_clusters=best_k, init="k-means++", n_init=10, random_state=0
         ).fit_predict(X)
-        return usable, diag
+
+        # Ward linkage on the same standardised matrix, cut at the same k so the
+        # two partitions are comparable. Ward merges the pair whose union adds
+        # least to within-cluster variance, which is the agglomerative analogue
+        # of what k-means minimises, so a disagreement between them is about the
+        # search rather than about the objective.
+        usable["cluster_ward"] = fcluster(
+            linkage(X, method="ward"), t=best_k, criterion="maxclust"
+        ) - 1
+        return usable, diag, X
+
+    @staticmethod
+    def internal_validation(X: np.ndarray, labels: np.ndarray) -> dict:
+        """Cohesion, separation, and the distance-adjacency correlation.
+
+        Cohesion is the mean distance from a point to others in its own
+        cluster; separation the mean distance to points outside it. The
+        correlation is between the pairwise distance matrix and the 0/1
+        same-cluster matrix, and it should come out negative for a good
+        partition, because pairs in the same cluster ought to be the close
+        ones. The lecture states it as a positive correlation with similarity,
+        which is the same statement with the sign flipped.
+        """
+        distances = squareform(pdist(X))
+        same = (labels[:, None] == labels[None, :])
+        off_diagonal = ~np.eye(len(X), dtype=bool)
+
+        within = distances[same & off_diagonal]
+        between = distances[~same]
+
+        flat_distance = distances[off_diagonal]
+        flat_same = same[off_diagonal].astype(float)
+        correlation = float(np.corrcoef(flat_distance, flat_same)[0, 1])
+
+        return {
+            "cohesion": float(within.mean()),
+            "separation": float(between.mean()),
+            "separation_over_cohesion": float(between.mean() / within.mean()),
+            "distance_adjacency_corr": correlation,
+        }
+
+    @staticmethod
+    def external_validation(labels: np.ndarray, truth: pd.Series) -> pd.DataFrame:
+        """Entropy and purity of the clusters against an attribute held out.
+
+        `medium` is not among the columns clustered on, so this asks whether a
+        partition built from cast size, title count, year, run span, rating and
+        popularity happens to recover the film/TV distinction. Entropy is the
+        weighted mean of each cluster's label entropy, so lower is better;
+        purity the weighted mean of each cluster's largest label share, so
+        higher is better.
+        """
+        rows = []
+        total = len(labels)
+        for cluster_id in sorted(set(labels)):
+            members = truth[labels == cluster_id]
+            shares = members.value_counts(normalize=True)
+            entropy = float(-(shares * np.log2(shares)).sum())
+            rows.append({
+                "cluster": cluster_id,
+                "n": len(members),
+                "entropy": entropy,
+                "purity": float(shares.max()),
+                "dominant": shares.index[0],
+                "weight": len(members) / total,
+            })
+
+        table = pd.DataFrame(rows)
+        overall = pd.DataFrame([{
+            "cluster": "weighted overall",
+            "n": total,
+            "entropy": float((table["entropy"] * table["weight"]).sum()),
+            "purity": float((table["purity"] * table["weight"]).sum()),
+            "dominant": "",
+            "weight": 1.0,
+        }])
+        return pd.concat([table, overall], ignore_index=True)
 
 
 def main() -> None:
@@ -283,24 +405,65 @@ def main() -> None:
     summary["n_franchises"] = len(usable)
     summary.to_csv(CLEAN_DIR / "q3_glm_summary.csv", index=False)
 
-    clustered, diag = FranchiseMortality.cluster(df)
-    print("\nk-means diagnostics")
+    clustered, diag, X = FranchiseMortality.cluster(df)
+    print(f"\nk-means over {len(CLUSTER_FEATURES)} standardised franchise "
+          f"properties, {len(clustered)} franchises, k-means++ seeding")
+    print("  silhouette picks k; mean distance to centroid is the elbow curve;")
+    print("  stability is how often two franchises co-cluster across 10 seeds.")
     print(diag.to_string(index=False, float_format=lambda v: f"{v:.3f}"))
 
     best_k = clustered["cluster"].nunique()
+    labels = clustered["cluster"].to_numpy()
+
     print(f"\nClusters at k={best_k}")
     for cluster_id, group in clustered.groupby("cluster"):
         names = ", ".join(sorted(group["franchise"]))
         print(f"  {cluster_id}: mortality {group['mortality'].mean():5.1f}%  "
               f"n={len(group)}  {names}")
 
+    internal = FranchiseMortality.internal_validation(X, labels)
+    print("\nInternal validation of the k-means partition")
+    for name, value in internal.items():
+        print(f"  {name:28s} {value:+.3f}")
+
+    external = FranchiseMortality.external_validation(
+        labels, clustered[EXTERNAL_LABEL].fillna("Unknown")
+    )
+    print(f"\nExternal validation against '{EXTERNAL_LABEL}', which the "
+          f"clustering never saw")
+    print(external.to_string(index=False, float_format=lambda v: f"{v:.3f}"))
+
+    # How far the two search strategies agree, as the share of franchise pairs
+    # the two partitions place the same way. This is the pairwise-membership
+    # accuracy measure from the community detection lecture, used here to
+    # compare two clusterings rather than to score one against ground truth.
+    ward = clustered["cluster_ward"].to_numpy()
+    same_kmeans = labels[:, None] == labels[None, :]
+    same_ward = ward[:, None] == ward[None, :]
+    off = ~np.eye(len(labels), dtype=bool)
+    agreement = float((same_kmeans[off] == same_ward[off]).mean())
+    moved = clustered.loc[
+        clustered.groupby("cluster")["cluster_ward"].transform("nunique") > 1,
+        "franchise",
+    ]
+    print(f"\nWard agglomerative clustering cut at k={best_k} agrees with "
+          f"k-means on {agreement:.1%} of franchise pairs")
+    if len(moved):
+        print(f"  k-means clusters that Ward splits: {len(moved)} franchises")
+
     df.to_csv(CLEAN_DIR / "q3_franchise_mortality.csv", index=False)
     diag.to_csv(CLEAN_DIR / "q3_kmeans_diagnostics.csv", index=False)
-    clustered[["franchise", "cluster"]].to_csv(
+    external.to_csv(CLEAN_DIR / "q3_cluster_external.csv", index=False)
+    pd.DataFrame([{**internal, "k": best_k, "ward_pair_agreement": agreement}]).to_csv(
+        CLEAN_DIR / "q3_cluster_internal.csv", index=False
+    )
+    clustered[["franchise", "cluster", "cluster_ward"]].to_csv(
         CLEAN_DIR / "q3_franchise_clusters.csv", index=False
     )
+    np.savetxt(CLEAN_DIR / "q3_cluster_matrix.csv", X, delimiter=",")
     print("\nWrote q3_franchise_mortality.csv, q3_glm_summary.csv, "
-          "q3_kmeans_diagnostics.csv, q3_franchise_clusters.csv")
+          "q3_kmeans_diagnostics.csv, q3_franchise_clusters.csv, "
+          "q3_cluster_internal.csv, q3_cluster_external.csv")
 
 
 if __name__ == "__main__":

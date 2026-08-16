@@ -1,0 +1,339 @@
+char_id,name,franchise,is_character_1,is_character_2,appears_onscreen_1,appears_onscreen_2,dies_in_narrative_1,dies_in_narrative_2,rationale_1,rationale_2
+e029e00d6e32,Tax,The Hunger Games,1,1,0,1,0,-1,Novel character from Hunger Games books,Hunger Games character with explicitly unknown fate
+a9ca1aaefc68,Ronald Dominique,Dexter,1,0,0,0,0,0,"Only mentioned in Dexter Resurrection, not onscreen","Real historical serial killer, not fictional character"
+2f3db1711711,Rick and Ryan,Breaking Bad / Better Call Saul,1,0,1,0,0,0,Actors in Better Call Saul TV series,"Group of characters (band owners), not individual"
+57b121fcf2bc,Hagar,Mission: Impossible,1,1,1,0,0,0,Character in Mission Impossible film,Individual character without screen appearance evidence
+9346a8d4f465,Brilliant Chang,Peaky Blinders,1,0,1,0,0,0,Character in Peaky Blinders TV series,Real historical figure adapted for fiction
+c5195b37eb94,Sarah's lover,Lost,0,1,0,1,0,0,Unnamed background character in fantasy,"Lost unnamed character, appears on screen but undeveloped"
+113af3844989,Dr. Wane,The Hunger Games,1,1,0,1,0,0,Hunger Games novel character,"Hunger Games film character, no death indicated"
+606923737dd7,Aethelflaed,Vikings,1,0,1,0,0,0,"Historical figure in Vikings TV, died before narrative","Real historical figure, not fictional character"
+c0a3a65c6727,Pontius,The Hunger Games,1,1,0,1,0,0,Hunger Games novel character,"Hunger Games character, no death indicated"
+e2e5d5459e88,Kate (Awakening),Westworld,1,1,0,0,0,1,"VR game character, not film/TV",Westworld VR game character killed in narrative
+fab2c5107fb2,LKUDI,Breaking Bad / Better Call Saul,1,1,0,0,0,-1,Unseen character in Better Call Saul,"Better Call Saul unseen character, unknown fate"
+2e1aeb35fc33,Willy Armitage,Mission: Impossible,1,1,1,0,0,0,Character in Mission Impossible TV series,Mission Impossible character without screen evidence
+0dfa3668432d,Pliny Harrington,The Hunger Games,1,1,0,1,0,0,Hunger Games novel character,"Hunger Games character, no death indicated"
+d5bcd2f3a81e,William Suff,Dexter,1,0,0,0,0,0,Only mentioned in Dexter Resurrection,"Real historical serial killer, not fictional character"
+645f82cfd5c9,Hank (Awakening),Westworld,1,1,0,0,0,1,VR game character only,Westworld antagonist killed multiple times in VR narrative
+1e7f162fc76f,Ghost,The Boys,1,1,1,1,-1,0,Character in The Boys animated series,"The Boys animated character, survives killing"
+0a77d4076c28,Edward,Vikings,1,0,1,0,0,0,Historical figure in Vikings TV,"Real historical figure, not fictional character"
+c81c04002275,Nguyen,Lost,0,0,0,0,0,-1,"Just a surname and number, not individual character","Surname designation and candidate number, not individual character"
+bf541f445ad0,Barman,Prison Break,0,1,1,1,0,0,Generic barman role; acts in episode but unnamed,Named minor character with actor credit in episode
+33bd4c4149ed,Zamhil,Avatar,1,1,0,1,0,0,"Individual Na'vi; video game only, not film/TV",Named Na'vi character with actor credit
+826c5813001e,FBI Agent,Sons of Anarchy,0,1,1,1,0,0,Generic FBI Agent role; appears one episode,Named FBI agent with actor credit appearing in episode
+0a9dc44e8b6b,Hanscum Family,Supernatural,0,0,0,0,0,-1,"Family group, not individual character","Family group page, not individual character"
+6b9e42e99cc6,Iris West (Flashpoint),DC Extended Universe,1,1,1,1,0,-1,"Individual character; actor credited, appears in Flash","Character erased from existence in alternate timeline, ambiguous final state"
+f32e05caa1f2,Parks Supervisor,Breaking Bad / Better Call Saul,0,1,1,1,0,0,Generic supervisor role; unnamed generic character,Named supervisor with actor credit appearing on screen
+a56dd6a1f80f,Leof,Vikings,1,1,1,1,-1,0,"Individual soldier; final season, unclear if dies",Named soldier with actor credit
+0113378d1f90,Mysterious Figure,Lost,0,1,1,1,0,0,Unidentified mysterious figure; appears but not named,"Individual mysterious figure with actor credit, identity ambiguous"
+ae8d0bb4e352,Jazz Dancer 10,Boardwalk Empire,0,1,1,1,0,0,Generic Jazz Dancer 10; background character type,Named minor character with actor credit
+f0a5d07a783a,Q (Phil Proctor),James Bond 007,1,1,0,1,0,0,"Individual agent; video game only, not film/TV",Named MI6 quartermaster with actor credit in video game
+7883a896d99a,Karmong,Avatar,1,1,0,1,0,0,"Individual Na'vi; video game only, not film/TV","Named Na'vi with actor credit, mother's death in backstory only"
+e3670c6a4883,Demons,Supernatural,0,0,1,0,0,0,"Species type, not individual character","Creature species type, not individual character"
+9d12ae152fdb,Burton,The Hunger Games,1,1,1,1,-1,0,Individual soldier; appears in Mockingjay film,Named soldier appearing in Hunger Games film
+875317a2919d,Edmund Kemper,Dexter,1,0,0,0,0,0,Real historical killer; appears only as unseen reference,"Real historical serial killer, not fictional character"
+ebd4242d8167,Galan,Vikings,1,1,1,1,-1,0,"Individual soldier; final season, unclear if dies",Named soldier with actor credit
+ba661b18c176,Killer Croc Xenomorph Hybrid,Alien vs Predator,0,1,0,0,0,-1,"Hybrid creature type, not individual named character","Comic-only hybrid creature, fate unclear after killing creator"
+5ed977fa8667,Kyker (DHARMA Initiative),Lost,0,1,0,0,-1,-1,"Generic DHARMA crew; unseen character, may have died","Unseen DHARMA staff member, fate ambiguous between death and escape"
+90f64760da87,Royce's Assistant,The Wire,0,1,1,1,0,0,Generic assistant role; unnamed generic character,Named character with actor credit
+d1c20d1d896f,Latino Man,Sons of Anarchy,0,1,1,1,0,0,"Generic character type; unnamed, generic role","Named character with actor credit, marked alive"
+6447ddfba799,Werewolf,Supernatural,1,0,0,0,0,0,Individual alien; intended post-credits scene scrapped,"Creature species type, not individual character"
+127f3730c54b,El Chapulín Colorado,DC Extended Universe,1,1,1,0,0,0,Character from fictional universe; appears as footage,"Character from Mexican TV show referenced in DCEU, not appearing directly on screen"
+6ece6e2e841b,Salvatore Perrone,Dexter,1,0,0,0,0,0,"Real historical killer; unseen character, only mentioned","Real serial killer, not fictional character"
+9782f279a0d7,Brian Ames,Westworld,0,0,1,0,0,0,"Entry about actor, not character; unclear character data","Real actor, not fictional character"
+af4f8908b714,Thorbjorn,Vikings,1,1,1,1,-1,0,"Individual warrior; final season, unclear if dies",Named Viking warrior with actor credit
+89b94706bea3,Beta and Alpha,Alien vs Predator,1,0,0,1,0,0,"Individual synthetics; only in novel, not film/TV","Pair of androids, not single individual character"
+a29aefc0da17,Hooker 1,Boardwalk Empire,0,1,1,1,0,0,Generic hooker role; unnamed background character,Named character with actor credit
+9ef33d227b8b,Entropy,Marvel Cinematic Universe,1,1,0,1,0,0,Individual cosmic entity; not in filmed work,"Cosmic entity depicted in MCU film, unclear if active character"
+f5350dd063c1,Unnamed Correction Officer,Prison Break,0,1,0,1,0,0,Generic correction officer; unnamed generic role,Unnamed correction officer appearing in episode
+12cf0c57d4c5,Namtet,Avatar,1,1,0,1,0,0,"Individual Na'vi; video game only, not film/TV",Named Na'vi character with actor credit
+7ff8bd8aa4b1,Porn Girl Doctor,Sons of Anarchy,0,1,1,1,0,0,Generic porn star character; unnamed character type,"Named character with actor credit, marked alive"
+d477585047d8,Redcaps,Supernatural,0,0,1,0,0,0,"Species type of fairy, not individual character","Fairy species type, not individual character"
+797c0899cea3,Florus Friend,The Hunger Games,1,1,1,1,-1,0,"Individual mentor; book source, appears in film","Named mentor character from book/film, tribute dies not character"
+fb90db0e4b3b,Dark Flash,DC Extended Universe,1,1,1,1,0,1,Individual future Flash variant; actor credited,"Named DC character erased from existence, counts as death"
+801a793bd900,Dennis Rader,Dexter,1,0,0,0,0,0,Real historical killer; mentioned not shown in series,"Real serial killer Dennis Rader/BTK, not fictional character"
+720561ec2743,Unidentified expedition member,Alien vs Predator,0,1,0,1,0,1,"Unidentified generic team member, not individual","Unnamed explorer attacked by xenomorph, likely killed"
+8bd1d17ae362,British priest,Lost,0,1,1,1,0,0,Generic priest role; unnamed background character,Named character with actor credit in flashback
+367cf4884ddb,PSNI Lieutenant,Sons of Anarchy,0,1,1,1,0,0,Generic officer role; unnamed military character,"Named character with actor credit, marked alive"
+c3b0eb8fcbfc,Tinks,Supernatural,0,0,1,0,0,0,"Species type of fairy, not individual character","Fairy species type, not individual character"
+f3bfddbeb2dc,District 12 doctor,The Hunger Games,0,1,1,1,0,0,Generic doctor role; unnamed generic character,Named doctor character in Hunger Games
+e9a78a4724e2,Duncan Springer,Breaking Bad / Better Call Saul,1,1,1,0,0,0,"Individual student; actor credited, appears in Better Call Saul","Named student character, not appearing on screen in excerpted material"
+087e7bc2fc86,Tiom Rordan,Star Wars,1,1,0,0,0,1,Novel character only: Legacy of the Force books,Character dies in narrative
+dec2daea5e6b,Westenberg,Harry Potter,1,1,0,0,0,1,"Died before story: summer 1997, not filmed",Character dies in narrative
+1e300f97b14d,Violet Austman,Indiana Jones,1,0,0,0,0,1,"Historical figure, not in films; suicide pre-1929",Not an individual character; real person or meta page
+21bf03e984c8,Willem Frey,Game of Thrones,1,1,1,0,1,1,Game of Thrones season 7; supposedly murdered by Arya,Character dies in narrative
+8244c1468b6c,Frór,Lord of the Rings,1,1,0,1,0,-1,Character appears in adaptations but death pre-story,Death status unclear; resurrection or unknown fate
+b9bf197bb360,Stone-Eyed Sam,Pirates of the Caribbean,1,1,0,0,0,-1,"Novel/game appearances only, died before 1700s",Death status unclear; resurrection or unknown fate
+dda20d5768a8,Korba,Dune,1,1,0,0,0,1,"Dune Messiah novel character, not filmed",Character dies in narrative
+a8333a1f73c3,Rowena King,The Twilight Saga,1,1,0,0,0,1,"Mentioned character in novels, no film appearance",Character dies in narrative
+67a97464d57e,Unidentified clone trooper captain (Hoth),Star Wars,1,0,0,0,0,1,"Unidentified soldier, video game only",Not an individual character; real person or meta page
+a407dc810e22,Quong Po,Harry Potter,1,1,0,0,0,1,Historical figure mentioned in Harry Potter media,Character dies in narrative
+287f1b708f47,Louis XIV,Indiana Jones,0,0,0,0,0,1,"Historical figure, not individual character",Not an individual character; real person or meta page
+e1eebfb512ac,Ornil,Lord of the Rings,1,1,0,0,0,1,"LOTR book character only, not filmed",Character dies in narrative
+484044d63749,Jane Beckett,Pirates of the Caribbean,1,1,0,0,0,1,"Novel character only, not filmed",Character dies in narrative
+14927b142269,Granuk Harkonnen,Dune,1,1,0,0,0,1,"Dune book character only, not filmed",Character dies in narrative
+f647ad9c9026,George Black,The Twilight Saga,1,0,0,0,0,1,"Mentioned character, not in films",Not an individual character; real person or meta page
+d25a8f0afb3a,Punter,Star Wars,1,0,0,0,0,1,"Star Wars guide reference only, not filmed",Not an individual character; real person or meta page
+1f889dc96bf2,Albert Einstein,Harry Potter,0,0,0,0,0,1,"Historical figure, not character",Not an individual character; real person or meta page
+2de60cc1507a,Chiang Kai-Shek,Indiana Jones,0,0,0,0,0,1,"Historical figure, not character",Not an individual character; real person or meta page
+2a1132dcd32c,Hardang,Lord of the Rings,1,1,0,0,0,1,"LOTR book character only, not filmed",Character dies in narrative
+3b6e9ad4626c,Eric Brand,Pirates of the Caribbean,1,1,0,0,0,1,"Novel character only, not filmed",Character dies in narrative
+a84ab140cd49,Pruwet Richese,Dune,1,1,0,1,0,1,"Dune book character, not filmed",Character dies in narrative
+4fe1d2725add,Francesco Solimena,The Twilight Saga,0,0,0,0,0,1,"Historical figure, not character",Not an individual character; real person or meta page
+6e04534fb236,Cope Shykrill's brother,Star Wars,1,0,0,0,0,1,"Jedi vs Sith book only, not filmed",Not an individual character; real person or meta page
+0252f7acd462,Ignatia Wildsmith,Harry Potter,1,1,0,0,0,1,"Harry Potter historical figure, not in films",Character dies in narrative
+6aff08125699,Walter Donovan,Indiana Jones,1,1,1,0,1,1,Indiana Jones film; shot and poisoned,Character dies in narrative
+e31da4d4317f,Mazor Alexi,Game of Thrones,1,1,0,0,0,1,"Game of Thrones book, not in show",Character dies in narrative
+859d47e68637,Longo Baggins,Lord of the Rings,1,1,0,0,0,1,LOTR book character only,Character dies in narrative
+c5c40b655531,Spanish Castaway,Pirates of the Caribbean,1,1,1,0,1,1,Pirates of Caribbean film On Stranger Tides,Character dies in narrative
+21cd5ed6b644,Dominic Vernius,Dune,1,1,0,0,0,1,"Dune book character only, not filmed",Character dies in narrative
+02fbe14267af,Riley Biers,The Twilight Saga,1,1,1,0,1,1,Twilight film Eclipse; killed in battle,Character dies in narrative
+037b6f349c6d,Benits Stinex,Star Wars,1,0,0,0,0,1,"Star Wars book/reference only, not filmed",Not an individual character; real person or meta page
+b033a2cfd472,Daisy Dodderidge,Harry Potter,1,1,0,0,0,1,"Harry Potter historical figure, not filmed",Character dies in narrative
+8c9cff131327,Qin Shi Huang,Indiana Jones,0,1,0,0,0,1,"Historical figure, not character",Character dies in narrative
+ad6be6c89dd7,Imin,Lord of the Rings,1,1,0,0,-1,1,"LOTR ancient character, death fate unknown",Character dies in narrative
+c8567a98ed4d,Ho-Kwan,Pirates of the Caribbean,1,1,1,0,1,1,"Pirates Dead Man's Chest film, dies in escape",Character dies in narrative
+244827d49658,Toshiro,The Twilight Saga,1,1,1,0,1,1,Twilight Breaking Dawn Part 2 film,Character dies in narrative
+9a51ece6d8e3,Deron Cadoruso,Star Wars,1,0,0,0,0,1,"Star Wars game only, not filmed",Not an individual character; real person or meta page
+208a67fad014,Derwent Shimpling,Harry Potter,1,1,0,0,0,1,Harry Potter historical figure only,Character dies in narrative
+0af28a111809,Feathers,Indiana Jones,1,0,0,0,0,1,"Indiana Jones comic character, not filmed",Not an individual character; real person or meta page
+4a22fea1093b,Náin I,Lord of the Rings,1,1,0,0,0,1,"LOTR book character, killed by Balrog",Character dies in narrative
+1d55701ec8ec,Silverback,Pirates of the Caribbean,1,1,0,0,0,1,"Pirates novel character only, not filmed",Character dies in narrative
+0f09975f751e,Shaddam Corrino IV,Dune,1,1,0,0,0,1,"Dune book character only, not filmed",Character dies in narrative
+a05bfa603e10,Omar Jenks,The Twilight Saga,1,0,0,0,0,1,"Twilight mentioned character, not in films",Not an individual character; real person or meta page
+28556849524c,Unidentified Bothan ambassador,Star Wars,1,0,0,0,0,1,"Star Wars book/reference only, not filmed",Not an individual character; real person or meta page
+273b87949e8d,Clara Thompson,Harry Potter,1,1,0,0,0,1,"Harry Potter portrait character, not filmed",Character dies in narrative
+5210416650fe,Burke J. Carter,Indiana Jones,1,0,0,0,0,1,"Indiana Jones background character, not filmed",Not an individual character; real person or meta page
+df795856121a,Indor,Lord of the Rings,1,1,0,0,-1,1,"LOTR book, presumed dead, unclear",Character dies in narrative
+3829aff9f078,Liang Dao,Pirates of the Caribbean,1,1,0,0,0,1,Pirates novel character only,Character dies in narrative
+a142a0ecf8df,Dama,Dune,1,1,0,0,0,1,Dune novel character only,Character dies in narrative
+b763e698125f,Denise,The Twilight Saga,1,0,1,0,1,1,"Twilight film New Moon, killed by Victoria",Not an individual character; real person or meta page
+4f503942c67f,Del Meeko,Star Wars,1,1,1,0,1,1,"Star Wars novels/games, killed 34 ABY",Character dies in narrative
+a316b79e3306,Unidentified insulting wizard,Harry Potter,1,1,0,0,0,1,"Harry Potter unidentified, possibly portrait",Character dies in narrative
+929c37f70003,Abu Bakr,Indiana Jones,0,0,0,0,0,1,"Historical figure, not character",Not an individual character; real person or meta page
+21bb53d74efd,Bingo Baggins,Lord of the Rings,1,0,0,0,0,1,LOTR book character only,Not an individual character; real person or meta page
+8796e17fbd20,Samuel Bellamy,Pirates of the Caribbean,1,1,0,0,0,1,"Pirates historical figure, not in films",Character dies in narrative
+14ef5de53a04,Piter de Vries,Dune,1,1,0,0,0,1,"Dune novel only, not filmed",Character dies in narrative
+3198fabba080,Waylon Forge,The Twilight Saga,1,1,1,0,1,1,"Twilight film, killed by James coven",Character dies in narrative
+43776bf2f723,Kason,Star Wars,1,1,0,0,0,1,"Star Wars novel only, not filmed",Character dies in narrative
+9c0496cd98aa,Selina Sapworthy,Harry Potter,1,1,0,0,0,1,"Harry Potter historical figure, not filmed",Character dies in narrative
+e3acafef12a8,Virgil,Indiana Jones,0,0,0,0,0,1,"Historical figure, not character",Not an individual character; real person or meta page
+a2a596e50ee5,Minto Burrows,Lord of the Rings,1,1,0,0,0,1,"LOTR book character, video game only",Character dies in narrative
+0f8b2be73dea,Elizabeth Swann's mother,Pirates of the Caribbean,1,1,0,0,0,1,"Pirates character mentioned, not filmed",Character dies in narrative
+f9da8b7604ab,Leto Atreides I,Dune,1,1,1,0,1,1,Dune adaptations; poisoned during siege,Character dies in narrative
+7577dab78ca3,Kristie,The Twilight Saga,1,1,1,0,1,1,"Twilight Eclipse film, killed in battle",Character dies in narrative
+4ded6e19a6bb,Chulco Gi,Star Wars,1,0,1,0,1,1,"Star Wars comic, dies on Jedha",Not an individual character; real person or meta page
+6ab13937c75b,Antonia Creaseworthy,Harry Potter,1,1,0,0,0,1,"Harry Potter historical figure, portrait only",Character dies in narrative
+040217a5f9b4,Robert Oppenheimer,Indiana Jones,0,0,0,0,0,1,"Historical figure, mentioned in film",Not an individual character; real person or meta page
+eb430f53b7c2,Boake,Game of Thrones,1,1,1,0,1,1,"Game of Thrones S6, killed in Great Sept",Character dies in narrative
+12f35d00b1a8,Tata,Lord of the Rings,1,0,0,0,-1,1,"LOTR ancient character, fate unknown",Not an individual character; real person or meta page
+81eec167017e,Spanish Soldier (faceless),Pirates of the Caribbean,1,1,1,0,1,1,Pirates Dead Men Tell No Tales film,Character dies in narrative
+5bd98f070785,Iblis Ginjo,Dune,1,1,0,0,0,1,"Dune novel only, not filmed",Character dies in narrative
+1ac34eaf271a,Marie Higginbotham,The Twilight Saga,1,1,0,0,0,1,"Twilight mentioned character, not filmed",Character dies in narrative
+72c489af91d0,Haze Delik,Star Wars,1,1,0,0,0,1,Star Wars audiobook character only,Character dies in narrative
+fc0f84467d7e,T. R.,Harry Potter,1,1,0,0,0,1,"Harry Potter portrait character, game only",Character dies in narrative
+5df6198aa904,Marie Dressler,Indiana Jones,0,0,0,0,0,1,"Historical figure, not character",Not an individual character; real person or meta page
+5c05ee4c1396,Othrod,Lord of the Rings,1,0,0,0,0,1,"LOTR book character, not filmed",Not an individual character; real person or meta page
+69f48fd81da8,Nathan Bolton,Pirates of the Caribbean,1,1,0,0,0,1,Pirates novel character only,Character dies in narrative
+1a1acf9d7e90,Paul Atreides,Dune,1,1,1,0,1,1,"Dune adaptations, main character, dies 10219 AG",Character dies in narrative
+c30b2c08b34f,Kumboh,The Twilight Saga,1,1,1,0,1,1,Twilight short film The Groundskeeper,Character dies in narrative
+4049c9f9706f,Calleen (convor),Star Wars,0,1,0,0,0,1,"Named animal/pet, not character",Character dies in narrative
+63bd522ae2cd,Leta Lestrange,Harry Potter,1,1,1,0,1,1,Harry Potter film Fantastic Beasts; sacrificed,Character dies in narrative
+6dfa2ba02410,Johnson,Indiana Jones,1,1,0,0,0,1,Indiana Jones comic character only,Character dies in narrative
+4f112733729e,Archie,Game of Thrones,1,1,1,0,1,1,"Game of Thrones mentioned, Battle Goldroad",Character dies in narrative
+f5910265e970,Isembold Took,Lord of the Rings,1,1,0,0,0,1,LOTR book character only,Character dies in narrative
+a1dd2697cbd2,Morgan (Pirate Captain),Pirates of the Caribbean,1,1,0,0,0,1,Pirates novel character only,Character dies in narrative
+260d67391584,Ori Zhoma,Dune,1,1,0,0,0,1,Dune novel character only,Character dies in narrative
+622b4c434bf5,Sasha,The Twilight Saga,1,1,1,0,1,1,"Twilight Breaking Dawn film, executed",Character dies in narrative
+6fd9bb782910,Murk Lundi,Star Wars,1,1,0,0,0,1,"Star Wars novel/game only, not filmed",Character dies in narrative
+05bfd64e57b8,Tobias Stump,Harry Potter,1,1,0,0,0,1,Harry Potter portrait character only,Character dies in narrative
+8932e4da9cd1,Victor Bernard,Indiana Jones,1,1,0,0,0,1,Indiana Jones novel character only,Character dies in narrative
+57b2d86aeda7,Samwell Blackwood,Game of Thrones,1,1,1,0,1,1,"Game of Thrones House of Dragon S2, dies",Character dies in narrative
+a3033c63161d,Ingwion,Lord of the Rings,1,1,0,0,0,1,Does not appear onscreen,Character dies but not shown on screen
+2a9cc7586728,Raoul Rheims,Pirates of the Caribbean,1,1,0,0,0,1,Does not appear onscreen,Character dies but not shown on screen
+67e622f1c280,John,The Twilight Saga,1,1,1,1,1,0,Dies in narrative,"Character with screen appearances, survives narrative"
+1c289d39bdd4,Sanga's companion,Star Wars,0,1,0,0,0,1,Not a character,Character dies but not shown on screen
+f2c3b325a297,Octavius Pepper,Harry Potter,1,1,0,0,0,1,Does not appear onscreen,Character dies but not shown on screen
+5394043e3a68,Arminas,Lord of the Rings,1,1,0,0,0,1,Does not appear onscreen,Character dies but not shown on screen
+b12ce82f0c51,Cutler Beckett,Pirates of the Caribbean,1,1,1,0,1,1,Dies in narrative,Character dies but not shown on screen
+6a5cbfb77157,Marie Fenring,Dune,1,1,0,0,0,1,Does not appear onscreen,Character dies but not shown on screen
+393c2f2f857b,The Third Wife,The Twilight Saga,1,1,0,1,0,1,Does not appear onscreen,Character with screen appearances and narrative death
+5cd2dced360c,Telaat,Star Wars,1,1,0,0,0,1,Does not appear onscreen,Character dies but not shown on screen
+27c2f9cb1ff9,Gaidic Lestrange,Harry Potter,1,1,0,0,0,1,Does not appear onscreen,Character dies but not shown on screen
+2e9fd7ce9bc0,Franklin Delano Roosevelt,Indiana Jones,1,0,1,0,1,0,Dies in narrative,Not an individual character
+bb61099cb572,Laura (Grubb) Baggins,Lord of the Rings,1,1,0,0,0,1,Does not appear onscreen,Character dies but not shown on screen
+d2fcb8067ad5,Maddox,Pirates of the Caribbean,1,1,1,0,1,1,Dies in narrative,Character dies but not shown on screen
+e8bcac6ec35e,Edward Masen,The Twilight Saga,1,1,0,0,0,1,Does not appear onscreen,Character dies but not shown on screen
+db30675dc286,Kren Blista-Vanee,Star Wars,1,1,0,0,0,1,Does not appear onscreen,Character dies but not shown on screen
+ac705fc21f82,Deek and Tobbs's first master,Harry Potter,1,1,1,0,1,1,Dies in narrative,Character dies but not shown on screen
+77227eaea4dd,Grail Knight,Indiana Jones,1,1,0,0,0,1,Does not appear onscreen,Character dies but not shown on screen
+24062aaf8a64,Halmir,Lord of the Rings,1,1,0,0,0,1,Does not appear onscreen,Character dies but not shown on screen
+639e1398b420,Blackbeard,Pirates of the Caribbean,1,1,1,0,1,-1,Dies in narrative,Unclear death status in narrative
+c9f1e1da3f12,Abulurd Rabban,Dune,0,0,0,0,0,1,Not a character,Not an individual character
+eb87a83b3b1f,Royce King II,The Twilight Saga,1,1,0,1,0,1,Does not appear onscreen,Character with screen appearances and narrative death
+35180f2486f3,Jerdon Bly,Star Wars,1,1,0,0,0,1,Does not appear onscreen,Character dies but not shown on screen
+392cd2d57157,Falco Aesalon,Harry Potter,0,1,0,0,0,0,Not a character,Character exists only in print media or survives
+6a837363bc46,Short Round's mother,Indiana Jones,1,1,1,0,1,1,Dies in narrative,Character dies but not shown on screen
+7a997df03437,Iminyë,Lord of the Rings,1,1,0,0,0,1,Does not appear onscreen,Character dies but not shown on screen
+f7336147f70d,Crimp,Pirates of the Caribbean,1,1,1,0,1,1,Dies in narrative,Character dies but not shown on screen
+a92d21d3bafc,Muriz,Dune,0,1,0,0,0,1,Not a character,Character dies but not shown on screen
+2fa433e390c7,Cold Woman,The Twilight Saga,1,1,0,1,0,1,Does not appear onscreen,Character with screen appearances and narrative death
+e59b7db2a80f,Cellia Moten,Star Wars,1,1,0,0,0,1,Does not appear onscreen,Character dies but not shown on screen
+561c3903604f,Ferdinand Octavius Pratt,Harry Potter,1,1,1,0,0,-1,Does not die,Unclear death status in narrative
+6e2c3f34c4f3,Tzi,Indiana Jones,1,1,1,0,1,0,Dies in narrative,Character exists only in print media or survives
+14f0e08a1554,Ancalagon,Lord of the Rings,1,1,0,0,0,-1,Does not appear onscreen,Unclear death status in narrative
+579075644873,Moss,Pirates of the Caribbean,1,1,1,0,1,1,Dies in narrative,Character dies but not shown on screen
+bbf53b4792a0,Giandro Tull,Dune,1,1,1,0,1,1,Dies in narrative,Character dies but not shown on screen
+9459186f67ef,Victoria,The Twilight Saga,1,1,0,1,0,1,Does not appear onscreen,Character with screen appearances and narrative death
+b318b2dbbde8,Tank tread death Nazi,Indiana Jones,1,1,0,0,0,1,Does not appear onscreen,Character dies but not shown on screen
+8ca28ec4f3d1,Algund,Lord of the Rings,1,1,0,0,0,1,Does not appear onscreen,Character dies but not shown on screen
+1ddd69e597a2,Francis Drake,Pirates of the Caribbean,1,1,0,0,0,1,Does not appear onscreen,Character dies but not shown on screen
+422a659369b5,Barbra Pryce,Alien vs Predator,1,0,1,0,0,0,Does not die,Not an individual character
+d449cc4f5819,Sluggsy and Horror,James Bond 007,1,1,0,0,0,1,Does not appear onscreen,Character dies but not shown on screen
+a3efe2160693,Skinner,Jurassic Park,0,0,0,0,0,1,Not a character,Not an individual character
+270d879237d8,Mercury,DC Extended Universe,1,1,0,0,0,1,Does not appear onscreen,Character dies but not shown on screen
+64166115b2d9,Arachne Crane,The Hunger Games,1,1,0,0,0,1,Does not appear onscreen,Character dies but not shown on screen
+5dcfd671639a,Martin Keamy,Lost,1,0,1,0,1,1,Dies in narrative,Not an individual character
+947ad9f5e6cc,Floyd (Apocalypse World),Supernatural,1,0,1,0,0,0,Does not die,Not an individual character
+b11668f0e288,Gnaeus,Spartacus,1,0,1,0,1,1,Dies in narrative,Not an individual character
+2133a6706ce3,Gill,Sons of Anarchy,1,0,1,0,1,1,Dies in narrative,Not an individual character
+23d68bb2d8d4,Curtis Barnes,Dexter,1,0,1,0,1,1,Dies in narrative,Not an individual character
+5ee85dc7f6a7,Russell Lightbourne,The 100,1,0,1,0,1,1,Dies in narrative,Not an individual character
+fd8e2464e7a0,Zureyn,Avatar,1,0,1,0,0,0,Does not die,Not an individual character
+6a36f3115f69,Andrew Holt,Breaking Bad / Better Call Saul,1,0,1,0,1,1,Dies in narrative,Not an individual character
+12be7c70accf,Roadbuster TFP,Transformers,1,0,1,0,1,1,Dies in narrative,Not an individual character
+6280e99aea82,Rioters,The Sopranos,1,0,1,0,1,-1,Dies in narrative,Not an individual character
+7b248c81a93c,Charles Webber,Grey's Anatomy,1,0,1,0,1,1,Dies in narrative,Not an individual character
+e121f06daa0d,Toreen Boyd,The Wire,1,1,0,0,0,1,Does not appear onscreen,Character dies but not shown on screen
+9f3335f8648f,Sophia Peletier (TV Series),The Walking Dead,1,0,1,0,-1,1,Death context unclear,Not an individual character
+ac9e00c694b7,Gabriel,Mission: Impossible,1,1,1,1,1,-1,Dies in narrative,"Character with screen appearances, survives narrative"
+55d9f0068a40,Tony,Ozark,1,0,0,0,0,1,Does not appear onscreen,Not an individual character
+5c8bdf7f5e18,Funshine,Stranger Things,1,0,1,0,1,1,Dies in narrative,Not an individual character
+4e0eeaee9ff7,Mind-Droid,The Boys,1,0,0,0,0,1,Does not appear onscreen,Not an individual character
+852b9071d977,Danny Whizz-Bang,Peaky Blinders,1,0,1,0,1,1,Dies in narrative,Not an individual character
+b6d6f1b447a6,Mary Alice,The Matrix,0,0,0,0,0,1,Not a character,Not an individual character
+9beaca40a417,Alexi,Alien vs Predator,1,1,1,0,0,0,Does not die,Character exists only in print media or survives
+c4dfe489e1fb,Saunders,James Bond 007,1,0,1,0,1,1,Dies in narrative,Not an individual character
+d4d70c5ab141,M.B. Nash,Jurassic Park,1,0,1,0,1,1,Dies in narrative,Not an individual character
+a0b9e2c1a33f,Drove,The Hunger Games,1,0,1,0,1,1,Dies in narrative,Not an individual character
+bf048571db36,Daniel Faraday,Lost,1,0,1,0,1,-1,Dies in narrative,Not an individual character
+4b83c179d8f1,The Brothers Ferox,Spartacus,1,0,1,0,0,0,Does not die,Not an individual character
+05f02a43a540,Cameron Hayes,Sons of Anarchy,1,0,1,0,1,1,Dies in narrative,Not an individual character
+8200e1cc2c56,Harpe Brothers,Dexter,1,0,1,0,1,1,Dies in narrative,Not an individual character
+ae06c6f336a3,Sierra,The 100,1,0,1,0,1,1,Dies in narrative,Not an individual character
+6858282b72b9,Lyle Wainfleet,Avatar,1,1,1,0,1,1,Dies in narrative,Character dies but not shown on screen
+2561c0192955,Jack Fensky,Breaking Bad / Better Call Saul,1,0,1,0,1,1,Dies in narrative,Not an individual character
+9718885e4fa6,John Scalise,Boardwalk Empire,0,0,0,0,0,1,Not a character,Not an individual character
+d7d68b1fcba9,Wanahton,Westworld,1,0,1,0,0,0,Does not die,Not an individual character
+cc243f74208c,Impactor TFP,Transformers,0,0,0,0,0,-1,Not a character,Not an individual character
+f3a6bf7e77d6,Dickie Moltisanti,The Sopranos,1,0,1,0,1,1,Dies in narrative,Not an individual character
+15ea4bb74bc4,Thatcher Grey,Grey's Anatomy,1,0,1,0,1,1,Dies in narrative,Not an individual character
+0dd969be8ce4,Devar Manigault,The Wire,1,0,1,0,1,0,Wire TV character with actor; dies in Season 4,Meta page or list
+7f65d4c82a7a,Derek (Comic Series),The Walking Dead,1,1,0,0,0,1,Comic series only; issues 75-78,Only in print or game media
+ae62346b0a75,Louis Zehner,Ozark,1,0,1,0,1,0,Ozark TV character; killed by henchmen,"Species or creature type, not individual character"
+2c65109a1dc9,Picante Balls,The Boys,1,0,1,0,1,0,Boys Presents: Diabolical animated episode; killed by Homelander,"Species or creature type, not individual character"
+f36510209d19,Stuart Tuxhorn,Prison Break,1,0,1,0,1,0,Prison Break S4; played by Steve Tom; killed in 2005,Meta page or list
+0c4882eb1a9e,Sebastian Miro,Fast & Furious,1,0,1,0,1,0,Fast & Furious film; actor Christian Lanz; deceased status,Meta page or list
+8e8e05cfc75a,Father Hughes,Peaky Blinders,1,0,1,0,1,0,Peaky Blinders S3 episodes; stabbed to death by Michael,Meta page or list
+119d9c4ba4b6,Berserker (LV-412),Alien vs Predator,1,0,0,0,0,0,AVP video game character; no film appearance mentioned,Meta page or list
+34256266d7fe,Mrs. Whistler,James Bond 007,1,0,1,0,1,0,Diamonds Are Forever 1971 film; portrayed by Margaret Lacey; drowned,Meta page or list
+5991929b86e3,Juan,Jurassic Park,1,0,0,0,0,0,Jurassic World: Aftermath novel; unseen character,"Species or creature type, not individual character"
+94882c80ce15,Alura,DC Extended Universe,1,0,0,0,0,0,Comic characters only; DCEU reference materials,"Species or creature type, not individual character"
+143b6c989e91,Lamina,The Hunger Games,1,1,1,0,1,1,Hunger Games film; tribute dies day 3 of games,Only in print or game media
+4f40ab60e311,Regina,Lost,1,0,1,0,1,0,Lost S4 crew; dies December 26 2004 onscreen,Meta page or list
+f44f36b1262b,Joshua,Supernatural,1,0,1,0,1,0,Supernatural TV; killed by Dagon,Meta page or list
+f5ef7843769e,Marcia,Spartacus,1,0,1,0,1,0,Spartacus S2 TV; portrayed by Delaney Tabron; crucified,Meta page or list
+3f76e683d98f,Renzo Sandoval,Dexter,1,0,0,0,0,0,Dexter unseen victim; died before series,Meta page or list
+604f3db04ba7,Gael,The 100,1,0,1,0,1,0,The 100 S4; portrayed by Andre Tricoteux; dies in Final Conclave,Meta page or list
+45b7ad0f8de9,Helgi,Vikings,1,0,1,0,1,0,Vikings S5; portrayed by Jack McEvoy; killed by Kjetill,Meta page or list
+b894be145009,Ro'a,Avatar,1,0,1,0,1,0,Avatar: Way of Water film; hunted and killed,"Species or creature type, not individual character"
+090bc62d1444,Yolanda,Breaking Bad / Better Call Saul,1,0,1,0,1,0,Better Call Saul TV; shot dead,Meta page or list
+43589c4de246,Elmer Borst,Boardwalk Empire,1,0,1,0,1,0,Boardwalk Empire S3; Wade Mylius; shot by Agent Knox,Meta page or list
+272debb794cf,Dolores Abernathy,Westworld,1,0,1,0,1,0,Westworld TV; multiple actors; destroyed in series,"Species or creature type, not individual character"
+e885d49e9644,Prima (WFC Trilogy),Transformers,1,0,0,0,0,0,WFC Trilogy; did not make appearance; presumed dead,"Species or creature type, not individual character"
+b2ea6175c8a5,Johnny Soprano,The Sopranos,1,1,1,1,0,1,Sopranos; actor Joseph Siravo; died 1986 before series,Cast credit or actor listed in infobox
+c0b4ad38b3f4,"""Big Daddy"" King",Grey's Anatomy,1,0,1,0,1,0,Grey's Anatomy Private Practice S2; dies during episode,Meta page or list
+c48786994391,Butchie,The Wire,1,0,1,0,1,0,Wire TV; actor S. Robert Morgan; shot by Chris,Meta page or list
+5b8019d85c25,Sidney,Mission: Impossible,1,0,0,0,0,0,Mission: Impossible unreleased film; film not yet released,"Species or creature type, not individual character"
+f9b56d08e4cb,Grace Young,Ozark,1,0,1,0,1,0,Ozark TV; murdered by Snells in episode,"Species or creature type, not individual character"
+d13043cff8ec,Francine,Stranger Things,1,1,0,0,0,1,Stranger Things comic miniseries; not TV/film,Only in print or game media
+d416d93262ce,Fang,The Boys,1,0,1,0,1,0,Boys Presents: Diabolical episode; killed by Homelander,"Species or creature type, not individual character"
+3f8bd1b6f6d9,Sue,Fast & Furious,1,0,1,0,1,0,F9 film; Martyn Ford; crushed by Letty,Meta page or list
+58a03e1a5835,Barney Thomason,Peaky Blinders,1,0,1,0,1,0,Peaky Blinders S5; sniper killed with silenced pistol,Meta page or list
+048f80d753cb,Rama Kandra,The Matrix,1,0,1,0,1,0,Matrix Reloaded/Revolutions films; Program deleted,"Species or creature type, not individual character"
+467ee670b9ae,Quill,Alien vs Predator,1,0,0,0,0,0,Alien 3 unproduced screenplay novel; not filmed,"Species or creature type, not individual character"
+926d8409e99f,Cooper (United States Army),Marvel Cinematic Universe,1,0,1,0,1,0,Captain America: Brave New World MCU film; killed by Leader,"Species or creature type, not individual character"
+bdfed79e3299,Jason Sin,James Bond 007,1,1,0,1,0,1,James Bond novel Trigger Mortis; not filmed,Appears in filmed media
+413738ec0a83,Black Mask,DC Extended Universe,1,0,1,0,1,0,Birds of Prey film 2020; Ewan McGregor; killed by grenade,"Species or creature type, not individual character"
+982377130daf,Lucy Gray Baird,The Hunger Games,1,1,1,0,-1,1,Hunger Games film; victor of games; death unclear,Only in print or game media
+0275ad35b047,Tom Friendly,Lost,1,0,1,0,1,0,Lost TV; M.C. Gainey; executed by Sawyer S3,Meta page or list
+5083078d73e8,Calvin Reidy,Supernatural,1,0,1,0,1,0,Supernatural S2/S3 TV; FBI agent; killed by demon,Meta page or list
+7ea8545330bc,Jose Galindo,Sons of Anarchy,1,0,0,0,0,0,Sons of Anarchy mentioned only character; no appearance,Meta page or list
+30e13f24d337,Thichis Kuras,Star Wars,1,0,0,0,0,0,Star Wars reference materials; Moff in background material,"Species or creature type, not individual character"
+cc7641659084,Michael Karume,Harry Potter,1,0,0,0,0,0,Harry Potter video game only; not in films,"Species or creature type, not individual character"
+516a9ba6f46d,Bauer,Indiana Jones,1,0,0,0,0,0,Indiana Jones video game; not in films,Meta page or list
+240e46f10a91,Orla Richese,Dune,1,1,1,1,0,1,Dune TV; Laura Howard; alive in narrative,Cast credit or actor listed in infobox
+ccc264bca8ee,Brett Warner,The Twilight Saga,1,0,1,0,0,0,Twilight film; nurse character; alive,"Species or creature type, not individual character"
+ddf1bba3af88,Wiseman Gamwich,Lord of the Rings,1,0,0,0,0,0,LOTR hobbit; appears in appendices only,Meta page or list
+23c315291997,Trev Mallory,Harry Potter,1,0,0,0,0,0,Harry Potter video game student; not in films,"Species or creature type, not individual character"
+239dca53317b,Roger Fontane,Indiana Jones,1,0,0,0,0,0,Indiana Jones video game; not in films,Meta page or list
+a8f14b0aaf28,Lormelle Long Lance,Game of Thrones,1,0,0,0,0,0,Game of Thrones mentioned only; not shown in TV,Meta page or list
+2e6c3ead3930,Apedemak,Pirates of the Caribbean,0,1,0,0,0,0,Deity/god in franchise; not individual character,No evidence of on-screen appearance
+449a825cc74e,Samin Moro,Dune,1,0,0,0,0,0,Dune: Awakening video game; not in films,Meta page or list
+d1d66faef19c,Gustavo,The Twilight Saga,1,0,1,0,0,0,Breaking Dawn films; Sebastiao Lemos; alive,"Species or creature type, not individual character"
+3849046462ae,Hiril (daughter of Barahir),Lord of the Rings,1,0,0,0,0,0,LOTR Edain; appears in History/reference materials only,Meta page or list
+a3e5bf0fee5a,Bronze (Chiss),Star Wars,1,0,0,0,0,0,Star Wars New Jedi Order novel; not filmed,"Species or creature type, not individual character"
+219f3ec5e534,Seamus Finnigan's father,Harry Potter,1,0,0,0,0,0,Harry Potter Seamus father; mentioned not shown,"Species or creature type, not individual character"
+06a546df5c3d,Basil Rathbone,Indiana Jones,0,1,0,1,0,0,Real historical actor; not fictional character,Appears in filmed media
+cef5dcad098f,Lordsport dockhand,Game of Thrones,1,0,1,0,0,0,Game of Thrones S2 TV; Jer O'Leary; alive,Meta page or list
+f668947ee6ec,Inmate (Turkish Prison),Pirates of the Caribbean,1,1,1,0,0,1,Pirates of the Caribbean films; prisoner; escaped,Only in print or game media
+3d8249ab994b,Isbar,Dune,1,1,0,0,0,1,Dune: The Winds of Dune novel; not filmed,No evidence of on-screen appearance
+9667b93a73a2,Vladimir,The Twilight Saga,1,0,1,0,0,0,Breaking Dawn film; Noel Fisher; vampire survives,"Species or creature type, not individual character"
+bd532fc765f5,Man in the Moon,Lord of the Rings,0,1,0,0,0,0,LOTR mythological figure; not individual character,No evidence of on-screen appearance
+1e656da524df,Valentina Vázquez,Harry Potter,1,0,0,0,0,0,Harry Potter president; background materials only,"Species or creature type, not individual character"
+b67d07157d2b,Lyndsey Donner,Indiana Jones,1,0,1,0,0,0,Indiana Jones Dial of Destiny film; Billy Postlethwaite; alive,Meta page or list
+27c826b66c42,Footman (Weatherby Swann's mansion),Pirates of the Caribbean,0,1,0,0,0,0,Pirates generic footman; unnamed role; not character,No evidence of on-screen appearance
+b6d13a8db4e1,Siona Atreides,Dune,1,1,0,0,0,-1,Dune novels; appears in God Emperor of Dune,No evidence of on-screen appearance
+02ef5f344be3,Isaac Weber,The Twilight Saga,1,0,1,0,0,0,Twilight Eclipse/Breaking Dawn films; alive,"Species or creature type, not individual character"
+f35d5da28bce,Tinfang,Lord of the Rings,1,0,0,0,0,0,LOTR Elf; appears in reference materials only,Meta page or list
+c7bd128532a9,Nuri Pravada,Star Wars,1,0,0,0,0,0,Star Wars Expanded Universe references; not filmed,Meta page or list
+a3ca98b1135a,Azizi,Indiana Jones,1,0,0,0,0,0,Indiana Jones Great Circle video game; not filmed,Meta page or list
+a57496d98b24,Uthor Karstark,Game of Thrones,1,0,0,0,0,0,Game of Thrones mentioned background; not shown,Meta page or list
+ef77ab304cb1,Murtogg,Pirates of the Caribbean,1,1,1,1,0,1,Pirates of the Caribbean films; marine survives,Appears in filmed media
+2bdaad8bd31b,Simone Von Konig,Dune,1,0,0,0,0,0,Dune: Awakening video game; not filmed,Meta page or list
+70baa3f08baf,Phil Dwyer,The Twilight Saga,1,0,1,0,0,0,Twilight films; Matt Bushell/Ty Olsson; alive,"Species or creature type, not individual character"
+d89c30f3fed7,Melilot Brandybuck,Lord of the Rings,1,0,0,0,0,0,LOTR hobbit; appendices only,Meta page or list
+6fb7cedd7cb9,Rae Vixe,Star Wars,1,0,0,0,0,0,Star Wars corporate mogul; reference materials only,"Species or creature type, not individual character"
+b97f039ed051,Mae,Indiana Jones,1,0,0,0,0,0,Indiana Jones reference material; not filmed,Meta page or list
+b114348d1f66,Vance Corbray,Game of Thrones,1,1,1,1,0,1,Game of Thrones S4 TV; Richard Doubleday; alive,Cast credit or actor listed in infobox
+8694d9fd81fb,Cursed Captain,Pirates of the Caribbean,1,0,0,0,0,0,Sea of Thieves video game; not filmed,Meta page or list
+5fabf650e3af,Campos Demari,Dune,1,0,0,0,0,0,Dune: Awakening video game; not filmed,Meta page or list
+55bb88111a9b,Mr. Jefferson,The Twilight Saga,1,0,1,0,0,0,Twilight film; teacher character; alive,"Species or creature type, not individual character"
+285ac7f09bb9,Davrill,Star Wars,1,0,0,0,0,0,Star Wars KOTOR video game; not filmed,"Species or creature type, not individual character"
+c4dd7e896e0b,Quartermaster (Flying Dutchman),Pirates of the Caribbean,1,1,0,1,0,-1,"Quartermaster in Pirates video game, not filmed appearance","Video game character, fate explicitly unknown"
+34db2f012009,Arn Mikals,Dune,1,1,0,0,0,1,"Arn Mikals from Dune video game only, voice role","Voice-only game appearance, presumed imprisoned or killed but unconfirmed"
+023a602fad95,Halvard,Lord of the Rings,1,1,-1,0,-1,0,Halvard set to be portrayed in LOTR but unclear if filmed/aired,"Character set to appear in unreleased film, not yet shown"
+0eb64b892297,Lymond Hightower,Game of Thrones,1,1,-1,0,0,1,"Lymond Hightower historical figure, Histories & Lore appearance unclear","Supplementary material only, character dies in described action"
+cfb821962a8d,The Water Shipper,Dune,1,1,0,1,0,1,"Water Shipper from Dune video game Awakening, dies in game not film",Voice-acted game character explicitly dies from poisoned water
+91426bab2d56,Rob Sawyer,The Twilight Saga,1,1,0,1,0,0,"Rob Sawyer from Twilight Midnight Sun book, no filming","Minor school character in Midnight Sun, no death mentioned"
+528863466a98,Cassius Bell,Harry Potter,1,1,1,1,-1,0,"Cassius Bell in Fantastic Beasts film, death outcome uncertain","Portrayed in Fantastic Beasts film, appears alive in action"
+4cfdacb335c3,Stephen (saint),Indiana Jones,1,0,0,0,0,0,"Saint Stephen historical figure, Indiana Jones reference only","Historical saint, not narrative character"
+bd55f20086c9,Glendon Footly,Game of Thrones,1,1,1,0,-1,-1,"Glendon Footly in Game of Thrones TV, actor listed, historical backstory","Supplementary material character only, narrative outcome unclear"
+445a511d8875,Captain of HMS Dauntless,Pirates of the Caribbean,0,0,0,1,0,0,"Unidentified, unnamed captain only mentioned not shown",Unidentified character only mentioned in dialogue
+e60a56889124,Seron Varlin,Dune,1,1,0,1,0,0,Seron Varlin from Dune Awakening video game only,"Swordmaster in video game, trains player, alive"
+fac05b18d3e8,Whitney,The Twilight Saga,1,1,0,1,0,0,"Whitney from Twilight Midnight Sun book, no film appearance","Minor character in school scenes, no death mentioned"
+97cfb1dd076d,Achilles,Indiana Jones,1,0,0,0,0,0,"Achilles legendary mythology, Indiana Jones reference not filmed","Legendary Greek mythological figure, not fictional narrative character"
+7048b0c3c2c5,Li,Alien vs Predator,1,1,0,1,-1,-1,"Li from Alien vs Predator game EVAC, status unknown",Game character with unknown status after rescue operations
+93b999a14643,Echo (LEGO Jurassic World: Legend of Isla Nublar),Jurassic Park,1,1,0,1,0,0,Echo Velociraptor in LEGO Jurassic games only,"Named individual velociraptor in game, alive status confirmed"
+8e1bc67b182d,Armorhide TFP,Transformers,1,1,0,0,0,-1,Armorhide TFP Transformers novel/Exodus only,"Transformers novel character, attacked but fate unknown"
+d8af82fa4a9e,Ada Monroe,Supernatural,1,1,1,1,0,-1,"Ada Monroe Winchesters TV main character, actress Demetria McKinney","Main character sacrifices soul, restoration outcome unclear"
+1982ec3dacb2,Hedylus,Spartacus,1,1,1,1,0,-1,"Hedylus Spartacus TV episodes, actor Graham Vincent","Gladiator in TV series, limited narrative information"
+7414f8a1bb4b,Domitia Whimsiwick,The Hunger Games,1,1,0,1,0,0,Domitia Whimsiwick Hunger Games novel only,"Mentor in Hunger Games prequel film, alive"
+614a52dcb73d,Jamie,Stranger Things,1,1,-1,1,-1,0,"Jamie Stranger Things appears in novel/extended universe, unclear if filmed","Psychokinetic child in Stranger Things, no death indicated"
+c804f150608f,Sofia Ivanescu,Mission: Impossible,1,1,0,1,0,0,Sofia Ivanescu Mission Impossible video game only,"Software engineer in Mission Impossible game, no death"
+7ccc4728c09e,Reacher Dick,The Boys,1,1,0,1,0,0,Reacher Dick The Boys comic series only,"Superhero in The Boys comics, survives conflict"
+951a935c5e30,Atticus,Spartacus,1,0,0,0,0,0,"Atticus Spartacus only mentioned not seen, actor none","Roman nobleman only mentioned in passing, no substantive identity"
+1832ac351f7b,Neely,Mission: Impossible,1,1,1,0,0,0,"Neely Mission Impossible film, status alive","Officer in Mission Impossible video game, no death"
+a1d44aee9751,Gumchum,The Boys,1,1,0,1,0,0,Gumchum The Boys comic series only,"Superhero in The Boys comics, survives attack"
+3492829ada80,Stalker (Elite Clan),Alien vs Predator,1,1,0,1,0,0,"Stalker Elite Clan video game only, multiplayer skin","Elite Predator in video game, no death mentioned"
+ddb048077745,Mehen,DC Extended Universe,1,0,0,0,0,0,"Mehen Egyptian god DC only mentioned, mythological","Mythological god mentioned in backstory, not a narrative character"
+81074d979af1,Topspin TFP,Transformers,1,1,0,1,0,-1,Topspin TFP Transformers video game only,"Autobot in video game, status possibly deceased but uncertain"

@@ -54,8 +54,9 @@ status field.
 | Audit label derivation | `python -m src.labels.audit_labels` | `data/clean/label_audit.csv` |
 | Draw annotation sample | `python -m src.labels.build_gold_set` | `data/gold/gold_sample.csv` (600 chars) |
 | Split into chunks | `python -m src.labels.annotate --split` | `data/gold/chunks/chunk_NN.csv` |
-| Annotate | Haiku 4.5 subagents, one per chunk | `data/gold/annotations/passN/chunk_NN.jsonl` |
+| Annotate | Haiku 4.5 subagents, one per chunk, coding scheme in `src/labels/ANNOTATION_RUBRIC.md` | `data/gold/annotations/passN/chunk_NN.jsonl` |
 | Score the label | `python -m src.labels.eval_labels` | `data/clean/label_eval.csv`, `corpus_composition.csv` |
+| Inter-coder reliability | `python -m src.labels.reliability` | `label_reliability.csv`, `label_disagreements.csv` |
 | Build modelling table | `python -m src.labels.rebuild_label` | `data/clean/characters_model.csv` |
 
 ### What the label means
@@ -87,12 +88,19 @@ To reproduce the numbers with those rows kept in:
 INCLUDE_UNNAMED_ROLES=1 python -m src.q1_character.models
 ```
 
-The filter only catches explicit `Unidentified`/`Unnamed`/`Unknown` prefixes, so
-role-titled pages like Dexter's "Acupuncturist" still get through — see Known
-issues in the README.
+The filter matches explicit `Unidentified`, `Unnamed` and `Unknown` prefixes, so
+role-titled pages without one of those markers remain in the population. See
+Limitations and scope in the README.
 
-Annotations come from Haiku 4.5, not from people. Inter-pass agreement measures
+Annotations come from Haiku 4.5, not from people. Inter-coder agreement measures
 reliability, not correctness.
+
+The 600-character sample was coded four times. Passes 1 and 2 used the rubric as
+first written down, and reached Cohen's kappa 0.26 on `is_character` and 0.38 on
+`dies_in_narrative`. Reading the disagreements showed four cases the rubric left
+open, so it was revised (`src/labels/ANNOTATION_RUBRIC.md`, v2) and coded twice
+more. Passes 3 and 4 reach 0.53 and 0.67 on the same two labels. Run
+`python -m src.labels.reliability` to reproduce the table.
 
 ## Stage 2 — enrichment
 
@@ -111,7 +119,8 @@ counts for the franchise-level analysis.
 
 | step | command | writes |
 |---|---|---|
-| Wide feature matrix | `python -m src.q1_character.features` | `data/clean/character_features.csv` (369 one-hot + network + text) |
+| Louvain seed check | `python -m src.q1_character.features --seed-check` | `q1_louvain_stability.csv` |
+| Wide feature matrix | `python -m src.q1_character.features` | `data/clean/character_features.csv` (369 one-hot + network + community + text), `q1_community_structure.csv` |
 
 Five families, all from data already on disk: Fandom categories, infobox field
 names, family-relation counts, per-franchise co-mention graphs (PageRank, HITS,
@@ -140,8 +149,11 @@ marker either — `is` and `was` are English stopwords and already dropped.
 | Q1 train/test assignment | `python -m src.q1_character.splits` | `split_assignment.csv` |
 | Q1 honest held-out score | `python -m src.q1_character.evaluate` | `q1_holdout_results.csv`, `q1_dev_selection.csv`, `q1_dev_errors.csv` |
 | Q1 gender effect sizes | `python -m src.q1_character.effects` | `q1_gender_pooled.csv`, `q1_gender_by_franchise.csv` |
+| Q1 community fate test | `python -m src.q1_character.community` | `q1_community_fate.csv` |
+| Q1 paired fold significance | `python -m src.q1_character.significance` | `q1_fold_scores.csv`, `q1_significance.csv` |
+| Q1 cost-sensitive thresholds | `python -m src.q1_character.costs` | `q1_cost_curves.csv`, `q1_cost_optima.csv`, `q1_metric_table.csv`, `q1_cost_by_franchise.csv` |
 | Q2 text (partial) | folded into `src.q1_character.models` as the `text` and `character+text` sets | — |
-| Q3 franchise mortality | `python -m src.q3_franchise.mortality` | `q3_franchise_mortality.csv`, `q3_glm_summary.csv`, `q3_kmeans_diagnostics.csv`, `q3_franchise_clusters.csv` |
+| Q3 franchise mortality | `python -m src.q3_franchise.mortality` | `q3_franchise_mortality.csv`, `q3_glm_summary.csv`, `q3_kmeans_diagnostics.csv`, `q3_franchise_clusters.csv`, `q3_cluster_internal.csv`, `q3_cluster_external.csv` |
 
 `models.py` compares every feature set against every model under cross
 validation — the right tool for "which features carry the signal". `evaluate.py`
@@ -171,7 +183,7 @@ parameters are exported; the browser reproduces the Python prediction exactly.
 
 It's fit on `split_random == "trainval"` and only ever shows `split_random ==
 "test"` characters — fitting and scoring on the same rows was an earlier bug
-(see README, Known issues). Run `src.q1_character.splits` first if
+(see README, Limitations and scope). Run `src.q1_character.splits` first if
 `split_assignment.csv` doesn't exist yet.
 
 `export_demo.py` writes the same JSON to `data/clean/` and to `docs/`. Copying

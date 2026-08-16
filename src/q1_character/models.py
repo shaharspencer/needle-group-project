@@ -61,6 +61,17 @@ NETWORK_NUMERIC = [
     "in_degree", "out_degree", "component_size", "n_relatives", "n_categories",
 ]
 
+# Where a character sits in their franchise's Louvain partition, rather than how
+# central they are in the graph as a whole. community_id itself is deliberately
+# absent: it is an arbitrary integer with no meaning across franchises, and
+# one-hot encoding it would let the model memorise "community 4 of Game of
+# Thrones", which is the franchise-memorisation failure the grouped split
+# exists to catch. Only size-, position- and boundary-relative quantities are
+# kept, all of which are comparable across franchises.
+COMMUNITY_NUMERIC = [
+    "community_size", "community_share", "embeddedness", "community_rank",
+]
+
 # Column names naming death would restate the label.
 DEATH_TERM_RE = re.compile(
     r"death|deceas|died|dead|kill|murder|victim|casualt|fatal|corpse|posthum|"
@@ -104,14 +115,33 @@ FEATURE_SETS = {
 def build_feature_sets(df: pd.DataFrame) -> dict:
     """Add the wide sets, whose columns are only known once the data is read."""
     wide = [c for c in df.columns if c.startswith(("cat_", "ib_"))]
-    leaky = [c for c in wide + NETWORK_NUMERIC if DEATH_TERM_RE.search(c)]
+    leaky = [
+        c for c in wide + NETWORK_NUMERIC + COMMUNITY_NUMERIC
+        if DEATH_TERM_RE.search(c)
+    ]
     if leaky:
         raise SystemExit(f"death-related feature columns reached the matrix: {leaky}")
 
     sets = dict(FEATURE_SETS)
-    sets["network"] = FeatureSet(FRANCHISE_CATEGORICAL, NETWORK_NUMERIC)
+    # No FRANCHISE_CATEGORICAL here. These used to carry franchise, genre,
+    # medium and content_rating, which meant "network only" and "community only"
+    # were really "network plus four franchise columns" -- and the whole point of
+    # the comparison is to separate the two. Their scores move as a result.
+    sets["network"] = FeatureSet([], NETWORK_NUMERIC)
     sets["character+network"] = FeatureSet(
         CHARACTER_CATEGORICAL, CHARACTER_NUMERIC + NETWORK_NUMERIC
+    )
+    # Community position on its own, to separate what the Louvain partition adds
+    # from what raw centrality already supplied. The two are correlated by
+    # construction (a high-degree node is usually well embedded), so the
+    # combined set below is the one that answers whether it adds anything.
+    sets["community"] = FeatureSet([], COMMUNITY_NUMERIC)
+    sets["character+community"] = FeatureSet(
+        CHARACTER_CATEGORICAL, CHARACTER_NUMERIC + COMMUNITY_NUMERIC
+    )
+    sets["character+network+community"] = FeatureSet(
+        CHARACTER_CATEGORICAL,
+        CHARACTER_NUMERIC + NETWORK_NUMERIC + COMMUNITY_NUMERIC,
     )
     if TEXT_COLUMN in df.columns:
         sets["text"] = FeatureSet([], [], TEXT_COLUMN)
@@ -120,7 +150,8 @@ def build_feature_sets(df: pd.DataFrame) -> dict:
         )
     sets["rich"] = FeatureSet(
         CHARACTER_CATEGORICAL + FRANCHISE_CATEGORICAL,
-        CHARACTER_NUMERIC + FRANCHISE_NUMERIC + NETWORK_NUMERIC + wide,
+        CHARACTER_NUMERIC + FRANCHISE_NUMERIC + NETWORK_NUMERIC
+        + COMMUNITY_NUMERIC + wide,
         TEXT_COLUMN if TEXT_COLUMN in df.columns else None,
     )
     return sets
@@ -189,6 +220,32 @@ class Q1Models:
 
     @staticmethod
     def models() -> dict:
+        """The three classifiers, with the reasoning for each setting.
+
+        `class_weight="balanced"` throughout. At a 35.6% base rate an unweighted
+        fit optimises a loss dominated by survivors, which is the situation the
+        evaluation lecture warns about when it notes that a default classifier
+        can score well by ignoring the minority class entirely.
+
+        logistic  C left at the sklearn default of 1.0. Regularisation strength
+                  is not tuned because the comparison is between feature sets,
+                  and tuning one model per set would confound the two.
+
+        tree      Pre-pruned rather than grown out and cut back. The supervised
+                  learning lecture gives both options and the reason to prefer
+                  stopping early here is the second one it lists: with 369 sparse
+                  one-hot columns, a fully grown tree splits on categories held
+                  by a handful of characters, which is a decision made on very
+                  little data. max_depth=6 and min_samples_leaf=50 stop growth
+                  before that. Cost-complexity post-pruning is scored as the
+                  alternative in `pruning_comparison` below.
+
+        forest    400 trees, chosen where the out-of-fold score stopped moving.
+                  Depth is left unbounded on purpose: bagging plus
+                  min_samples_leaf=5 supplies the variance control that a single
+                  tree needs a depth limit for, and capping depth here only
+                  costs accuracy.
+        """
         return {
             "logistic": LogisticRegression(max_iter=2000, class_weight="balanced"),
             "tree": DecisionTreeClassifier(
@@ -200,6 +257,53 @@ class Q1Models:
                 class_weight="balanced_subsample", random_state=RANDOM_STATE,
             ),
         }
+
+    @staticmethod
+    def pruning_comparison(df: pd.DataFrame, spec) -> pd.DataFrame:
+        """Unpruned, pre-pruned and post-pruned trees on the same features.
+
+        The supervised learning lecture's overfitting section offers pre-pruning
+        (stop growing) and post-pruning (grow fully, then remove nodes) as the
+        two remedies. Which one wins is an empirical question, so both are run
+        against a tree with no limits at all, under the grouped rule where
+        overfitting shows up most clearly.
+        """
+        variants = {
+            "unpruned": DecisionTreeClassifier(
+                class_weight="balanced", random_state=RANDOM_STATE,
+            ),
+            "pre-pruned (depth 6, leaf 50)": DecisionTreeClassifier(
+                max_depth=6, min_samples_leaf=50,
+                class_weight="balanced", random_state=RANDOM_STATE,
+            ),
+            "post-pruned (ccp_alpha 0.001)": DecisionTreeClassifier(
+                ccp_alpha=0.001, class_weight="balanced", random_state=RANDOM_STATE,
+            ),
+        }
+
+        y = df[TARGET].astype(int).to_numpy()
+        groups = df["franchise"].to_numpy()
+        X = df[spec.columns]
+
+        rows = []
+        for name, model in variants.items():
+            pipeline = Q1Models.make_pipeline(
+                model, spec.categorical, spec.numeric, spec.text
+            )
+            proba = cross_val_predict(
+                pipeline, X, y, cv=GroupKFold(n_splits=N_SPLITS),
+                groups=groups, method="predict_proba", n_jobs=1,
+            )[:, 1]
+
+            fitted = pipeline.fit(X, y).named_steps["model"]
+            rows.append({
+                "variant": name,
+                "grouped_pr_auc": average_precision_score(y, proba),
+                "grouped_roc_auc": roc_auc_score(y, proba),
+                "n_leaves": int(fitted.get_n_leaves()),
+                "depth": int(fitted.get_depth()),
+            })
+        return pd.DataFrame(rows)
 
     @staticmethod
     def evaluate(df: pd.DataFrame, feature_sets: dict) -> pd.DataFrame:
@@ -304,6 +408,11 @@ def main() -> None:
           .to_string(index=False, float_format=lambda v: f"{v:.3f}"))
 
     report.to_csv(CLEAN_DIR / "q1_model_comparison.csv", index=False)
+
+    print("\nPre-pruning against post-pruning, character features, grouped CV")
+    pruning = Q1Models.pruning_comparison(df, feature_sets["character"])
+    print(pruning.to_string(index=False, float_format=lambda v: f"{v:.3f}"))
+    pruning.to_csv(CLEAN_DIR / "q1_pruning.csv", index=False)
 
     print("\nPermutation importance, character-only forest")
     importance = Q1Models.importances(df)
