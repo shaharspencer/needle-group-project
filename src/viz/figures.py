@@ -84,14 +84,11 @@ def fig_model_comparison() -> None:
 
     axes[1].tick_params(labelleft=False)
     fig.tight_layout()
-    fig.suptitle("Character attributes predict death better than the franchise does",
+    fig.suptitle("Feature set and PR-AUC",
                  x=0.0, y=1.10, ha="left", fontsize=12, fontweight="bold")
     style.caption(fig,
-        "Best of three models per feature set, ranked by the grouped score. "
-        "Axis starts at 0.30, just below the 0.356 chance level; dots rather than bars, so the truncation does not "
-        "misstate ratios. Left: franchise identity is available to the model. Right: whole franchises are held out. "
-        "Every set loses ground between the panels, "
-        "and franchise-only drops to 0.398, close to the 0.356 baseline, since its one-hot column is then always zero.")
+        "Best score among the three models for each feature set. Left: random character folds. "
+        "Right: folds holding out whole franchises. The vertical line is the 0.356 prevalence baseline.")
     fig.savefig(FIG_DIR / "q1_model_comparison.png")
     plt.close(fig)
 
@@ -139,11 +136,10 @@ def fig_gender_forest() -> None:
     # top of Ozark and Breaking Bad, which have the widest intervals.
     ax.legend(loc="upper left")
 
-    ax.set_title("Women are less likely to die in every franchise we could measure")
+    ax.set_title("Franchise and gender odds ratio")
     style.caption(fig,
-        "Adjusted for prominence, role, alignment and species. Bars are 95% intervals. "
-        f"{significant.sum()} of {len(per)} franchises reach p<0.05 and none point the other way; "
-        "the weak cases are null effects, not reversals.")
+        "Points are adjusted odds-ratio estimates; lines are 95% confidence intervals. "
+        f"Filled points indicate p < 0.05 ({significant.sum()} of {len(per)} franchises).")
     fig.savefig(FIG_DIR / "q1_gender_forest.png")
     plt.close(fig)
 
@@ -171,10 +167,9 @@ def fig_importance() -> None:
         plt.Line2D([], [], color=SERIES[1], linewidth=6, label="Wiki metadata"),
     ]
     ax.legend(handles=handles, loc="lower right")
-    ax.set_title("The two strongest features measure the wiki, not the character")
+    ax.set_title("Feature and permutation importance")
     style.caption(fig,
-        "Character-only random forest. How much fans wrote about a character outranks anything about the character. "
-        "Gender and archetype are the strongest substantive features.")
+        "Permutation importance for the character-only random forest. Orange bars mark wiki-derived metadata.")
     fig.savefig(FIG_DIR / "q1_feature_importance.png")
     plt.close(fig)
 
@@ -214,11 +209,10 @@ def fig_franchise_mortality() -> None:
     style.strip_spines(ax, keep=("bottom",))
     ax.legend(loc="lower right")
 
-    ax.set_title("How deadly is each franchise?")
+    ax.set_title("Franchise and mortality rate")
     style.caption(fig,
-        "Dot = point estimate, using the Haiku-resolved labels where a status could not be parsed. Grey bar = 95% "
-        "Wilson interval on that estimate. Blue band = how far it would move if every remaining unlabelled character "
-        "turned out to be dead. Franchises with complete wiki coverage have no blue band.")
+        "Dots use the Haiku-resolved point estimate. Grey lines are 95% Wilson intervals. "
+        "Blue bands show the upper bound if every remaining unlabelled character died.")
     fig.savefig(FIG_DIR / "q3_franchise_mortality.png")
     plt.close(fig)
 
@@ -249,15 +243,10 @@ def fig_runspan() -> None:
     ax.set_xlabel("Years between first and last release")
     ax.set_ylabel("Mortality (%)")
     style.strip_spines(ax)
-    glm = pd.read_csv(CLEAN_DIR / "q3_glm_summary.csv")
-    run_span_p = glm.loc[glm.term == "run_span", "p"].iloc[0]
 
-    ax.set_title("How long a franchise runs says nothing about how deadly it is")
+    ax.set_title("Run span and franchise mortality")
     style.caption(fig,
-        f"Marker size is cast size. Run span is the strongest of the five franchise properties we tested and it still "
-        f"misses significance (p={run_span_p:.2f}); the whole model reaches R2={glm.r_squared[0]:.2f} on "
-        f"{int(glm.n_franchises[0])} franchises, with an adjusted R2 of {glm.r_squared_adj[0]:.2f} -- worse than "
-        "predicting every franchise at the overall mean.")
+        "Marker area is cast size. The line is the univariate least-squares fit.")
     fig.savefig(FIG_DIR / "q3_run_span.png")
     plt.close(fig)
 
@@ -282,11 +271,9 @@ def fig_text_terms(n: int = 12) -> None:
     ax.yaxis.grid(False)
     style.strip_spines(ax, keep=("bottom",))
 
-    ax.set_title("Narrative role is the strongest text signal for death")
+    ax.set_title("TF-IDF term and logistic-regression coefficient")
     style.caption(fig,
-        f"Top {n} terms in each direction (trainval only). Portable terms like 'antagonist', 'command', 'background' "
-        "describe narrative position and transfer across franchises. Less portable terms ('hydra', 'island') are "
-        "franchise fingerprints; survival-side terms ('relationships', 'category') are wiki section headings.")
+        f"The {n} largest coefficients in each direction, estimated on the training and validation data.")
     fig.savefig(FIG_DIR / "q2_text_terms.png")
     plt.close(fig)
 
@@ -337,10 +324,9 @@ def fig_text_transfer() -> None:
     style.strip_spines(ax, keep=("left",))
     ax.legend(loc="upper left")
 
-    ax.set_title("Logistic regression transfers better than random forest on text")
+    ax.set_title("Model and text-feature PR-AUC")
     style.caption(fig,
-        "Solid bar = grouped CV (franchise held out). Faded extension = drop from random CV. "
-        "The forest drops more because it memorises franchise-specific term combinations.")
+        "Solid bars show grouped CV. Faded extensions show the difference from random CV.")
     fig.savefig(FIG_DIR / "q2_text_transfer.png")
     plt.close(fig)
 
@@ -368,11 +354,10 @@ def fig_corpus() -> None:
     ax.set_xlim(0, 101)
     ax.set_ylim(-1.1, 0.5)
     ax.axis("off")
-    ax.set_title("Three in five scraped pages are not an on-screen character")
+    ax.set_title("Page type in the raw scrape")
     style.caption(fig,
-        f"Estimated from {comp['n_annotated'].iloc[0]} annotated pages, reweighted to the "
-        f"{comp['n_corpus_represented'].iloc[0]:,} they represent. "
-        "Analysis is restricted to the leftmost group.")
+        f"Estimated from {comp['n_annotated'].iloc[0]} annotated pages and reweighted to the "
+        f"{comp['n_corpus_represented'].iloc[0]:,} pages they represent.")
     fig.savefig(FIG_DIR / "corpus_composition.png")
     plt.close(fig)
 
@@ -381,6 +366,9 @@ def fig_community_fate() -> None:
     """Do characters in the same Louvain community share fates?"""
     fate = pd.read_csv(CLEAN_DIR / "q1_community_fate.csv")
     fate = fate.sort_values("z")
+    display_names = fate["franchise"].replace({
+        "Breaking Bad / Better Call Saul": "Breaking Bad universe",
+    })
 
     fig, axes = plt.subplots(
         1, 2, figsize=(10.5, 6.2), gridspec_kw={"width_ratios": [1.35, 1]}
@@ -400,7 +388,7 @@ def fig_community_fate() -> None:
     ax.text(1.96, len(fate) - 0.2, "  p = 0.05", color=MUTED, fontsize=7.5,
             va="center")
 
-    ax.set_yticks(y, fate["franchise"], fontsize=7)
+    ax.set_yticks(y, display_names, fontsize=7)
     ax.set_xlabel("Fate concentration, standardised against a label-shuffling null")
     ax.set_title("13 of 33 franchises exceed the null", fontsize=9,
                  color=INK_SECONDARY, pad=6)
@@ -424,7 +412,10 @@ def fig_community_fate() -> None:
     # already names every franchise.
     notable = fate[(fate["d_observed"] > 0.05) | (fate["d_observed"] < -0.02)]
     for _, row in notable.iterrows():
-        ax.annotate(row["franchise"], (row["modularity"], row["d_observed"]),
+        label = ("Breaking Bad universe"
+                 if row["franchise"] == "Breaking Bad / Better Call Saul"
+                 else row["franchise"])
+        ax.annotate(label, (row["modularity"], row["d_observed"]),
                     fontsize=6.5, color=INK_SECONDARY,
                     xytext=(5, 3), textcoords="offset points")
 
@@ -435,12 +426,11 @@ def fig_community_fate() -> None:
     style.strip_spines(ax)
 
     fig.tight_layout()
-    fig.suptitle("Characters in the same narrative community often share a fate",
+    fig.suptitle("Franchise and fate concentration",
                  x=0.0, y=1.04, ha="left", fontsize=12, fontweight="bold")
     style.caption(fig,
-        "Louvain partitions of each franchise's co-mention graph, tested against 2,000 within-franchise label shuffles. "
-        "Filled markers reject the null at p < 0.05. Modularity does not predict the effect: Dune and Lord of the Rings "
-        "partition equally well (Q = 0.64, 0.62) and sit at opposite ends of D.")
+        "Observed concentration was compared with 2,000 within-franchise label shuffles. "
+        "Blue marks have one-sided permutation p < 0.05; no multiple-testing correction was applied.")
     fig.savefig(FIG_DIR / "q1_community_fate.png")
     plt.close(fig)
 
@@ -471,7 +461,7 @@ def fig_cost_curves() -> None:
             va="top")
     ax.set_xlabel("Decision threshold")
     ax.set_ylabel("Weighted loss per character")
-    ax.set_title("The best threshold moves with the cost of a missed death",
+    ax.set_title("Global optimum by false-negative cost",
                  fontsize=9, color=INK_SECONDARY, pad=6)
     ax.legend(loc="upper left", ncol=2, bbox_to_anchor=(0.02, 0.98))
     ax.set_ylim(0, None)
@@ -484,7 +474,10 @@ def fig_cost_curves() -> None:
     ax.scatter(ordered["best_threshold"], y,
                color=[SERIES[1] if w else "#c9d6e4" for w in watched],
                s=[34 if w else 16 for w in watched], zorder=3)
-    ax.axvline(0.5, color=MUTED, linewidth=1)
+    global_w3 = optima.loc[optima["cost_ratio"] == 3, "threshold"].iloc[0]
+    ax.axvline(global_w3, color=MUTED, linewidth=1)
+    ax.text(global_w3, len(ordered) - 0.5, f" global {global_w3:.2f}",
+            color=MUTED, fontsize=7.5, va="top")
 
     for _, (position, row) in enumerate(zip(y, ordered.itertuples())):
         if row.franchise in ("Spartacus", "Grey's Anatomy"):
@@ -494,21 +487,18 @@ def fig_cost_curves() -> None:
 
     ax.set_yticks([])
     ax.set_xlabel("Threshold each franchise would choose for itself (w1 = 3)")
-    ax.set_title("Franchise optima span 0.05 to 0.72", fontsize=9,
+    ax.set_title("Franchise-specific optima at w1 = 3", fontsize=9,
                  color=INK_SECONDARY, pad=6)
     ax.xaxis.grid(True)
     ax.yaxis.grid(False)
     style.strip_spines(ax, keep=("bottom",))
 
     fig.tight_layout()
-    fig.suptitle("The relative cost of the two errors decides the threshold",
+    fig.suptitle("Decision threshold and weighted loss",
                  x=0.0, y=1.06, ha="left", fontsize=12, fontweight="bold")
     style.caption(fig,
-        "Left: weighted loss w1*FN + FP swept over thresholds, on out-of-fold predictions under grouped folds. "
-        "Markers are the minima, moving from 0.81 at w1 = 0.5 down to 0.10 at w1 = 10. "
-        "Right: the threshold each franchise would pick for itself at w1 = 3. These track base mortality closely, "
-        "running from 0.05 for Spartacus at 74% mortality up to 0.72 for Grey's Anatomy at 9%. At the global 0.50 "
-        "threshold Spartacus carries four times the loss it would under its own.")
+        "Loss is w1*FN + FP on grouped out-of-fold predictions. Dots mark the minimum for each curve. "
+        "The right panel shows the minimum separately for each franchise at w1 = 3.")
     fig.savefig(FIG_DIR / "q1_cost_curves.png")
     plt.close(fig)
 
@@ -549,12 +539,10 @@ def fig_fold_spread() -> None:
         style.strip_spines(ax, keep=("bottom",))
 
     fig.tight_layout()
-    fig.suptitle("Fold spread swamps most of the gaps between feature sets",
+    fig.suptitle("Feature set and fold-level PR-AUC",
                  x=0.0, y=1.05, ha="left", fontsize=12, fontweight="bold")
     style.caption(fig,
-        "Small markers are the five individual folds, large markers the mean. Both panels share an axis, so the "
-        "leftward shift between them is the cost of holding out a whole franchise. Under that rule each fold is a "
-        "different set of franchises, and the spread within a feature set is wider than the distance between most of them.")
+        "Small points show individual folds; large points show their mean. Both panels use the same scale.")
     fig.savefig(FIG_DIR / "q1_fold_spread.png")
     plt.close(fig)
 
@@ -586,7 +574,7 @@ def fig_cluster_diagnostics() -> None:
     for side in ("top", "left", "bottom"):
         twin.spines[side].set_visible(False)
 
-    ax.set_title("The elbow curve bends nowhere; the silhouette picks k = 2",
+    ax.set_title("Distance to centroid and silhouette by k",
                  fontsize=9, color=INK_SECONDARY, pad=6)
 
     ax = axes[1]
@@ -605,12 +593,11 @@ def fig_cluster_diagnostics() -> None:
     ax.tick_params(axis="x", rotation=90)
 
     fig.tight_layout()
-    fig.suptitle("Thirty-eight franchises do not fall into natural groups",
+    fig.suptitle("Number of clusters and internal diagnostics",
                  x=0.0, y=1.06, ha="left", fontsize=12, fontweight="bold")
     style.caption(fig,
-        "Left: neither selection rule finds a clear k. The distance curve falls smoothly with no elbow, and the best "
-        "silhouette (0.43 at k = 2) separates six large film franchises from everything else. "
-        "Right: the dendrogram shows the same, with one small branch splitting off early and the rest merging at similar heights.")
+        "Left: mean distance to centroid and silhouette score across k. "
+        "Right: Ward dendrogram using the same standardised franchise properties.")
     fig.savefig(FIG_DIR / "q3_cluster_diagnostics.png")
     plt.close(fig)
 
@@ -653,7 +640,7 @@ def fig_reliability() -> None:
     ax.set_yticks(y, ["Is it a character?", "Does it appear on screen?",
                       "Does it die?"])
     ax.set_xlim(0, 0.9)
-    ax.set_xlabel("Cohen's kappa between two independent coders")
+    ax.set_xlabel("Cohen's kappa between two annotation runs")
     ax.legend(loc="lower right")
     ax.xaxis.grid(True)
     ax.yaxis.grid(False)
@@ -661,11 +648,11 @@ def fig_reliability() -> None:
     ax.invert_yaxis()
 
     fig.tight_layout()
-    fig.suptitle("Writing the coding scheme down moved the death label two bands",
+    fig.suptitle("Label and agreement by rubric version",
                  x=0.0, y=1.04, ha="left", fontsize=12, fontweight="bold")
     style.caption(fig,
-        "Same 600 characters, same model, four independent coding passes. v1 was reconstructed after the fact; v2 "
-        "adjudicates the four cases the v1 disagreements exposed. Vertical rules are the Landis and Koch bands.")
+        "Cohen's kappa from two annotation runs under each rubric version. "
+        "Vertical lines mark the Landis and Koch agreement bands.")
     fig.savefig(FIG_DIR / "label_reliability.png")
     plt.close(fig)
 
