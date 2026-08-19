@@ -9,7 +9,6 @@ venv/
 # build_pipeline.py stage checkpoints — resume state, regenerated on every run
 # and deleted automatically once a build finishes.
 data/clean/.ckpt/
-data/checkpoints/
 
 # Secrets — TMDB key etc. Never commit.
 .env
@@ -17,13 +16,5 @@ data/checkpoints/
 # Per-run console logs from src.__init__.setup_run_log — regenerated on every run.
 logs/
 
-# Large / regenerable data.
-# data/raw is 262MB of scraped Fandom JSONL (page_text is most of it) and is
-# reproducible via `python -m scraper.run_scraper`. data/external is 147MB of
-# third-party Kaggle/CMU dumps that we did not create.
-data/raw/
-data/external/
-data/external/tmdb/
-
-# Everything else under data/ (clean tables, gold labels, figures) IS tracked —
-# those are our outputs and need to be auditable.
+# data/raw (scraped Fandom JSONL) and data/external (third-party Kaggle/CMU
+# dumps) are tracked via Git LFS — see .gitattributes.
