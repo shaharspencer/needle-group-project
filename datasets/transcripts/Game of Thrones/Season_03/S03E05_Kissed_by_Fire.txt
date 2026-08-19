@@ -1,31 +1,3 @@
-Show: Game of Thrones (2011–…) - episodes with scripts
-Season 3, Episode 5: Kissed by Fire
-Source: https://subslikescript.com/series/Game_of_Thrones-944947/season-3/episode-5-Kissed_by_Fire
-============================================================
-
-You did not choose this life.
-But you are free men now.
-And free men make their own choices.
-Have you selected your own leader
-from amongst your ranks?
-Remove your helmet.
-This one has the honour.
-What is your name?
-Grey Worm.
-Grey Worm.
-From this day forward,
-you will choose your own names.
-You will tell your fellow soldiers
-to do the same.
-Throw away your slave name.
-Choose the name your parents gave you,
-or any other.
-A name that gives you pride.
-"Grey Worm" gives me pride.
-It is a lucky name.
-The name this one was born
-with was cursed.
-That was the name he had when he
-was taken as a slave.
-But Grey Worm is the name this one had
-the day Daenerys Stormborn set him free.
+version https://git-lfs.github.com/spec/v1
+oid sha256:42f4a3be4c900d0c728a2b644d05fd23cf48283eb59f50ac56e32157e11229ec
+size 966

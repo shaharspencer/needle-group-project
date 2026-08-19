@@ -1,8 +1,3 @@
-Show: The 100
-Season 12, Episode 1: The Old Man and the Anomaly
-Page Title: The_Old_Man_and_the_Anomaly/Transcript
-============================================================
-
-This is a transcribed copy of "The Old Man and the Anomaly" feel free to add information to this article as long it comes directly from the episode.<< PrevNext >>
-
-This transcript is incomplete. Clickeditto help. Thank you!
+version https://git-lfs.github.com/spec/v1
+oid sha256:b9e8b71c91459ed53790aa8f71b980518bd998997a45e801316b6c919fd17b44
+size 407

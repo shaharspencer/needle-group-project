@@ -1,11 +1,3 @@
-Show: Game of Thrones (2011–…) - episodes with scripts
-Season 3, Episode 8: Second Sons
-Source: https://subslikescript.com/series/Game_of_Thrones-944947/season-3/episode-8-Second_Sons
-============================================================
-
-My Queen, shall I slice out
-his tongue for you?
-These men are our guests.
-Drogo said I spoke Dothraki
-like one born to it.
-It gave him great pride.
+version https://git-lfs.github.com/spec/v1
+oid sha256:7e1551a3d19cf9aefcaa60eab311648feb39ad16ddec657ab68be4d04fef8c87
+size 407

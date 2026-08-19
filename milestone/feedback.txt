@@ -1,3 +1,3 @@
-This is such a cool topic. Good data collection.
-
-Viz1 is good, but really doesn't make sense to me. The numbers are **way** too high for...
+version https://git-lfs.github.com/spec/v1
+oid sha256:0b18cdbd41efa43cf142c96f0409ac1584787e974cfc07ecfe3d2e30954aa8b6
+size 142

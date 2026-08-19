@@ -1,16 +1,3 @@
-Show: Game of Thrones (2011–…) - episodes with scripts
-Season 1, Episode 10: Fire and Blood
-Source: https://subslikescript.com/series/Game_of_Thrones-944947/season-1/episode-10-Fire_and_Blood
-============================================================
-
-My sun and stars.
-Do you remember
-our first ride, my sun and stars?
-If you are in there, if you haven't gone away,
-show me.
-You're a fighter.
-You've always been a fighter.
-I need you to fight now.
-I know you're very far away,
-but come back to me, my sun and stars.
-Is this your command, Khaleesi?
+version https://git-lfs.github.com/spec/v1
+oid sha256:a715eb36941580a06b9aadea1314b7e5a48f52799783a0111712d14064c3ceee
+size 569
