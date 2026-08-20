@@ -8,16 +8,16 @@ franchise they are in better predicts their death.
 
 **This file is the operational one: how to set the project up, what to run, and
 where the outputs land.** For what we found and what it means, read
-[WRITEUP.md](WRITEUP.md). For how each feature is computed, read
-[FEATURES.md](FEATURES.md). For a stage-by-stage description of the pipeline,
-read [PIPELINE.md](PIPELINE.md).
+[noimages_group56.md](noimages_group56.md). For how each feature is computed,
+read [meta/FEATURES.md](meta/FEATURES.md). For a stage-by-stage description of
+the pipeline, read [meta/PIPELINE.md](meta/PIPELINE.md).
 
 | document | answers |
 |---|---|
 | README.md (this file) | how do I run it, and where does the output go |
-| [WRITEUP.md](WRITEUP.md) | what did we find |
-| [PIPELINE.md](PIPELINE.md) | what does each stage read and write |
-| [FEATURES.md](FEATURES.md) | how is each feature computed |
+| [noimages_group56.md](noimages_group56.md) | what did we find |
+| [meta/PIPELINE.md](meta/PIPELINE.md) | what does each stage read and write |
+| [meta/FEATURES.md](meta/FEATURES.md) | how is each feature computed |
 
 ## Where the project stands
 
@@ -106,7 +106,7 @@ and the console defaults to cp1252, which otherwise kills the run.
 
 ## Running it
 
-[PIPELINE.md](PIPELINE.md) has the full order with inputs and outputs per stage.
+[meta/PIPELINE.md](meta/PIPELINE.md) has the full order with inputs and outputs per stage.
 The short version, in dependency order:
 
 ```bash
@@ -191,12 +191,15 @@ data/
   gold/            600-page annotation sample and its labels, plus the Haiku
                     fill for unlabelled rows (tracked)
 datasets/          transcripts, death registries, per-show character features
-docs/              the demo, served by GitHub Pages; WRITING_STYLE.md
-tools/             check_writing.js, the prose checker used on WRITEUP.md
-.claude/skills/    writing skills the checker's guidance comes from
+docs/              the demo, served by GitHub Pages
 legacy/            pre-restructure scripts, kept for the record, never run
 logs/              per-run console output (gitignored)
 tests/             pytest (labels, community statistic, cost sweep)
+meta/              non-code, non-data project material: PIPELINE.md,
+                   FEATURES.md, project_guidelines/ (assignment spec),
+                   example_projects/ (other groups' reference writeups),
+                   milestone/ (earlier milestone submission and feedback)
+noimages_group56.md   the writeup (images stripped, per the assignment spec)
 ```
 
 Three conventions worth keeping to:
