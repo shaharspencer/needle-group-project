@@ -84,7 +84,7 @@ def fig_model_comparison() -> None:
 
     axes[1].tick_params(labelleft=False)
     fig.tight_layout()
-    fig.suptitle("Feature set and PR-AUC",
+    fig.suptitle("PR-AUC by feature set",
                  x=0.0, y=1.10, ha="left", fontsize=12, fontweight="bold")
     style.caption(fig,
         "Best score among the three models for each feature set. Left: random character folds. "
@@ -136,12 +136,32 @@ def fig_gender_forest() -> None:
     # top of Ozark and Breaking Bad, which have the widest intervals.
     ax.legend(loc="upper left")
 
-    ax.set_title("Franchise and gender odds ratio")
+    ax.set_title("Gender gap in mortality, by franchise")
     style.caption(fig,
         "Points are adjusted odds-ratio estimates; lines are 95% confidence intervals. "
         f"Filled points indicate p < 0.05 ({significant.sum()} of {len(per)} franchises).")
     fig.savefig(FIG_DIR / "q1_gender_forest.png")
     plt.close(fig)
+
+
+# One display name per raw feature column, so the importance figure doesn't
+# leak internal column names into the writeup.
+IMPORTANCE_LABELS = {
+    "page_text_length": "Page length",
+    "archetype": "Archetype",
+    "gender": "Gender",
+    "infobox_field_count_clean": "Infobox field count",
+    "prominence_tier": "Prominence tier",
+    "billing_order": "Billing order",
+    "affiliation_alignment": "Alignment",
+    "appearance_count": "Appearance count",
+    "episode_count": "Episode count",
+    "has_family": "Has family listed",
+    "is_human": "Is human",
+    "has_alias": "Has alias",
+    "has_dob": "Has date of birth",
+    "has_image": "Has image",
+}
 
 
 def fig_importance() -> None:
@@ -156,7 +176,7 @@ def fig_importance() -> None:
     ax.barh(y, imp.importance, height=0.62, color=colors,
             xerr=imp["std"], error_kw={"ecolor": MUTED, "elinewidth": 0.8})
 
-    ax.set_yticks(y, imp.feature)
+    ax.set_yticks(y, [IMPORTANCE_LABELS.get(f, f) for f in imp.feature])
     ax.set_xlabel("Permutation importance (drop in PR-AUC)")
     ax.xaxis.grid(True)
     ax.yaxis.grid(False)
@@ -167,7 +187,7 @@ def fig_importance() -> None:
         plt.Line2D([], [], color=SERIES[1], linewidth=6, label="Wiki metadata"),
     ]
     ax.legend(handles=handles, loc="lower right")
-    ax.set_title("Feature and permutation importance")
+    ax.set_title("What drives the death prediction")
     style.caption(fig,
         "Permutation importance for the character-only random forest. Orange bars mark wiki-derived metadata.")
     fig.savefig(FIG_DIR / "q1_feature_importance.png")
@@ -209,9 +229,9 @@ def fig_franchise_mortality() -> None:
     style.strip_spines(ax, keep=("bottom",))
     ax.legend(loc="lower right")
 
-    ax.set_title("Franchise and mortality rate")
+    ax.set_title("Mortality rate by franchise")
     style.caption(fig,
-        "Dots use the Haiku-resolved point estimate. Grey lines are 95% Wilson intervals. "
+        "Dots use the Haiku-resolved point estimate. Grey lines are 95% confidence intervals. "
         "Blue bands show the upper bound if every remaining unlabelled character died.")
     fig.savefig(FIG_DIR / "q3_franchise_mortality.png")
     plt.close(fig)
@@ -244,9 +264,9 @@ def fig_runspan() -> None:
     ax.set_ylabel("Mortality (%)")
     style.strip_spines(ax)
 
-    ax.set_title("Run span and franchise mortality")
+    ax.set_title("Does a longer run mean more deaths?")
     style.caption(fig,
-        "Marker area is cast size. The line is the univariate least-squares fit.")
+        "Marker area is cast size. The line is a linear trend fit.")
     fig.savefig(FIG_DIR / "q3_run_span.png")
     plt.close(fig)
 
@@ -399,8 +419,7 @@ def fig_community_fate() -> None:
     # Right panel: the partition has to be worth interpreting before its
     # relationship with fate is worth reading, so modularity goes on one axis.
     ax = axes[1]
-    ax.scatter(fate["modularity"], fate["d_observed"],
-               s=18 + 42 * fate["n_characters"] / fate["n_characters"].max(),
+    ax.scatter(fate["modularity"], fate["d_observed"], s=30,
                color=[SERIES[0] if s else "#c9d6e4" for s in significant],
                edgecolor=SURFACE, linewidth=0.6, zorder=3)
     ax.axhline(0, color=INK, linewidth=0.9)
@@ -421,12 +440,12 @@ def fig_community_fate() -> None:
 
     ax.set_xlabel("Modularity Q of the franchise partition")
     ax.set_ylabel("D, excess same-fate rate within communities")
-    ax.set_title("Marker area is cast size", fontsize=9,
+    ax.set_title("Fate concentration vs. partition strength", fontsize=9,
                  color=INK_SECONDARY, pad=6)
     style.strip_spines(ax)
 
     fig.tight_layout()
-    fig.suptitle("Franchise and fate concentration",
+    fig.suptitle("Do deaths cluster within communities?",
                  x=0.0, y=1.04, ha="left", fontsize=12, fontweight="bold")
     style.caption(fig,
         "Observed concentration was compared with 2,000 within-franchise label shuffles. "
@@ -436,14 +455,12 @@ def fig_community_fate() -> None:
 
 
 def fig_cost_curves() -> None:
-    """Where the cost-minimising threshold sits, and what a global one costs."""
+    """Where the cost-minimising threshold sits, for each assumed cost ratio."""
     curves = pd.read_csv(CLEAN_DIR / "q1_cost_curves.csv")
     optima = pd.read_csv(CLEAN_DIR / "q1_cost_optima.csv")
-    franchises = pd.read_csv(CLEAN_DIR / "q1_cost_by_franchise.csv")
 
-    fig, axes = plt.subplots(1, 2, figsize=(10.0, 4.3))
+    fig, ax = plt.subplots(figsize=(7.0, 4.3))
 
-    ax = axes[0]
     ratios = sorted(curves["cost_ratio"].unique())
     for i, ratio in enumerate(ratios):
         subset = curves[curves["cost_ratio"] == ratio]
@@ -461,44 +478,15 @@ def fig_cost_curves() -> None:
             va="top")
     ax.set_xlabel("Decision threshold")
     ax.set_ylabel("Weighted loss per character")
-    ax.set_title("Global optimum by false-negative cost",
-                 fontsize=9, color=INK_SECONDARY, pad=6)
     ax.legend(loc="upper left", ncol=2, bbox_to_anchor=(0.02, 0.98))
     ax.set_ylim(0, None)
     style.strip_spines(ax)
 
-    ax = axes[1]
-    ordered = franchises.sort_values("best_threshold")
-    y = np.arange(len(ordered))
-    watched = ordered["franchise"].isin(["Spartacus", "Grey's Anatomy"])
-    ax.scatter(ordered["best_threshold"], y,
-               color=[SERIES[1] if w else "#c9d6e4" for w in watched],
-               s=[34 if w else 16 for w in watched], zorder=3)
-    global_w3 = optima.loc[optima["cost_ratio"] == 3, "threshold"].iloc[0]
-    ax.axvline(global_w3, color=MUTED, linewidth=1)
-    ax.text(global_w3, len(ordered) - 0.5, f" global {global_w3:.2f}",
-            color=MUTED, fontsize=7.5, va="top")
-
-    for _, (position, row) in enumerate(zip(y, ordered.itertuples())):
-        if row.franchise in ("Spartacus", "Grey's Anatomy"):
-            ax.annotate(row.franchise, (row.best_threshold, position),
-                        fontsize=7.5, color=INK, fontweight="bold",
-                        xytext=(6, -1), textcoords="offset points")
-
-    ax.set_yticks([])
-    ax.set_xlabel("Threshold each franchise would choose for itself (w1 = 3)")
-    ax.set_title("Franchise-specific optima at w1 = 3", fontsize=9,
-                 color=INK_SECONDARY, pad=6)
-    ax.xaxis.grid(True)
-    ax.yaxis.grid(False)
-    style.strip_spines(ax, keep=("bottom",))
-
     fig.tight_layout()
-    fig.suptitle("Decision threshold and weighted loss",
+    fig.suptitle("Choosing a decision threshold",
                  x=0.0, y=1.06, ha="left", fontsize=12, fontweight="bold")
     style.caption(fig,
-        "Loss is w1*FN + FP on grouped out-of-fold predictions. Dots mark the minimum for each curve. "
-        "The right panel shows the minimum separately for each franchise at w1 = 3.")
+        "Loss is w1*FN + FP on grouped out-of-fold predictions. Dots mark the minimum for each curve.")
     fig.savefig(FIG_DIR / "q1_cost_curves.png")
     plt.close(fig)
 
@@ -539,7 +527,7 @@ def fig_fold_spread() -> None:
         style.strip_spines(ax, keep=("bottom",))
 
     fig.tight_layout()
-    fig.suptitle("Feature set and fold-level PR-AUC",
+    fig.suptitle("PR-AUC spread across folds",
                  x=0.0, y=1.05, ha="left", fontsize=12, fontweight="bold")
     style.caption(fig,
         "Small points show individual folds; large points show their mean. Both panels use the same scale.")
@@ -555,29 +543,28 @@ def fig_cluster_diagnostics() -> None:
     clusters = pd.read_csv(CLEAN_DIR / "q3_franchise_clusters.csv")
     X = np.loadtxt(CLEAN_DIR / "q3_cluster_matrix.csv", delimiter=",")
 
-    fig, axes = plt.subplots(1, 2, figsize=(11.0, 4.6),
-                             gridspec_kw={"width_ratios": [1, 1.5]})
+    fig = plt.figure(figsize=(11.0, 5.4))
+    gs = fig.add_gridspec(2, 2, width_ratios=[1, 1.5], height_ratios=[1, 1],
+                          hspace=0.55, wspace=0.28,
+                          top=0.85, bottom=0.32, left=0.08, right=0.98)
 
-    ax = axes[0]
+    ax = fig.add_subplot(gs[0, 0])
     ax.plot(diag["k"], diag["mean_distance_to_centroid"], color=SERIES[0],
-            marker="o", markersize=4, linewidth=1.6, label="mean distance to centroid")
-    ax.set_xlabel("k")
-    ax.set_ylabel("Mean distance to centroid")
+            marker="o", markersize=4, linewidth=1.6)
+    ax.set_ylabel("Mean distance\nto centroid", fontsize=8)
+    ax.set_title("Elbow curve", fontsize=9, color=INK_SECONDARY, pad=4)
+    ax.tick_params(labelbottom=False)
     style.strip_spines(ax)
 
-    twin = ax.twinx()
-    twin.plot(diag["k"], diag["silhouette"], color=SERIES[1], marker="s",
-              markersize=4, linewidth=1.6, label="silhouette")
-    twin.set_ylabel("Silhouette", color=SERIES[1])
-    twin.tick_params(axis="y", colors=SERIES[1])
-    twin.grid(False)
-    for side in ("top", "left", "bottom"):
-        twin.spines[side].set_visible(False)
+    ax = fig.add_subplot(gs[1, 0])
+    ax.plot(diag["k"], diag["silhouette"], color=SERIES[1],
+            marker="s", markersize=4, linewidth=1.6)
+    ax.set_xlabel("k")
+    ax.set_ylabel("Silhouette", fontsize=8)
+    ax.set_title("Silhouette score", fontsize=9, color=INK_SECONDARY, pad=4)
+    style.strip_spines(ax)
 
-    ax.set_title("Distance to centroid and silhouette by k",
-                 fontsize=9, color=INK_SECONDARY, pad=6)
-
-    ax = axes[1]
+    ax = fig.add_subplot(gs[:, 1])
     linkage_matrix = linkage(X, method="ward")
     dendrogram(
         linkage_matrix, ax=ax, labels=clusters["franchise"].tolist(),
@@ -592,12 +579,11 @@ def fig_cluster_diagnostics() -> None:
     style.strip_spines(ax, keep=("left",))
     ax.tick_params(axis="x", rotation=90)
 
-    fig.tight_layout()
-    fig.suptitle("Number of clusters and internal diagnostics",
-                 x=0.0, y=1.06, ha="left", fontsize=12, fontweight="bold")
+    fig.suptitle("How many franchise clusters?",
+                 x=0.0, y=0.97, ha="left", fontsize=12, fontweight="bold")
     style.caption(fig,
-        "Left: mean distance to centroid and silhouette score across k. "
-        "Right: Ward dendrogram using the same standardised franchise properties.")
+        "Left: two internal diagnostics across k. Right: Ward dendrogram using the same "
+        "standardised franchise properties.")
     fig.savefig(FIG_DIR / "q3_cluster_diagnostics.png")
     plt.close(fig)
 
