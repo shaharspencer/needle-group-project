@@ -128,26 +128,23 @@
 
 <header>
   <h1>Plot Armor Index</h1>
-  <p class="sub">How likely is a fictional character to die? This scores on-screen
-  characters from 38 franchises on the attributes a writer actually controls — who they are,
-  how prominent they are, and how central they are to the story.</p>
+  <p class="sub">Explore death-risk scores for held-out characters from 38 film and TV
+  franchises. Search for a character or change the inputs to see how the score moves.</p>
   <div class="stats" id="stats"></div>
   <p class="sub" id="accuracy-plain" style="margin-top:10px"></p>
 </header>
 
 <div class="card" id="importance-card" style="margin-bottom:20px">
-  <h2>What drives this model</h2>
+  <h2>Feature influence in the demo model</h2>
   <div id="importance"></div>
-  <p class="note" style="margin-top:10px">How much each attribute actually
-  varies the prediction across the characters below — not how much it matters
-  for any one of them. Measured as the spread of each attribute's contribution
-  to the log-odds, so a feature with many rare categories doesn't outrank a
-  common one just for having more of them.</p>
+  <p class="note" style="margin-top:10px">The bars show how much each feature changes
+  scores across the held-out characters. They describe this smaller browser model, not the
+  full random forest used in the report.</p>
 </div>
 
 <div class="tabs" role="tablist">
-  <button class="tab" role="tab" aria-selected="true" data-panel="lookup">Look up a character</button>
-  <button class="tab" role="tab" aria-selected="false" data-panel="build">Build a character</button>
+  <button class="tab" role="tab" aria-selected="true" data-panel="lookup">Find a character</button>
+  <button class="tab" role="tab" aria-selected="false" data-panel="build">Try your own</button>
 </div>
 
 <section class="panel on" id="lookup">
@@ -157,8 +154,8 @@
       <input type="search" id="q" placeholder="Search name or franchise…" autocomplete="off">
       <div class="tabs" id="verdict-filter" style="margin:12px 0 0">
         <button class="tab" data-verdict="all" aria-selected="true">All</button>
-        <button class="tab" data-verdict="right" aria-selected="false">Got it right</button>
-        <button class="tab" data-verdict="wrong" aria-selected="false">Got it wrong</button>
+        <button class="tab" data-verdict="right" aria-selected="false">Correct</button>
+        <button class="tab" data-verdict="wrong" aria-selected="false">Incorrect</button>
       </div>
       <p class="note" id="filter-count" style="margin:8px 0 0"></p>
       <div id="list"></div>
@@ -178,10 +175,8 @@
 </section>
 
 <footer>
-  Built for “A Needle in a Data Haystack”. The model is a logistic regression over
-  user-selectable attributes only; the project's full model uses many more features and scores
-  higher. Predictions describe patterns in how these stories were written — not what any
-  character deserves.
+  Group 56 final project for “A Needle in a Data Haystack”. This page uses a small
+  logistic-regression model that can run in the browser. The report uses the full random forest.
 </footer>
 
 </div>
@@ -190,7 +185,7 @@
 const F = {
   gender: "Gender", archetype: "Role", affiliation_alignment: "Alignment",
   franchise: "Franchise", billing_order: "Billing order",
-  pagerank_rank: "Story centrality", in_degree: "Times mentioned",
+  pagerank_rank: "Graph centrality", in_degree: "Mention count",
   is_human: "Human", n_relatives: "Named relatives",
 };
 
@@ -199,12 +194,12 @@ const F = {
 // "billing order" mean nothing without them. Full definitions: FEATURES.md.
 const DEFS = {
   gender: "From the wiki infobox. Where it's missing, inferred from he/she pronoun counts in the first 500 words of the page.",
-  archetype: "Occupation bucket from a keyword rule over the infobox title, falling back to a scan of the page text. No wiki has a clean occupation field, so this is approximate — about 28% end up Unknown.",
-  affiliation_alignment: "Good, Evil, Neutral or Ambiguous, matched from the infobox affiliation against two word lists (Jedi and the Order of the Phoenix vs the Empire and the Death Eaters). Ambiguous means it matched both.",
+  archetype: "Broad role category based on keywords in the infobox and page text. About 28% are Unknown.",
+  affiliation_alignment: "Good, Evil, Neutral or Ambiguous, based on affiliation keywords in the infobox.",
   franchise: "Which of the 38 wikis the character came from.",
   billing_order: "Cast position in the TMDB credits — 0 is top billing. 40 means no credit was matched, which usually means uncredited or background.",
-  pagerank_rank: "PageRank over a per-franchise graph where an edge means one character's page talks about another, then ranked within the franchise: 0 is the most central character, 1 the least.",
-  in_degree: "How many other characters in the franchise are described as having something to do with this one. PageRank weights those mentions by who is doing the mentioning; this is the raw count, capped at 60. Together with story centrality it is what this model knows about the story rather than about the wiki.",
+  pagerank_rank: "PageRank within the franchise co-mention graph: 0 is most central and 1 is least central.",
+  in_degree: "Number of other character pages that mention this character, capped at 60.",
   is_human: "From the infobox species field.",
   n_relatives: "How many family members the infobox lists.",
 };
@@ -251,9 +246,8 @@ function contributions(parts) {
         <td class="bar"><span class="mid"></span><u style="${style}"></u></td>
         <td class="num">${w >= 0 ? "+" : ""}${w.toFixed(2)}</td></tr>`;
     }).join("") + `</tbody></table>
-    <p class="note">Red pushes toward dying, blue toward surviving. Bars are the model's
-    log-odds contributions; the eight largest are shown. Hover a <b>?</b> for how
-    that attribute is defined.</p>`;
+    <p class="note">Red increases predicted risk and blue lowers it. The eight largest
+    contributions are shown. Hover a <b>?</b> for the feature definition.</p>`;
 }
 
 function similar(c) {
@@ -267,19 +261,15 @@ function similar(c) {
       return [d, o];
     })
     .sort((a, b) => a[0] - b[0]).slice(0, 5).map(x => x[1]);
-  const outcomes = new Set(scored.map(o => o.d));
-  return `<h2 style="margin-top:26px">Others the model scored the same</h2>
+  return `<h2 style="margin-top:26px">Characters with similar scores</h2>
     <table><thead><tr><th>Character</th><th>Franchise</th>
     <th class="num">Risk</th><th class="num">Actually</th></tr></thead><tbody>` +
     scored.map(o => `<tr><td>${esc(o.n)}</td><td style="color:var(--muted)">${esc(o.f)}</td>
       <td class="num">${pct(o.risk)}</td>
       <td class="num" style="color:${o.d ? "var(--red)" : "var(--green)"}">${o.d ? "died" : "survived"}</td></tr>`).join("") +
     `</tbody></table>
-    <p class="note">Ranked by how close the model's score is, not by how alike
-    the characters are — so this is the group the model can't tell apart.
-    ${outcomes.size > 1
-      ? "Note the outcomes differ: same score, different fate, which is the model's limit showing."
-      : "They all ended up the same way here, which is the model's score looking justified."}</p>`;
+    <p class="note">Sorted by predicted risk only. Similar scores do not mean the
+    characters themselves are similar.</p>`;
 }
 
 function showCharacter(c) {
@@ -298,12 +288,12 @@ function showCharacter(c) {
       <div class="who">${esc(c.n)}<small>${esc(c.f)} · ${esc(c.a)} · ${esc(c.g)}</small></div>
     </div>
     <div class="meter"><i style="width:${(100 * r.p).toFixed(1)}%"></i></div>
-    <div class="scale"><span>certain survival</span><span>${band} risk</span><span>certain death</span></div>
+    <div class="scale"><span>lower risk</span><span>${band} risk</span><span>higher risk</span></div>
     <div class="verdict ${c.d ? "died" : "lived"}">
-      In the story, <b>${esc(c.n)} ${c.d ? "dies" : "survives"}</b>.
-      The model ${right ? "called this correctly" : "got this wrong"}.
+      Actual outcome: <b>${esc(c.n)} ${c.d ? "dies" : "survives"}</b>.
+      At a 50% threshold, the prediction is ${right ? "correct" : "incorrect"}.
     </div>
-    <h2 style="margin-top:26px">Why</h2>
+    <h2 style="margin-top:26px">Score breakdown</h2>
     ${contributions(r.parts)}
     ${similar(c)}
     <p class="note"><a href="${esc(c.u)}" target="_blank" rel="noopener">Source wiki page</a></p>`;
@@ -321,7 +311,7 @@ function renderList() {
   const nRight = D.characters.filter(correct).length;
   document.getElementById("filter-count").textContent =
     `${nRight} of ${D.characters.length} called correctly ` +
-    `(${pct(nRight / D.characters.length)}), at a 50% threshold. ` +
+    `(${pct(nRight / D.characters.length)}) at a 50% threshold. ` +
     `Showing ${matching.length}.`;
 
   const hits = matching.slice(0, 300);
@@ -384,11 +374,11 @@ function renderBuilt() {
   document.getElementById("built").innerHTML = `
     <div class="headline">
       <div class="big" style="color:${r.p >= .5 ? "var(--red)" : "var(--blue)"}">${pct(r.p)}</div>
-      <div class="who">chance of dying<small>${esc(c.franchise)}</small></div>
+      <div class="who">predicted chance of death<small>${esc(c.franchise)}</small></div>
     </div>
     <div class="meter"><i style="width:${(100 * r.p).toFixed(1)}%"></i></div>
-    <div class="scale"><span>certain survival</span><span>base rate ${pct(D.performance.base_rate)}</span><span>certain death</span></div>
-    <h2 style="margin-top:26px">Why</h2>${contributions(r.parts)}`;
+    <div class="scale"><span>lower risk</span><span>base rate ${pct(D.performance.base_rate)}</span><span>higher risk</span></div>
+    <h2 style="margin-top:26px">Score breakdown</h2>${contributions(r.parts)}`;
 }
 
 function renderImportance() {
@@ -449,8 +439,8 @@ fetch("demo_data.json").then(r => r.json()).then(data => {
     <div class="stat"><b>${pct(D.performance.base_rate)}</b><span>actually die</span></div>
     <div class="stat"><b>${D.performance.roc_auc}</b><span>ROC-AUC (test set)</span></div>`;
   document.getElementById("accuracy-plain").textContent =
-    `In plain terms: given one character who died and one who didn't, this model ranks ` +
-    `the one who died as riskier about ${pct(D.performance.roc_auc)} of the time.`;
+    `For a random pair containing one death and one survivor, this model gives the higher ` +
+    `risk score to the death about ${pct(D.performance.roc_auc)} of the time.`;
   renderImportance();
   renderList();
   renderControls();
