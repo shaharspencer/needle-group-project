@@ -1,47 +1,60 @@
-# Data guide
+# Pipeline workspace: datasets and generated outputs
 
-This folder contains the data used for the final report. If you want to inspect
-the analysis without rebuilding the scrape, start with the files in the table
-below. CSV files open directly on GitHub; large files stored with Git LFS have a
-download button on their GitHub file page.
+This is the pipeline's working directory, so it contains intermediate tables
+and generated outputs as well as data. For a clean folder containing only the
+four final datasets, use [`../dataset/`](../dataset/). The sections below
+document the pipeline files; they are not the Data link used in the writeup.
 
-## Main analysis files
+## Final datasets used in the analyses
 
-| File | What it contains |
+These are the clearest files for inspecting the observations that were
+actually analysed.
+
+| Dataset | Rows | What one row represents |
+| --- | ---: | --- |
+| [Q1 character dataset](clean/q1_analysis_data.csv) | 15,686 | One named, on-screen character. It contains the death label and all candidate features used across the 12 Q1 feature sets. |
+| [Q2 franchise dataset](clean/q2_franchise_mortality.csv) | 38 | One franchise. It contains mortality, population counts, medium, genre, release years, run span, titles, and rating used for Q2. |
+| [Annotation sample](gold/gold_sample.csv) | 600 | One wiki page sampled for the label-quality checks. |
+| [Labels for unclear cases](gold/fill_unlabelled/haiku_fill.csv) | 1,858 | One previously unclear case and its rubric-based outcome: dead, alive, or undecided. |
+
+The Q1 dataset contains 5,579 deaths (35.57%) across 38 franchises. The Q2
+dataset summarizes 17,584 named, on-screen characters. The label-fill outcomes
+match the writeup: 123 dead, 1,223 alive, and 512 undecided.
+
+## Supporting and intermediate datasets
+
+These files show how the final datasets were assembled, but they are not the
+final model-ready tables.
+
+| File | Purpose |
 | --- | --- |
-| [`clean/q1_analysis_data.csv`](clean/q1_analysis_data.csv) | Exact Q1 analysis table: the 15,686 modelled characters, death label, and the 401 candidate feature columns used across the 12 feature sets. |
-| [`clean/character_features.csv`](clean/character_features.csv) | Broader feature-building table that is joined to the cleaned characters before the Q1 population filter is applied. |
-| [`clean/characters_model.csv`](clean/characters_model.csv) | Compiled 68,463-row character table containing the cleaned labels and population flags. |
-| [`clean/onscreen_flags.csv`](clean/onscreen_flags.csv) | On-screen and naming filters used to define the franchise-level population. |
-| [`clean/split_assignment.csv`](clean/split_assignment.csv) | Fixed train, validation, and test assignments used by the models. |
-| [`clean/q1_model_comparison.csv`](clean/q1_model_comparison.csv) | Cross-validation results for the Q1 feature and model comparison. |
-| [`clean/q1_holdout_results.csv`](clean/q1_holdout_results.csv) | Final held-out Q1 scores. |
-| [`clean/q1_fold_scores.csv`](clean/q1_fold_scores.csv) | Per-fold scores behind the fold-spread comparison. |
-| [`clean/q1_feature_importance.csv`](clean/q1_feature_importance.csv) | Character-feature importance values shown in the report. |
-| [`clean/q1_cost_curves.csv`](clean/q1_cost_curves.csv) | Weighted error costs across classification thresholds. |
-| [`clean/q2_franchise_mortality.csv`](clean/q2_franchise_mortality.csv) | One row per franchise with mortality and franchise attributes. |
-| [`clean/q2_regression_summary.csv`](clean/q2_regression_summary.csv) | Ordinary linear-regression output for franchise mortality. |
-| [`clean/q2_franchise_clusters.csv`](clean/q2_franchise_clusters.csv) | Final k-means cluster assignment for each franchise. |
-| [`gold/gold_sample.csv`](gold/gold_sample.csv) | Stratified annotation sample used for label checks. |
+| [Compiled character table](clean/characters_model.csv) | 68,463 wiki-page rows with cleaned labels and population flags. |
+| [Feature-building table](clean/character_features.csv) | Character text, graph, community, category, and infobox features before the Q1 population is selected. |
+| [On-screen flags](clean/onscreen_flags.csv) | Naming and on-screen decisions used to define the Q2 population. |
+| [Split assignments](clean/split_assignment.csv) | Fixed train, validation, and test membership for Q1. |
+| [TMDB titles](clean/tmdb_titles.csv) | 280 film and television title records used for franchise attributes. |
+| [TMDB cast](clean/tmdb_cast.csv) | 28,151 cast credits used mainly for billing order and appearance information. |
+| [`gold/`](gold/) | Annotation chunks and checking files used to build and evaluate the supplied labels. |
 
-The other `q1_*.csv` and `q2_*.csv` files contain the supporting values used to
-produce the remaining tables and figures. Images in `clean/figures/` are
-generated from these CSVs.
+## Generated outputs — not datasets
 
-## Folder layout
+The remaining files under `clean/` are products of the analysis code:
 
-| Folder | Purpose |
-| --- | --- |
-| `gold/` | Annotation samples, model-assisted labels, and their checking files. |
-| `clean/` | Processed tables, model results, and report figures. |
+- `q1_model_comparison.csv`, `q1_holdout_results.csv`, and
+  `q1_fold_scores.csv` contain model evaluation results.
+- The other `q1_*.csv` files contain feature-importance, cost, gender,
+  community, pruning, and diagnostic results.
+- `q2_regression_summary.csv`, the other `q2_*.csv` files, and the cluster
+  assignments contain regression or clustering results.
+- `figures/` contains plots generated from those result tables.
+- `label_*.csv`, `corpus_composition.csv`, and `demo_data.json` are generated
+  checks or application outputs.
 
-The exact Q1 file contains 15,686 characters from 38 franchises, including
-5,579 deaths (35.57%). The Q2 mortality table contains all 38 franchises and is
-built from 17,584 named on-screen characters. The label-fill file contains the
-1,858 cases reported in the writeup: 123 dead, 1,223 alive, and 512 undecided.
+These outputs are included for reproducibility, but they should not be read as
+additional observations or source datasets.
 
-The three submission files are in [`../submission/`](../submission/). The code
-ZIP includes these final processed tables and the annotation data. Raw scraped
-pages and third-party source dumps are omitted from the grader-facing branch;
-they are not needed to inspect or rerun the reported analyses from the supplied
-processed inputs.
+The three files submitted for grading are in [`../submission/`](../submission/).
+The code ZIP contains the four final datasets above, the supporting processed
+tables, and the generated outputs. Raw scraped pages and third-party source
+dumps are omitted because they are not needed to inspect or rerun the reported
+analyses from the supplied processed inputs.

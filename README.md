@@ -12,7 +12,7 @@ then examines how mortality rates differ between franchises.
 - [Illustrated writeup](submission/writeup_group56.pdf)
 - [Writeup without images](submission/noimages_group56.pdf)
 - [Code and analysis data](submission/code_group56.zip)
-- [Data guide and downloadable files](data/README.md)
+- [Final datasets](dataset/README.md)
 - [Interactive demo](https://shaharspencer.github.io/needle-group-project/)
 
 ## Repository contents
@@ -25,7 +25,8 @@ src/enrich/         adds TMDB cast and title information
 src/q1_character/   character-level models and comparisons
 src/q2_franchise/   franchise-level regression and clustering
 src/viz/            creates the report figures
-data/               raw, supporting, processed, and annotation data
+dataset/            four final datasets linked from the writeup
+data/               pipeline intermediates and generated outputs
 docs/               browser-based demo
 submission/         the three files submitted for grading
 ```
@@ -55,9 +56,10 @@ JSON, JSONL, TSV, Parquet, and text files use Git LFS; after cloning, run
 
 ## Data and labels
 
-The [data guide](data/README.md) identifies the main analysis tables and
-explains each data folder. The submitted ZIP and the grader-facing repository
-contain the final processed tables and annotation data used for the report.
+The [`dataset/`](dataset/README.md) folder contains only the four final datasets
+used for the report. The submitted ZIP contains the same dedicated folder.
+The separate `data/` directory is the pipeline workspace and also contains
+intermediate tables and generated outputs.
 The much larger raw scrape and third-party source dumps are not required to
 inspect or rerun the reported analyses from these processed inputs.
 

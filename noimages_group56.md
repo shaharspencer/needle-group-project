@@ -15,7 +15,7 @@ Demo: https://shaharspencer.github.io/needle-group-project/
 
 Repository: https://github.com/shaharspencer/needle-group-project/
 
-Data: https://github.com/shaharspencer/needle-group-project/blob/master/data/README.md
+Data: https://github.com/shaharspencer/needle-group-project/tree/master/dataset
 
 # Domain
 
