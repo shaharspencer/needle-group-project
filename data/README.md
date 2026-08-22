@@ -12,7 +12,7 @@ actually analysed.
 
 | Dataset | Rows | What one row represents |
 | --- | ---: | --- |
-| [Q1 character dataset](clean/q1_analysis_data.csv) | 15,686 | One named, on-screen character. It contains the death label and all candidate features used across the 12 Q1 feature sets. |
+| [Q1 character dataset](clean/q1_analysis_data.csv) | 15,686 | Internal pipeline copy of `dataset/q1_characters.csv`: one named, on-screen character with 2 identifiers, the death label, and 402 candidate predictors used across the 12 Q1 feature sets. |
 | [Q2 franchise dataset](clean/q2_franchise_mortality.csv) | 38 | One franchise. It contains mortality, population counts, medium, genre, release years, run span, titles, and rating used for Q2. |
 | [Annotation sample](gold/gold_sample.csv) | 600 | One wiki page sampled for the label-quality checks. |
 | [Labels for unclear cases](gold/fill_unlabelled/haiku_fill.csv) | 1,858 | One previously unclear case and its rubric-based outcome: dead, alive, or undecided. |
