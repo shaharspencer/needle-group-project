@@ -371,7 +371,7 @@ class Q1Models:
 
     @staticmethod
     def importances(df: pd.DataFrame) -> pd.DataFrame:
-        """Permutation importance on the character-only forest."""
+        """Measure the PR-AUC drop after shuffling each character feature."""
         spec = FEATURE_SETS["character"]
         X, y = df[spec.columns], df[TARGET].astype(int)
 
@@ -414,7 +414,7 @@ def main() -> None:
     print(pruning.to_string(index=False, float_format=lambda v: f"{v:.3f}"))
     pruning.to_csv(CLEAN_DIR / "q1_pruning.csv", index=False)
 
-    print("\nPermutation importance, character-only forest")
+    print("\nPR-AUC drop after shuffling features, character-only forest")
     importance = Q1Models.importances(df)
     print(importance.to_string(index=False, float_format=lambda v: f"{v:.4f}"))
     importance.to_csv(CLEAN_DIR / "q1_feature_importance.csv", index=False)

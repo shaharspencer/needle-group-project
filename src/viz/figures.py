@@ -8,7 +8,6 @@ import numpy as np
 import pandas as pd
 
 from src.paths import CLEAN_DIR, FIG_DIR
-from src.q3_franchise.mortality import FranchiseMortality
 from src.viz import style
 from src.viz.style import BASELINE, INK, INK_SECONDARY, MUTED, SERIES, SURFACE
 
@@ -94,52 +93,41 @@ def fig_model_comparison() -> None:
 
 
 def fig_gender_forest() -> None:
-    """Effect of being female on the odds of dying, per franchise."""
+    """Raw male and female mortality rates by franchise."""
     per = pd.read_csv(CLEAN_DIR / "q1_gender_by_franchise.csv")
     pooled = pd.read_csv(CLEAN_DIR / "q1_gender_pooled.csv")
-    per = per.sort_values("odds_ratio")
+    per = per.sort_values("pp_change")
 
     fig, ax = plt.subplots(figsize=(7.2, 6.4))
     y = np.arange(len(per))
 
-    significant = per.p_value < 0.05
     for i, (_, row) in enumerate(per.iterrows()):
-        color = SERIES[0] if row.p_value < 0.05 else MUTED
-        ax.plot([row.ci_low, row.ci_high], [i, i], color=color,
-                linewidth=1.4, solid_capstyle="round", alpha=0.9)
-    ax.scatter(per.odds_ratio[significant], y[significant.values],
-               s=34, color=SERIES[0], zorder=3, label="p < 0.05")
-    ax.scatter(per.odds_ratio[~significant], y[~significant.values],
-               s=34, facecolor=SURFACE, edgecolor=MUTED, linewidth=1.2,
-               zorder=3, label="not significant")
+        ax.plot([row.male_mortality, row.female_mortality], [i, i],
+                color="#c9d6e4", linewidth=1.4, zorder=1)
+    ax.scatter(per.male_mortality, y, s=32, color=SERIES[1],
+               zorder=3, label="Men")
+    ax.scatter(per.female_mortality, y, s=32, color=SERIES[0],
+               zorder=3, label="Women")
 
-    ax.axvline(1.0, color=INK_SECONDARY, linewidth=1.1)
-    ax.text(1.05, len(per) - 0.6, "no effect", color=INK_SECONDARY, fontsize=7.5)
-
-    row = pooled[pooled.estimate.str.startswith("adjusted")].iloc[0]
-    ax.axvline(row.odds_ratio, color=SERIES[1], linewidth=1.2)
-    ax.text(row.odds_ratio * 0.97, len(per) - 0.6,
-            f"pooled {row.odds_ratio:.2f}", color=SERIES[1], fontsize=7.5, ha="right")
+    row = pooled.iloc[0]
+    ax.text(0.99, 0.02,
+            f"Overall: men {row.male_mortality:.1f}%, women {row.female_mortality:.1f}%",
+            transform=ax.transAxes, ha="right", va="bottom",
+            color=INK_SECONDARY, fontsize=8)
 
     ax.set_yticks(y, per.estimate)
-    ax.set_xscale("log")
-    ax.set_xticks([0.1, 0.25, 0.5, 1, 2])
-    ax.set_xticklabels(["0.1", "0.25", "0.5", "1", "2"])
-    ax.set_xlim(0.05, 3.0)
-    ax.set_xlabel("Odds ratio for dying, women vs men (log scale)")
+    ax.set_xlim(0, 100)
+    ax.set_xlabel("Mortality rate (%)")
     ax.set_ylim(-1, len(per))
     ax.xaxis.grid(True)
     ax.yaxis.grid(False)
     style.strip_spines(ax, keep=("bottom",))
-    # Upper left: the franchises are sorted by odds ratio, so the top rows sit
-    # nearest 1.0 and leave the left corner empty. A lower-left legend lands on
-    # top of Ozark and Breaking Bad, which have the widest intervals.
     ax.legend(loc="upper left")
 
     ax.set_title("Gender gap in mortality, by franchise")
     style.caption(fig,
-        "Points are adjusted odds-ratio estimates; lines are 95% confidence intervals. "
-        f"Filled points indicate p < 0.05 ({significant.sum()} of {len(per)} franchises).")
+        "Raw mortality rates for franchises with at least 100 labelled characters "
+        "and at least 20 men and 20 women. Lines join the two rates within each franchise.")
     fig.savefig(FIG_DIR / "q1_gender_forest.png")
     plt.close(fig)
 
@@ -173,11 +161,10 @@ def fig_importance() -> None:
     fig, ax = plt.subplots(figsize=(7.0, 4.0))
     colors = [SERIES[1] if f in wiki_meta else SERIES[0] for f in imp.feature]
     y = np.arange(len(imp))
-    ax.barh(y, imp.importance, height=0.62, color=colors,
-            xerr=imp["std"], error_kw={"ecolor": MUTED, "elinewidth": 0.8})
+    ax.barh(y, imp.importance, height=0.62, color=colors)
 
     ax.set_yticks(y, [IMPORTANCE_LABELS.get(f, f) for f in imp.feature])
-    ax.set_xlabel("Permutation importance (drop in PR-AUC)")
+    ax.set_xlabel("Training PR-AUC drop after shuffling feature")
     ax.xaxis.grid(True)
     ax.yaxis.grid(False)
     style.strip_spines(ax, keep=("bottom",))
@@ -187,21 +174,16 @@ def fig_importance() -> None:
         plt.Line2D([], [], color=SERIES[1], linewidth=6, label="Wiki metadata"),
     ]
     ax.legend(handles=handles, loc="lower right")
-    ax.set_title("What drives the death prediction")
+    ax.set_title("Which features the model uses")
     style.caption(fig,
-        "Permutation importance for the character-only random forest. Orange bars mark wiki-derived metadata.")
+        "Training PR-AUC drop after shuffling each feature. Orange bars mark wiki-derived metadata.")
     fig.savefig(FIG_DIR / "q1_feature_importance.png")
     plt.close(fig)
 
 
 def fig_franchise_mortality() -> None:
-    """Franchise mortality with both sampling and labelling uncertainty."""
-    df = pd.read_csv(CLEAN_DIR / "q3_franchise_mortality.csv")
-    # mortality_haiku_filled is the column the writeup's Q3 table quotes, so it
-    # is the one plotted. This used to plot mortality_adjusted against a Wilson
-    # interval computed on the raw parsed rate, which are different quantities:
-    # for Lost and Boardwalk Empire the plotted dot fell outside its own plotted
-    # interval.
+    """Franchise mortality with the range caused by missing labels."""
+    df = pd.read_csv(CLEAN_DIR / "q2_franchise_mortality.csv")
     df = df[df.n_characters >= 30].sort_values("mortality_haiku_filled")
 
     fig, ax = plt.subplots(figsize=(7.6, 7.6))
@@ -212,12 +194,6 @@ def fig_franchise_mortality() -> None:
     ax.barh(y, df.mortality_upper - df.mortality, left=df.mortality,
             height=0.5, color="#cde2fb", label="range if unlabelled characters died")
 
-    # Wilson interval recomputed around the estimate actually being plotted, so
-    # the dot always sits inside its own interval.
-    for i, (_, row) in enumerate(df.iterrows()):
-        successes = round(row.mortality_haiku_filled / 100 * row.n_characters)
-        low, high = FranchiseMortality.wilson(successes, int(row.n_characters))
-        ax.plot([low, high], [i, i], color=BASELINE, linewidth=1.2)
     ax.scatter(df.mortality_haiku_filled, y, s=28, color=SERIES[0], zorder=3,
                label="estimate")
 
@@ -231,32 +207,32 @@ def fig_franchise_mortality() -> None:
 
     ax.set_title("Mortality rate by franchise")
     style.caption(fig,
-        "Dots use the Haiku-resolved point estimate. Grey lines are 95% confidence intervals. "
-        "Blue bands show the upper bound if every remaining unlabelled character died.")
-    fig.savefig(FIG_DIR / "q3_franchise_mortality.png")
+        "Dots use the Haiku-resolved point estimate. Blue bands show how high the rate "
+        "would be if every remaining unlabelled character died.")
+    fig.savefig(FIG_DIR / "q2_franchise_mortality.png")
     plt.close(fig)
 
 
 def fig_runspan() -> None:
-    """Franchise properties against mortality: the null result for Q3."""
-    df = pd.read_csv(CLEAN_DIR / "q3_franchise_mortality.csv")
+    """Franchise properties against mortality for Q2."""
+    df = pd.read_csv(CLEAN_DIR / "q2_franchise_mortality.csv")
     df = df[(df.n_characters >= 30) & df.run_span.notna()]
 
     fig, ax = plt.subplots(figsize=(7.0, 4.4))
     sizes = 18 + 120 * (df.n_characters / df.n_characters.max()) ** 0.5
-    ax.scatter(df.run_span, df.mortality_adjusted, s=sizes,
+    ax.scatter(df.run_span, df.mortality_haiku_filled, s=sizes,
                color=SERIES[0], alpha=0.75, edgecolor=SURFACE, linewidth=1.5)
 
-    fit = np.polyfit(df.run_span, df.mortality_adjusted, 1)
+    fit = np.polyfit(df.run_span, df.mortality_haiku_filled, 1)
     xs = np.linspace(df.run_span.min(), df.run_span.max(), 50)
     ax.plot(xs, np.polyval(fit, xs), color=SERIES[1], linewidth=2)
 
     # Label only the extremes, never every point.
     for _, row in pd.concat([
-        df.nlargest(3, "mortality_adjusted"), df.nsmallest(3, "mortality_adjusted"),
+        df.nlargest(3, "mortality_haiku_filled"), df.nsmallest(3, "mortality_haiku_filled"),
         df.nlargest(2, "run_span"),
     ]).drop_duplicates("franchise").iterrows():
-        ax.annotate(row.franchise, (row.run_span, row.mortality_adjusted),
+        ax.annotate(row.franchise, (row.run_span, row.mortality_haiku_filled),
                     textcoords="offset points", xytext=(7, 4),
                     fontsize=7.5, color=INK_SECONDARY)
 
@@ -267,87 +243,7 @@ def fig_runspan() -> None:
     ax.set_title("Does a longer run mean more deaths?")
     style.caption(fig,
         "Marker area is cast size. The line is a linear trend fit.")
-    fig.savefig(FIG_DIR / "q3_run_span.png")
-    plt.close(fig)
-
-
-def fig_text_terms(n: int = 12) -> None:
-    """Which description words carry the death signal."""
-    coefficients = pd.read_csv(CLEAN_DIR / "q2_text_coefficients.csv")
-    toward_death = coefficients.head(n)
-    toward_life = coefficients.tail(n)
-    shown = pd.concat([toward_life, toward_death]).sort_values("coefficient")
-
-    fig, ax = plt.subplots(figsize=(7.0, 5.6))
-    y = np.arange(len(shown))
-    # Red for the death direction, blue for survival, matching the demo page.
-    colors = [SERIES[7] if c > 0 else SERIES[0] for c in shown.coefficient]
-    ax.barh(y, shown.coefficient, height=0.68, color=colors)
-
-    ax.set_yticks(y, shown.term)
-    ax.axvline(0, color=INK_SECONDARY, linewidth=1.0)
-    ax.set_xlabel("Logistic regression coefficient (TF-IDF, death-stripped text)")
-    ax.xaxis.grid(True)
-    ax.yaxis.grid(False)
-    style.strip_spines(ax, keep=("bottom",))
-
-    ax.set_title("TF-IDF term and logistic-regression coefficient")
-    style.caption(fig,
-        f"The {n} largest coefficients in each direction, estimated on the training and validation data.")
-    fig.savefig(FIG_DIR / "q2_text_terms.png")
-    plt.close(fig)
-
-
-def fig_text_transfer() -> None:
-    """How much does each model lose when franchises are held out?"""
-    report = pd.read_csv(CLEAN_DIR / "q1_model_comparison.csv")
-
-    feats = ["text", "character+text"]
-    models = ["logistic", "forest"]
-    labels = {"text": "Text only", "character+text": "Character + text"}
-    model_labels = {"logistic": "Logistic regression", "forest": "Random forest"}
-
-    fig, ax = plt.subplots(figsize=(7.0, 3.8))
-    x = np.arange(len(feats))
-    width = 0.32
-
-    for i, model in enumerate(models):
-        random_scores, grouped_scores = [], []
-        for feat in feats:
-            r = report[(report.features == feat) & (report.model == model)]
-            random_scores.append(r[r.regime == "random"].pr_auc.iloc[0])
-            grouped_scores.append(r[r.regime == "grouped"].pr_auc.iloc[0])
-
-        offset = (i - 0.5) * width
-        color = SERIES[i]
-
-        # Grouped score as solid bar, random-to-grouped drop as lighter extension
-        ax.bar(x + offset, grouped_scores, width * 0.9, color=color,
-               label=model_labels[model])
-        ax.bar(x + offset, [r - g for r, g in zip(random_scores, grouped_scores)],
-               width * 0.9, bottom=grouped_scores, color=color, alpha=0.25)
-
-        for j, (r, g) in enumerate(zip(random_scores, grouped_scores)):
-            # Grouped score inside the solid bar
-            ax.text(x[j] + offset, g - 0.015, f"{g:.3f}", ha="center", va="top",
-                    fontsize=8, color=SURFACE, fontweight="bold")
-            # Drop label inside the faded extension
-            mid = g + (r - g) / 2
-            ax.text(x[j] + offset, mid, f"−{r - g:.3f}", ha="center", va="center",
-                    fontsize=7.5, color=INK_SECONDARY)
-
-    ax.set_xticks(x, [labels[f] for f in feats])
-    ax.set_ylabel("PR-AUC")
-    ax.set_ylim(0, 0.78)
-    ax.yaxis.grid(True)
-    ax.xaxis.grid(False)
-    style.strip_spines(ax, keep=("left",))
-    ax.legend(loc="upper left")
-
-    ax.set_title("Model and text-feature PR-AUC")
-    style.caption(fig,
-        "Solid bars show grouped CV. Faded extensions show the difference from random CV.")
-    fig.savefig(FIG_DIR / "q2_text_transfer.png")
+    fig.savefig(FIG_DIR / "q2_run_span.png")
     plt.close(fig)
 
 
@@ -385,7 +281,7 @@ def fig_corpus() -> None:
 def fig_community_fate() -> None:
     """Do characters in the same Louvain community share fates?"""
     fate = pd.read_csv(CLEAN_DIR / "q1_community_fate.csv")
-    fate = fate.sort_values("z")
+    fate = fate.sort_values("d_observed")
     display_names = fate["franchise"].replace({
         "Breaking Bad / Better Call Saul": "Breaking Bad universe",
     })
@@ -396,21 +292,14 @@ def fig_community_fate() -> None:
 
     ax = axes[0]
     y = np.arange(len(fate))
-    significant = fate["p_permutation"] < 0.05
-    colors = [SERIES[0] if s else "#c9d6e4" for s in significant]
-    ax.barh(y, fate["z"], height=0.7, color=colors)
-
-    # +/-1.96 is the two-sided 5% band of the permutation null, which is
-    # standardised to z by construction.
-    for bound in (-1.96, 1.96):
-        ax.axvline(bound, color=MUTED, linewidth=1)
+    colors = [SERIES[0] if value > 0 else "#c9d6e4"
+              for value in fate["d_observed"]]
+    ax.barh(y, fate["d_observed"], height=0.7, color=colors)
     ax.axvline(0, color=INK, linewidth=0.9)
-    ax.text(1.96, len(fate) - 0.2, "  p = 0.05", color=MUTED, fontsize=7.5,
-            va="center")
 
     ax.set_yticks(y, display_names, fontsize=7)
-    ax.set_xlabel("Fate concentration, standardised against a label-shuffling null")
-    ax.set_title("13 of 33 franchises exceed the null", fontsize=9,
+    ax.set_xlabel("D: within-community minus between-community same-fate rate")
+    ax.set_title("Observed difference by franchise", fontsize=9,
                  color=INK_SECONDARY, pad=6)
     ax.xaxis.grid(True)
     ax.yaxis.grid(False)
@@ -420,12 +309,9 @@ def fig_community_fate() -> None:
     # relationship with fate is worth reading, so modularity goes on one axis.
     ax = axes[1]
     ax.scatter(fate["modularity"], fate["d_observed"], s=30,
-               color=[SERIES[0] if s else "#c9d6e4" for s in significant],
+               color=colors,
                edgecolor=SURFACE, linewidth=0.6, zorder=3)
     ax.axhline(0, color=INK, linewidth=0.9)
-    ax.axvline(0.3, color=MUTED, linewidth=1)
-    ax.text(0.303, ax.get_ylim()[1], " Q = 0.3", color=MUTED, fontsize=7.5,
-            va="top")
 
     # Labelling only the extremes keeps the panel readable; the left panel
     # already names every franchise.
@@ -448,8 +334,9 @@ def fig_community_fate() -> None:
     fig.suptitle("Do deaths cluster within communities?",
                  x=0.0, y=1.04, ha="left", fontsize=12, fontweight="bold")
     style.caption(fig,
-        "Observed concentration was compared with 2,000 within-franchise label shuffles. "
-        "Blue marks have one-sided permutation p < 0.05; no multiple-testing correction was applied.")
+        "D is the difference between the same-fate rate for character pairs in the same "
+        "community and pairs in different communities. Positive values indicate more "
+        "same-fate pairs within communities.")
     fig.savefig(FIG_DIR / "q1_community_fate.png")
     plt.close(fig)
 
@@ -486,7 +373,7 @@ def fig_cost_curves() -> None:
     fig.suptitle("Choosing a decision threshold",
                  x=0.0, y=1.06, ha="left", fontsize=12, fontweight="bold")
     style.caption(fig,
-        "Loss is w1*FN + FP on grouped out-of-fold predictions. Dots mark the minimum for each curve.")
+        "All-feature forest: loss is w1*FN + FP on grouped out-of-fold predictions. Dots mark each minimum.")
     fig.savefig(FIG_DIR / "q1_cost_curves.png")
     plt.close(fig)
 
@@ -530,7 +417,7 @@ def fig_fold_spread() -> None:
     fig.suptitle("PR-AUC spread across folds",
                  x=0.0, y=1.05, ha="left", fontsize=12, fontweight="bold")
     style.caption(fig,
-        "Small points show individual folds; large points show their mean. Both panels use the same scale.")
+        "Random forest: small points show individual folds; large points show their mean. Both panels use the same scale.")
     fig.savefig(FIG_DIR / "q1_fold_spread.png")
     plt.close(fig)
 
@@ -539,11 +426,12 @@ def fig_cluster_diagnostics() -> None:
     """How k was chosen, and what the resulting partition looks like."""
     from scipy.cluster.hierarchy import dendrogram, linkage
 
-    diag = pd.read_csv(CLEAN_DIR / "q3_kmeans_diagnostics.csv")
-    clusters = pd.read_csv(CLEAN_DIR / "q3_franchise_clusters.csv")
-    X = np.loadtxt(CLEAN_DIR / "q3_cluster_matrix.csv", delimiter=",")
+    diag = pd.read_csv(CLEAN_DIR / "q2_kmeans_diagnostics.csv")
+    clusters = pd.read_csv(CLEAN_DIR / "q2_franchise_clusters.csv")
+    X = np.loadtxt(CLEAN_DIR / "q2_cluster_matrix.csv", delimiter=",")
 
-    fig = plt.figure(figsize=(11.0, 5.4))
+    # Match the report's text width so labels are not shrunk when embedded.
+    fig = plt.figure(figsize=(7.2, 4.4))
     gs = fig.add_gridspec(2, 2, width_ratios=[1, 1.5], height_ratios=[1, 1],
                           hspace=0.55, wspace=0.28,
                           top=0.85, bottom=0.32, left=0.08, right=0.98)
@@ -584,7 +472,7 @@ def fig_cluster_diagnostics() -> None:
     style.caption(fig,
         "Left: two internal diagnostics across k. Right: Ward dendrogram using the same "
         "standardised franchise properties.")
-    fig.savefig(FIG_DIR / "q3_cluster_diagnostics.png")
+    fig.savefig(FIG_DIR / "q2_cluster_diagnostics.png")
     plt.close(fig)
 
 
@@ -656,11 +544,9 @@ def main() -> None:
         ("q1_feature_importance", fig_importance),
         ("q1_community_fate", fig_community_fate),
         ("q1_cost_curves", fig_cost_curves),
-        ("q2_text_terms", fig_text_terms),
-        ("q2_text_transfer", fig_text_transfer),
-        ("q3_franchise_mortality", fig_franchise_mortality),
-        ("q3_run_span", fig_runspan),
-        ("q3_cluster_diagnostics", fig_cluster_diagnostics),
+        ("q2_franchise_mortality", fig_franchise_mortality),
+        ("q2_run_span", fig_runspan),
+        ("q2_cluster_diagnostics", fig_cluster_diagnostics),
     ]:
         fn()
         print(f"  wrote {name}.png")

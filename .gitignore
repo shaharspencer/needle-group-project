@@ -16,5 +16,26 @@ data/clean/.ckpt/
 # Per-run console logs from src.__init__.setup_run_log — regenerated on every run.
 logs/
 
+# Local review and packaging workspaces; not part of the grader-facing branch.
+.claude/
+code_group56/
+tools/
+legacy/
+meta/
+tests/
+datasets/
+"datasets/
+docs/WRITING_STYLE.md
+data/checkpoints/
+data/raw/
+data/external/
+
+# Superseded analysis outputs retained only in the local working copy.
+data/clean/q1_significance.csv
+data/clean/q2_text_coefficients.csv
+data/clean/q3_*.csv
+data/clean/figures/q2_text_*.png
+data/clean/figures/q3_*.png
+
 # data/raw (scraped Fandom JSONL) and data/external (third-party Kaggle/CMU
 # dumps) are tracked via Git LFS — see .gitattributes.

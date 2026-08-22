@@ -5,23 +5,22 @@ corpus-composition sample (`data/gold/`) and the unlabelled-status fill
 (`data/gold/fill_unlabelled/`). Both passes of both samples code against this
 file and nothing else.
 
-Writing the scheme down is a precondition for measuring inter-rater
-reliability. Two coders who work from different rubrics disagree about the
-rubric, not about the data, and Cohen's kappa cannot tell the two apart.
+Both runs need the same written scheme before their answers can be compared.
+Otherwise, disagreement may come from different instructions rather than from
+the pages themselves.
 
 ## Version history
 
 **v1** was reconstructed after the fact from pass 1, which had been coded
-against an undocumented scheme. Two coders working from v1 reached kappa 0.26
+against an undocumented scheme. Two Haiku runs using v1 reached kappa 0.26
 on `is_character` and 0.51 on `appears_onscreen`, both below the 0.6 the
 evaluation lecture treats as a usable floor. Reading the 338 disagreeing rows
 showed the disagreement was concentrated in four cases v1 left open rather than
 spread over hard rows.
 
-**v2** adjudicates those four cases, in the sections marked *Adjudication*
-below. Reliability of v2 is measured on two fresh passes (3 and 4), both coded
-against this file, so that the number describes the scheme rather than the gap
-between a documented and an undocumented one.
+**v2** resolves those four cases in the sections marked *Adjudication* below.
+Its repeatability is measured using two fresh, separate Haiku runs (passes 3
+and 4), both using this file.
 
 ## What the coder sees
 
@@ -166,10 +165,11 @@ reader can tell which passes are comparable.
 |---|---|---|
 | 1 | undocumented | the original labels, behind the corpus-composition figures |
 | 2 | v1 | first reliability attempt; exposed the four open cases |
-| 3 | v2 | reliability of the documented scheme, coder A |
-| 4 | v2 | reliability of the documented scheme, coder B |
+| 3 | v2 | repeatability of the documented scheme, Haiku run A |
+| 4 | v2 | repeatability of the documented scheme, Haiku run B |
 
-Coders work independently and never see another pass's output. Agreement
-between two passes is reliability, not correctness. `src/labels/reliability.py`
-reports Cohen's kappa per label; accuracy against an external source is a
-separate question, handled by `src/labels/validate_registry.py`.
+Haiku runs are separate and never see another pass's output. Agreement between
+two passes measures model repeatability, not human inter-rater reliability or
+correctness. `src/labels/reliability.py` reports Cohen's kappa per label;
+comparison with a human-edited external source is handled separately by
+`src/labels/validate_registry.py`.

@@ -16,12 +16,9 @@ threshold that minimises L is swept rather than assumed, and reported across a
 range of cost ratios so a reader who disagrees with our ratio can read off
 theirs.
 
-**A second look at more measures.** The lecture recommends leading with a few
-metrics chosen for the problem and then showing a broader set, so that a method
-which looks good on one measure and bad on the rest is visible as such. The
-headline metric stays PR-AUC, for the class-imbalance reason given in the
-writeup; accuracy, precision, recall, F1, the two error rates and the Brier
-score follow underneath.
+**A second look at more measures.** The headline metric stays PR-AUC, for the
+class-imbalance reason given in the writeup. Accuracy, precision, recall, F1,
+and the two error rates are also printed for a few thresholds.
 
 Everything here is computed on out-of-fold predictions over the trainval split,
 so no threshold is chosen on the test set.
@@ -31,9 +28,7 @@ so no threshold is chosen on the test set.
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import (
-    average_precision_score, brier_score_loss, confusion_matrix, roc_auc_score,
-)
+from sklearn.metrics import average_precision_score, confusion_matrix, roc_auc_score
 from sklearn.model_selection import GroupKFold, StratifiedKFold, cross_val_predict
 
 from src.paths import CLEAN_DIR
@@ -61,9 +56,11 @@ class CostAnalysis:
             if regime == "random"
             else (GroupKFold(n_splits=N_SPLITS), df["franchise"].to_numpy())
         )
+        model = Q1Models.models()["forest"]
+        model.set_params(n_jobs=1)
         return cross_val_predict(
             Q1Models.make_pipeline(
-                Q1Models.models()["forest"], spec.categorical, spec.numeric, spec.text
+                model, spec.categorical, spec.numeric, spec.text
             ),
             df[spec.columns], df[TARGET].astype(int),
             cv=splitter, groups=groups, method="predict_proba",
@@ -160,19 +157,16 @@ GLOBAL_REFERENCE = 0.5
 
 
 def main() -> None:
-    # Restricted to trainval. The docstring has always said thresholds are
-    # chosen without touching the test split; until now main() loaded the whole
-    # population, so that claim was false and every threshold here had seen the
-    # test rows.
+    # Choose thresholds on trainval only, without touching the test split.
     df = Q1Models.load()
     splits = pd.read_csv(CLEAN_DIR / "split_assignment.csv")
     df = df.merge(splits[["page_url", "split_grouped"]], on="page_url", how="inner")
     df = df[df["split_grouped"] == "trainval"].reset_index(drop=True)
     feature_sets = build_feature_sets(df)
-    spec = feature_sets["character+text"]
+    spec = feature_sets["rich"]
 
     print(f"{len(df):,} trainval characters, {df[TARGET].mean():.1%} dead")
-    print("Out-of-fold predictions, forest on character+text, grouped folds.\n")
+    print("Out-of-fold predictions, forest on all features, grouped folds.\n")
 
     y = df[TARGET].astype(int).to_numpy()
     proba = CostAnalysis.out_of_fold(df, spec, "grouped")
@@ -180,8 +174,7 @@ def main() -> None:
     print("Threshold-free summary")
     print(f"  PR-AUC   {average_precision_score(y, proba):.3f}   "
           f"(chance {y.mean():.3f})")
-    print(f"  ROC-AUC  {roc_auc_score(y, proba):.3f}")
-    print(f"  Brier    {brier_score_loss(y, proba):.3f}\n")
+    print(f"  ROC-AUC  {roc_auc_score(y, proba):.3f}\n")
 
     table = pd.DataFrame([
         CostAnalysis.metrics(y, proba, t) for t in (0.3, 0.4, 0.5, 0.6, 0.7)

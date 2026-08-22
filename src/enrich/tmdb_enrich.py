@@ -128,7 +128,7 @@ class TmdbEnricher:
             release = detail.get("first_air_date", "")
             # A series is one title, so a franchise like Grey's Anatomy would
             # otherwise have first_year == last_year and a run span of zero
-            # despite running since 2005. Q3 regresses mortality on run span,
+            # despite running since 2005. Q2 regresses mortality on run span,
             # so without this every single-series franchise looked instantaneous.
             end = detail.get("last_air_date", "") or ""
         else:

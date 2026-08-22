@@ -1,28 +1,10 @@
-"""Inter-rater reliability for the annotated sample.
+"""Repeatability checks for the model-assisted annotation sample.
 
-Two independent coders labelled the same 600 characters against the scheme in
-src/labels/ANNOTATION_RUBRIC.md, writing to data/gold/annotations/pass1/ and
-pass2/. The second coder never saw the first coder's output.
-
-Reported per label:
-
-  raw agreement    the share of rows the two coders assigned the same code
-  Cohen's kappa    the same quantity corrected for the agreement two coders
-                   would reach by chance given their marginal rates
-
-The evaluation lecture's worked example is the reason both appear. Raw
-agreement rewards a coder for following the majority category, so on a label
-where 92% of rows fall in one class two coders can agree 92% of the time while
-carrying almost no shared information. Our labels are more skewed than that:
-`is_character` runs above 80% in one class. Kappa subtracts the chance
-agreement implied by each coder's own marginals, which is what makes it
-readable across labels with different skews. Values are read against the
-Landis and Koch bands the lecture gives.
-
-Also reported: kappa between the automatic label rule and coder 1. Agreement
-between two coders measures whether the coding scheme is reproducible;
-agreement between the rule and a coder measures whether the rule is right.
-The two questions are separate and the numbers should not be pooled.
+Each pass is a separate Claude Haiku 4.5 run using the same rubric. Runs do not
+see one another's output. We report raw agreement and Cohen's kappa, following
+the evaluation lecture. These values measure repeatability between model runs,
+not agreement between human annotators. We separately compare the automatic
+infobox rule with a Haiku annotation run and with human-edited registries.
 
   python -m src.labels.reliability
 """
@@ -234,10 +216,10 @@ def main() -> None:
         raise SystemExit("No annotations in pass1")
 
     print("Coding scheme: src/labels/ANNOTATION_RUBRIC.md")
-    print(f"Every coder is an independent run of {ANNOTATOR_MODEL}.")
-    print("Agreement between two coders measures whether the scheme is")
-    print("reproducible, not whether the labels are correct. Correctness against")
-    print("an external source is measured in src/labels/validate_registry.py.\n")
+    print(f"Every pass is a separate run of {ANNOTATOR_MODEL}.")
+    print("Agreement between runs measures whether the scheme is repeatable,")
+    print("not whether the labels are correct. Agreement with an external")
+    print("source is measured in src/labels/validate_registry.py.\n")
 
     for pass_id, frame in passes.items():
         state = f"{len(frame)} rows" if frame is not None else "absent"

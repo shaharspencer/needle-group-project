@@ -1,19 +1,9 @@
-"""Build the wide feature matrix for Q1 from the raw scrape.
+"""Build the Q1 feature matrix from the scraped pages.
 
-Extracts six feature families: categories, infobox, relations, network,
-community, and intro. See FEATURES.md for detailed definitions. Anything naming
-death is excluded throughout to prevent label leakage.
-
-Community structure follows the Louvain method covered in the community
-detection lecture: greedy modularity maximisation in O(n log n), against the
-configuration-model null. Girvan-Newman was the alternative, and was rejected on
-cost -- recomputing edge betweenness after every removal is O(nm) per iteration,
-which the Star Wars graph (42,268 nodes) does not survive. Modularity Q is
-reported per franchise so the partitions can be judged on the lecture's own
-scale, where Q above 0.3 indicates community structure worth interpreting.
-
-Every column built here is a function of graph topology or page text alone. The
-label is never read in this module, so no community feature can encode it.
+Extracts category, infobox, relation, network, community, and text features.
+Death-related text and label fields are excluded to reduce label leakage.
+Communities use Louvain, which scales better than Girvan-Newman for our largest
+graphs. The label is not read while constructing these features.
 
   python -m src.q1_character.features
 """

@@ -1,11 +1,11 @@
 """
 fandom_api.py
 -------------
-Rate-limited, anti-blocking MediaWiki API client for Fandom wikis.
+Rate-limited MediaWiki API client for Fandom wikis.
 
-Anti-blocking measures:
+Request-handling measures:
   - Randomized delay between requests (default 1.0–2.5 s)
-  - Realistic browser-like User-Agent header
+  - Descriptive research User-Agent header
   - Persistent requests.Session (connection reuse, keep-alive)
   - Exponential backoff with jitter on 429 / 503 / connection errors
   - Batch fetching: up to 50 pages per API call to minimise request count
@@ -23,7 +23,7 @@ from urllib3.util.retry import Retry
 
 logger = logging.getLogger(__name__)
 
-# Realistic User-Agent – identifies us as a research scraper, not a bot
+# User-Agent identifies the client as an academic research scraper.
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
     "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -31,7 +31,7 @@ USER_AGENT = (
     "FandomCharacterResearchBot/1.0 (+academic-research)"
 )
 
-# How long to wait between requests (seconds) — randomised to appear human
+# Randomized delay reduces request bursts.
 MIN_DELAY = 1.0
 MAX_DELAY = 2.5
 

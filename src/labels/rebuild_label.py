@@ -108,12 +108,12 @@ def main() -> None:
     df.to_csv(out_path, index=False, encoding="utf-8")
     print(f"\nWrote {out_path}")
 
-    # Franchise-level mortality belongs in src/q3_franchise/mortality.py, not
+    # Franchise-level mortality belongs in src/q2_franchise/mortality.py, not
     # here: this table's population is characters_model.csv, which never
     # contains a row with no parseable infobox status (build_pipeline.py
     # drops those upstream), so any per-franchise breakdown computed from it
     # is silently biased for the franchises where most rows fail to parse.
-    # q3_franchise_mortality.csv accounts for those rows properly.
+    # q2_franchise_mortality.csv accounts for those rows properly.
 
 
 if __name__ == "__main__":

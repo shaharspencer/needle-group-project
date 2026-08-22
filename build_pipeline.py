@@ -1299,7 +1299,7 @@ def main():
     # minutes per TV franchise, against the 8 the header used to claim) and the
     # only columns it produces are tvmaze_episode_count, tvmaze_found,
     # tvmaze_is_main_cast and actor_age_at_release, none of which is read
-    # anywhere in src/: not in a Q1 feature set, the Q3 regression, the figures
+    # anywhere in src/: not in a Q1 feature set, the Q2 regression, the figures
     # or the demo export. TMDB already supplies episode_count. Set
     # WITH_TVMAZE=1 to put it back.
     if os.environ.get("WITH_TVMAZE") == "1" and _should("s4_tvmaze"):
