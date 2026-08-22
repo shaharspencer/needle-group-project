@@ -29,7 +29,7 @@ final model-ready tables.
 | File | Purpose |
 | --- | --- |
 | [Compiled character table](clean/characters_model.csv) | 68,463 wiki-page rows with cleaned labels and population flags. |
-| [Feature-building table](clean/character_features.csv) | Character text, graph, community, category, and infobox features before the Q1 population is selected. |
+| [Feature-building table](clean/character_features.csv) | Intermediate table with 73,632 wiki-page rows and 387 columns: 2 identifiers, 291 category indicators, 78 infobox indicators, 9 graph measures, 5 community measures, and 2 text fields. It has no death label; it is merged with the character table and filtered before modelling. |
 | [On-screen flags](clean/onscreen_flags.csv) | Naming and on-screen decisions used to define the Q2 population. |
 | [Split assignments](clean/split_assignment.csv) | Fixed train, validation, and test membership for Q1. |
 | [TMDB titles](clean/tmdb_titles.csv) | 280 film and television title records used for franchise attributes. |
